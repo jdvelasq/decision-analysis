@@ -22,8 +22,8 @@ class DecisionTree:
             self.tree_nodes.append(
                 {
                     "id": current_id,
-                    "variable_name": current_variable,
-                    "next_nodes": None,
+                    "name": current_variable,
+                    "next": None,
                 }
             )
             if "branches" in variables[current_variable].keys():
@@ -31,8 +31,7 @@ class DecisionTree:
                 for branch in variables[current_variable].get("branches"):
                     branch_id: int = build_tree_node(current_variable=branch[-1])
                     next_tree_nodes.append(branch_id)
-
-                self.tree_nodes[current_id]["next_nodes"] = next_tree_nodes
+                self.tree_nodes[current_id]["next"] = next_tree_nodes
 
             return current_id
 
@@ -40,6 +39,49 @@ class DecisionTree:
         #
         self.tree_nodes: List = []
         build_tree_node(current_variable=initial_variable)
+
+    def fill_node_properties(self, variables: dict) -> None:
+        """FIll the tree with run properties"""
+
+        for node in self.tree_nodes:
+
+            var = variables[node["name"]]
+            if var.get("type") == "DECISION":
+                for idx, branch in zip(node.get("next"), var.get("branches")):
+                    self.tree_nodes[idx]["arg"] = {node["name"]: branch[0]}
+
+            if var.get("type") == "CHANCE":
+                for idx, branch in zip(node.get("next"), var.get("branches")):
+                    self.tree_nodes[idx]["prob"] = branch[0]
+                    self.tree_nodes[idx]["arg"] = {node["name"]: branch[1]}
+
+            if var.get("type") == "TERMNAL":
+                node["user_fn"] = var.get("expr")
+
+    def prepare_user_fn_args(self):
+        """.
+
+        Fist part of evaluation algorithm.
+
+
+        """
+        for node in self.tree_nodes:
+
+            if node.get("next") is None:
+                continue
+
+            arg = {} if "arg" not in node.keys() else node.get("arg")
+
+            for idx in node.get("next"):
+                self.tree_nodes[idx]["user_fn_args"] = {
+                    **arg,
+                    **self.tree_nodes[idx].get("arg"),
+                }
+
+
+    def compute_user_fn(self):
+
+        
 
     #
     # Debug

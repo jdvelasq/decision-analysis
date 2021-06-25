@@ -4,10 +4,7 @@
 from pyDecisionTree.nodes import Nodes
 
 
-def test_add_terminal_node():
-    """
-    Check terminal node addition
-    """
+def test_adds_terminal_node():
 
     name = "node1"
     expr = lambda x: x + 1
@@ -19,16 +16,13 @@ def test_add_terminal_node():
     assert nodes[name].get("expr") == expr
 
 
-def test_add_chance_node():
-    """
-    Check chance node addition
-    """
+def test_adds_chance_node():
 
     name = "chance_node"
     branches = [
-        (20.0, 100, 1),
-        (30.0, 200, 1),
-        (50.0, 300, 1),
+        (20.0, 100, "next_node"),
+        (30.0, 200, "next_node"),
+        (50.0, 300, "next_node"),
     ]
 
     nodes = Nodes()
@@ -36,3 +30,21 @@ def test_add_chance_node():
 
     assert nodes[name].get("type") == "CHANCE"
     assert nodes[name].get("branches") == branches
+
+
+def test_adds_decision_node():
+
+    name = "decision_node"
+    branches = [
+        (20.0, "next_node"),
+        (30.0, "next_node"),
+        (50.0, "next_node"),
+    ]
+    max_ = True
+
+    nodes = Nodes()
+    nodes.decision(name=name, branches=branches, max_=max_)
+
+    assert nodes[name].get("type") == "DECISION"
+    assert nodes[name].get("branches") == branches
+    assert nodes[name].get("max_") == max_

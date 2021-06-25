@@ -1,7 +1,7 @@
 """Test module
 """
 
-from pyDecisionTree.nodes import Nodes
+from pydecisiontree.nodes import Nodes
 
 
 def test_adds_terminal_node():
@@ -17,7 +17,7 @@ def test_adds_terminal_node():
 
 
 def test_adds_chance_node():
-
+    #
     name = "chance_node"
     branches = [
         (20.0, 100, "next_node"),

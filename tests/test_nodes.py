@@ -13,28 +13,28 @@ from pydecisiontree.nodes import Nodes
 def test_adds_terminal_node():
     """terminal node"""
     name = "node1"
-    expr = lambda x: x + 1
+    user_fn = None
 
     nodes = Nodes()
-    nodes.terminal(name=name, expr=expr)
+    nodes.terminal(name=name, user_fn=user_fn)
 
     assert nodes[name].get("type") == "TERMINAL"
-    assert nodes[name].get("expr") == expr
+    assert nodes[name].get("user_fn") is None
 
 
 def test_repr_terminal_node():
     """Checks repr function"""
     name = "node1"
-    expr = lambda x: x + 1
+    user_fn = lambda x: x + 1
 
     nodes = Nodes()
-    nodes.terminal(name=name, expr=expr)
+    nodes.terminal(name=name, user_fn=user_fn)
 
     assert (
         nodes.__repr__() == "Node 0\n"
         "    Type: TERMINAL\n"
         "    Name: node1\n"
-        "    Expr: (User fn)\n"
+        "    User fn: (User fn)\n"
     )
 
 

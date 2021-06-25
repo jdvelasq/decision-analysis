@@ -33,11 +33,11 @@ class Nodes:
             "max_": max_,
         }
 
-    def terminal(self, name: str, expr: Any) -> None:
+    def terminal(self, name: str, user_fn: Any = None) -> None:
         """Adds a terminal node"""
         self.data[name] = {
             "type": "TERMINAL",
-            "expr": expr,
+            "user_fn": user_fn,
         }
 
     def __repr__(self):
@@ -77,10 +77,10 @@ class Nodes:
             text = []
             text.append("    Type: " + node.get("type"))
             text.append("    Name: " + name)
-            if node.get("expr") is None:
-                text.append("    Expr: (cumulative)")
+            if node.get("user_fn") is None:
+                text.append("    User fn: (cumulative)")
             else:
-                text.append("    Expr: (User fn)")
+                text.append("    User fn: (User fn)")
             text.append("")
             return text
 

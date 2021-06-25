@@ -56,8 +56,8 @@ class DecisionTree:
                     self.tree_nodes[idx]["prob"] = branch[0]
                     self.tree_nodes[idx]["arg"] = {node["name"]: branch[1]}
 
-            if var.get("type") == "TERMNAL":
-                node["user_fn"] = var.get("expr")
+            if var.get("type") == "TERMINAL":
+                node["user_fn"] = var.get("user_fn")
 
     def prepare_user_fn_args(self):
         """.
@@ -79,7 +79,19 @@ class DecisionTree:
                     **self.tree_nodes[idx].get("arg"),
                 }
 
-    # def compute_user_fn(self):
+    def evaluate_user_fn(self):
+        """Evaluate terminal nodes"""
+
+        def cumulative(**kwargs):
+            return sum(v for _, v in kwargs.items())
+
+        for node in self.tree_nodes:
+            if node.get("type") == "TERMINAL":
+                kwargs = node.get("user_fn_args")
+                user_fn = node.get("user_fn")
+                if user_fn is None:
+                    user_fn = cumulative
+                node["user_fn_value"] = user_fn(**kwargs)
 
     #
     # Debug

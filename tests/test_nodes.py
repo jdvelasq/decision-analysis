@@ -66,8 +66,6 @@ def test_repr_chance_node():
     nodes = Nodes()
     nodes.chance(name=name, branches=branches)
 
-    print(nodes.__repr__())
-
     assert (
         nodes.__repr__() == "Node 0\n"
         "    Type: CHANCE\n"
@@ -96,3 +94,30 @@ def test_adds_decision_node():
     assert nodes[name].get("type") == "DECISION"
     assert nodes[name].get("branches") == branches
     assert nodes[name].get("max_") == max_
+
+
+def test_repr_decision_node():
+    """Checks repr"""
+    name = "decision_node"
+    branches = [
+        (20.0, "next_node"),
+        (30.0, "next_node"),
+        (50.0, "next_node"),
+    ]
+    max_ = True
+
+    nodes = Nodes()
+    nodes.decision(name=name, branches=branches, max_=max_)
+
+    print(nodes.__repr__())
+
+    assert (
+        nodes.__repr__() == "Node 0\n"
+        "    Type: DECISION - Maximum Payoff\n"
+        "    Name: decision_node\n"
+        "    Branches:\n"
+        "                         Value  Next Node\n"
+        "                        20.000  next_node\n"
+        "                        30.000  next_node\n"
+        "                        50.000  next_node\n"
+    )

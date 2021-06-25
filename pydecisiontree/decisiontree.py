@@ -22,6 +22,7 @@ class DecisionTree:
             self.tree_nodes.append(
                 {
                     "id": current_id,
+                    "type": variables[current_variable].get("type"),
                     "name": current_variable,
                     "next": None,
                 }
@@ -78,10 +79,7 @@ class DecisionTree:
                     **self.tree_nodes[idx].get("arg"),
                 }
 
-
-    def compute_user_fn(self):
-
-        
+    # def compute_user_fn(self):
 
     #
     # Debug

@@ -37,16 +37,19 @@ def test_build_skeleton():
 
     tree.build_skeleton(initial_variable="D", variables=nodes)
 
+    for node in tree.tree_nodes:
+        print(node)
+
     assert tree.tree_nodes == [
-        {"id": 0, "name": "D", "next": [1, 5]},
-        {"id": 1, "name": "C", "next": [2, 3, 4]},
-        {"id": 2, "name": "T", "next": None},
-        {"id": 3, "name": "T", "next": None},
-        {"id": 4, "name": "T", "next": None},
-        {"id": 5, "name": "C", "next": [6, 7, 8]},
-        {"id": 6, "name": "T", "next": None},
-        {"id": 7, "name": "T", "next": None},
-        {"id": 8, "name": "T", "next": None},
+        {"id": 0, "type": "DECISION", "name": "D", "next": [1, 5]},
+        {"id": 1, "type": "CHANCE", "name": "C", "next": [2, 3, 4]},
+        {"id": 2, "type": "TERMINAL", "name": "T", "next": None},
+        {"id": 3, "type": "TERMINAL", "name": "T", "next": None},
+        {"id": 4, "type": "TERMINAL", "name": "T", "next": None},
+        {"id": 5, "type": "CHANCE", "name": "C", "next": [6, 7, 8]},
+        {"id": 6, "type": "TERMINAL", "name": "T", "next": None},
+        {"id": 7, "type": "TERMINAL", "name": "T", "next": None},
+        {"id": 8, "type": "TERMINAL", "name": "T", "next": None},
     ]
 
 
@@ -85,15 +88,74 @@ def test_fill_node_properties():
         print(node)
 
     assert tree.tree_nodes == [
-        {"id": 0, "name": "D", "next": [1, 5]},
-        {"id": 1, "name": "C", "next": [2, 3, 4], "arg": {"D": 1}},
-        {"id": 2, "name": "T", "next": None, "prob": 20.0, "arg": {"C": 3}},
-        {"id": 3, "name": "T", "next": None, "prob": 30.0, "arg": {"C": 4}},
-        {"id": 4, "name": "T", "next": None, "prob": 50.0, "arg": {"C": 5}},
-        {"id": 5, "name": "C", "next": [6, 7, 8], "arg": {"D": 2}},
-        {"id": 6, "name": "T", "next": None, "prob": 20.0, "arg": {"C": 3}},
-        {"id": 7, "name": "T", "next": None, "prob": 30.0, "arg": {"C": 4}},
-        {"id": 8, "name": "T", "next": None, "prob": 50.0, "arg": {"C": 5}},
+        {
+            "id": 0,
+            "type": "DECISION",
+            "name": "D",
+            "next": [1, 5],
+        },
+        {
+            "id": 1,
+            "type": "CHANCE",
+            "name": "C",
+            "next": [2, 3, 4],
+            "arg": {"D": 1},
+        },
+        {
+            "id": 2,
+            "type": "TERMINAL",
+            "name": "T",
+            "next": None,
+            "prob": 20.0,
+            "arg": {"C": 3},
+        },
+        {
+            "id": 3,
+            "type": "TERMINAL",
+            "name": "T",
+            "next": None,
+            "prob": 30.0,
+            "arg": {"C": 4},
+        },
+        {
+            "id": 4,
+            "type": "TERMINAL",
+            "name": "T",
+            "next": None,
+            "prob": 50.0,
+            "arg": {"C": 5},
+        },
+        {
+            "id": 5,
+            "type": "CHANCE",
+            "name": "C",
+            "next": [6, 7, 8],
+            "arg": {"D": 2},
+        },
+        {
+            "id": 6,
+            "type": "TERMINAL",
+            "name": "T",
+            "next": None,
+            "prob": 20.0,
+            "arg": {"C": 3},
+        },
+        {
+            "id": 7,
+            "type": "TERMINAL",
+            "name": "T",
+            "next": None,
+            "prob": 30.0,
+            "arg": {"C": 4},
+        },
+        {
+            "id": 8,
+            "type": "TERMINAL",
+            "name": "T",
+            "next": None,
+            "prob": 50.0,
+            "arg": {"C": 5},
+        },
     ]
 
 
@@ -133,9 +195,15 @@ def test_prepare_user_fun_args():
         print(node)
 
     assert tree.tree_nodes == [
-        {"id": 0, "name": "D", "next": [1, 5]},
+        {
+            "id": 0,
+            "type": "DECISION",
+            "name": "D",
+            "next": [1, 5],
+        },
         {
             "id": 1,
+            "type": "CHANCE",
             "name": "C",
             "next": [2, 3, 4],
             "arg": {"D": 1},
@@ -143,6 +211,7 @@ def test_prepare_user_fun_args():
         },
         {
             "id": 2,
+            "type": "TERMINAL",
             "name": "T",
             "next": None,
             "prob": 20.0,
@@ -151,6 +220,7 @@ def test_prepare_user_fun_args():
         },
         {
             "id": 3,
+            "type": "TERMINAL",
             "name": "T",
             "next": None,
             "prob": 30.0,
@@ -159,6 +229,7 @@ def test_prepare_user_fun_args():
         },
         {
             "id": 4,
+            "type": "TERMINAL",
             "name": "T",
             "next": None,
             "prob": 50.0,
@@ -167,6 +238,7 @@ def test_prepare_user_fun_args():
         },
         {
             "id": 5,
+            "type": "CHANCE",
             "name": "C",
             "next": [6, 7, 8],
             "arg": {"D": 2},
@@ -174,6 +246,7 @@ def test_prepare_user_fun_args():
         },
         {
             "id": 6,
+            "type": "TERMINAL",
             "name": "T",
             "next": None,
             "prob": 20.0,
@@ -182,6 +255,7 @@ def test_prepare_user_fun_args():
         },
         {
             "id": 7,
+            "type": "TERMINAL",
             "name": "T",
             "next": None,
             "prob": 30.0,
@@ -190,6 +264,7 @@ def test_prepare_user_fun_args():
         },
         {
             "id": 8,
+            "type": "TERMINAL",
             "name": "T",
             "next": None,
             "prob": 50.0,

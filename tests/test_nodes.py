@@ -8,8 +8,11 @@ from pydecisiontree.nodes import Nodes
 # T e r m i n a l    n o d e s
 #
 #
+
+
 def test_adds_terminal_node():
     """terminal node"""
+
     name = "node1"
     user_fn = None
 

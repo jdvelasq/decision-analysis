@@ -94,6 +94,22 @@ class DecisionTree:
 
         set_fn_args(idx=0, args={})
 
+    def _evaluate_terminal_nodes(self) -> None:
+        #
+        def cumulative(**kwargs):
+            return sum(v for _, v in kwargs.items())
+
+        #
+        for node in self.tree_nodes:
+            name = node.get("name")
+            type_ = self._get_node_type(name=name)
+            if type_ == "TERMINAL":
+                user_fn = self.variables[name].get("user_fn")
+                if user_fn is None:
+                    user_fn = cumulative
+                user_args = node.get("user_args")
+                node["ExpVal"] = user_fn(**user_args)
+
     def build_tree(self):
         """This function is used to build the decision tree using the information in the
         variables.
@@ -101,43 +117,7 @@ class DecisionTree:
 
         self._build_skeleton()
         self._build_user_fn_args()
-
-    # def prepare_user_fn_args(self):
-    #     """.
-
-    #     Fist part of evaluation algorithm.
-
-    #     """
-    #     for node in self.tree_nodes:
-
-    #         if node.get("next") is None:
-    #             continue
-
-    #         arg = {} if "arg" not in node.keys() else node.get("arg")
-
-    #         for idx in node.get("next"):
-    #             self.tree_nodes[idx]["user_fn_args"] = {
-    #                 **arg,
-    #                 **self.tree_nodes[idx].get("arg"),
-    #             }
-
-    # def _fill_node_properties(self, variables: dict) -> None:
-
-    #     for node in self.tree_nodes:
-
-    #         var = variables[node["name"]]
-    #         if var.get("type") == "DECISION":
-    #             node["max_"] = var.get("max_")
-    #             for idx, branch in zip(node.get("next"), var.get("branches")):
-    #                 self.tree_nodes[idx]["arg"] = {node["name"]: branch[0]}
-
-    #         if var.get("type") == "CHANCE":
-    #             for idx, branch in zip(node.get("next"), var.get("branches")):
-    #                 self.tree_nodes[idx]["prob"] = branch[0]
-    #                 self.tree_nodes[idx]["arg"] = {node["name"]: branch[1]}
-
-    #         if var.get("type") == "TERMINAL":
-    #             node["user_fn"] = var.get("user_fn")
+        self._evaluate_terminal_nodes()
 
     # def _evaluate_user_fn(self):
     #     def cumulative(**kwargs):

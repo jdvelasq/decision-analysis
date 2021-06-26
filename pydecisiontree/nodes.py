@@ -22,7 +22,9 @@ class Nodes:
                      Name of the variable.
 
         :param branches:
-                    A list of tuples, where each tuple contains the corresponding information of each branch in the node. Each tuple has the probability, the value of the branch and the name of the next node.
+                    A list of tuples, where each tuple contains the corresponding information of
+                    each branch in the node. Each tuple has the probability, the value of the
+                    branch and the name of the next node.
 
         >>> nodes = Nodes()
         >>> nodes.chance(

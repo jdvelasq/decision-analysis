@@ -2,38 +2,47 @@
 Tests for DecisionTree model
 """
 
-# from pydecisiontree.decisiontree import DecisionTree
-# from pydecisiontree.nodes import Nodes
+
+from pydecisiontree.decisiontree import DecisionTree
+from pydecisiontree.nodes import Nodes
 
 
-# def test_build_skeleton():
-#     """Skeleton testing"""
+def test_build_tree():
+    """Skeleton testing"""
 
-#     nodes = Nodes()
+    nodes = Nodes()
 
-#     nodes.decision(
-#         name="D",
-#         branches=[
-#             (1, "C"),
-#             (2, "C"),
-#         ],
-#     )
+    nodes.decision(
+        name="D",
+        branches=[
+            (1, "C"),
+            (2, "C"),
+        ],
+    )
 
-#     nodes.chance(
-#         name="C",
-#         branches=[
-#             (20.0, 3, "T"),
-#             (30.0, 4, "T"),
-#             (50.0, 5, "T"),
-#         ],
-#     )
+    nodes.chance(
+        name="C",
+        branches=[
+            (40.0, 3, "T"),
+            (60.0, 4, "T"),
+        ],
+    )
 
-#     nodes.terminal(
-#         name="T",
-#         user_fn=None,
-#     )
+    nodes.terminal(
+        name="T",
+        user_fn=None,
+    )
 
-#     tree = DecisionTree()
+    print(nodes)
+
+    tree = DecisionTree(variables=nodes, initial_variable="D")
+    tree.build_tree()
+
+    for tree_node in tree.tree_nodes:
+        print(tree_node)
+
+    assert True == 0
+
 
 #     tree.build_skeleton(initial_variable="D", variables=nodes)
 

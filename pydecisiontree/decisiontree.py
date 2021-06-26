@@ -9,16 +9,14 @@ from typing import List
 class DecisionTree:
     """Decision Tree Model"""
 
-    def __init__(self):
+    def __init__(self, variables: List, initial_variable: str) -> None:
         self.tree_nodes = None
+        self.variables = variables
+        self.initial_variable = initial_variable
 
-    def _build_skeleton(self, initial_variable: str, variables: dict) -> None:
+    def _build_skeleton(self) -> None:
         #
         def build_tree_node(current_variable: str) -> int:
-            #
-            # `current_variable` is the current variable to expand
-            # refered by its name
-            #
 
             # position of the variable in the table of nodes
             current_idx = len(self.tree_nodes)
@@ -27,46 +25,82 @@ class DecisionTree:
             self.tree_nodes.append(
                 {
                     "idx": current_idx,
-                    "type": variables[current_variable].get("type"),
                     "name": current_variable,
                     "next_idx": None,
                 }
             )
 
             # adds branch nodes
-            if "branches" in variables[current_variable].keys():
+            if "branches" in self.variables[current_variable].keys():
+
                 next_idx = []
-                for branch in variables[current_variable].get("branches"):
-                    #
+
+                for branch in self.variables[current_variable].get("branches"):
+
                     # The last position of each branch in a variable contains
-                    # the name of the next variable
-                    #
+                    # the name of the next variable (type)
                     branch_idx: int = build_tree_node(current_variable=branch[-1])
                     next_idx.append(branch_idx)
+
                 self.tree_nodes[current_idx]["next_idx"] = next_idx
 
             return current_idx
 
         self.tree_nodes: List = []
-        build_tree_node(current_variable=initial_variable)
+        build_tree_node(current_variable=self.initial_variable)
 
-    # def _fill_node_properties(self, variables: dict) -> None:
+    def _get_node_type(self, name: str = None, idx: int = None) -> str:
+        #
+        # Gets the node type ("TERMINAL", "CHANCE", "DECISION") from
+        # table of variables
+        #
+        if idx is not None:
+            name = self.tree_nodes[idx].get("name")
+        return self.variables[name].get("type")
 
-    #     for node in self.tree_nodes:
+    def _get_next_idx(self, idx: int = None) -> List:
+        return self.tree_nodes[idx].get("next_idx")
 
-    #         var = variables[node["name"]]
-    #         if var.get("type") == "DECISION":
-    #             node["max_"] = var.get("max_")
-    #             for idx, branch in zip(node.get("next"), var.get("branches")):
-    #                 self.tree_nodes[idx]["arg"] = {node["name"]: branch[0]}
+    def _build_user_fn_args(self) -> None:
+        def set_fn_args(idx: int, args: dict) -> None:
 
-    #         if var.get("type") == "CHANCE":
-    #             for idx, branch in zip(node.get("next"), var.get("branches")):
-    #                 self.tree_nodes[idx]["prob"] = branch[0]
-    #                 self.tree_nodes[idx]["arg"] = {node["name"]: branch[1]}
+            type_ = self._get_node_type(idx=idx)
 
-    #         if var.get("type") == "TERMINAL":
-    #             node["user_fn"] = var.get("user_fn")
+            if type_ == "TERMINAL":
+                self.tree_nodes[idx]["user_args"] = args
+                return
+
+            #
+            # collecte the values of the branches
+            #
+            name = self.tree_nodes[idx].get("name")
+            var_branches = self.variables[name].get("branches")
+
+            if type_ == "DECISION":
+                values = [value for value, _ in var_branches]
+
+            if type_ == "CHANCE":
+                values = [value for _, value, _ in var_branches]
+
+            #
+            # Fills the next node with value of the current branch
+            #
+            node_branches = self._get_next_idx(idx=idx)
+            if node_branches is not None:
+                for next_idx, value in zip(node_branches, values):
+                    new_args = args.copy()
+                    new_args = {**new_args, **{name: value}}
+                    set_fn_args(idx=next_idx, args=new_args)
+
+        set_fn_args(idx=0, args={})
+
+    def build_tree(self):
+        """This function is used to build the decision tree using the information in the
+        variables.
+        """
+
+        self._build_skeleton()
+        self._build_user_fn_args()
 
     # def prepare_user_fn_args(self):
     #     """.
@@ -86,6 +120,24 @@ class DecisionTree:
     #                 **arg,
     #                 **self.tree_nodes[idx].get("arg"),
     #             }
+
+    # def _fill_node_properties(self, variables: dict) -> None:
+
+    #     for node in self.tree_nodes:
+
+    #         var = variables[node["name"]]
+    #         if var.get("type") == "DECISION":
+    #             node["max_"] = var.get("max_")
+    #             for idx, branch in zip(node.get("next"), var.get("branches")):
+    #                 self.tree_nodes[idx]["arg"] = {node["name"]: branch[0]}
+
+    #         if var.get("type") == "CHANCE":
+    #             for idx, branch in zip(node.get("next"), var.get("branches")):
+    #                 self.tree_nodes[idx]["prob"] = branch[0]
+    #                 self.tree_nodes[idx]["arg"] = {node["name"]: branch[1]}
+
+    #         if var.get("type") == "TERMINAL":
+    #             node["user_fn"] = var.get("user_fn")
 
     # def _evaluate_user_fn(self):
     #     def cumulative(**kwargs):

@@ -7,10 +7,7 @@ from typing import Any, List
 
 
 class Nodes:
-    """
-    Create a list of variables conformint the tree.
-
-    """
+    """Creates a dictionary with the variables used internally by the decision tree."""
 
     def __init__(self):
         self.data = {}
@@ -19,14 +16,81 @@ class Nodes:
         return self.data[name]
 
     def chance(self, name: str, branches: List[tuple]) -> None:
-        """Adds a chance node."""
+        """Adds a chance node.
+
+        :param name:
+                     Name of the variable.
+
+        :param branches:
+                    A list of tuples, where each tuple contains the corresponding information of each branch in the node. Each tuple has the probability, the value of the branch and the name of the next node.
+
+        >>> nodes = Nodes()
+        >>> nodes.chance(
+        ...     name="ChanceNode",
+        ...     branches=[
+        ...         (20.0, 100, "next-node"),
+        ...         (30.0, 200, "next-node"),
+        ...         (50.0, 300, "next-node"),
+        ...     ],
+        ... )
+        >>> nodes # doctest: +NORMALIZE_WHITESPACE
+        Node 0
+            Type: CHANCE
+            Name: ChanceNode
+            Branches:
+                  Chance         Value  Next Node
+                   20.00       100.000  next-node
+                   30.00       200.000  next-node
+                   50.00       300.000  next-node
+        <BLANKLINE>
+
+        """
+
         self.data[name] = {
             "type": "CHANCE",
             "branches": branches,
         }
 
     def decision(self, name: str, branches: List[tuple], max_: bool = False) -> None:
-        """Adds a decision node"""
+        """Creates a decisions tree's internal decision node.
+
+        :param name:
+            A valid name for variables in Python.
+
+        :param branches:
+            A list of tuples, where each tuple contains the corresponding
+            information of each branch in the node. Each tuple has the value
+            of the branch and the name of the next node.
+
+        :param max_:
+            When it is `True`, selects the branch with the maximum expected value.
+
+
+        >>> nodes = Nodes()
+        >>> nodes.decision(
+        ...     name='DecisionNode',
+        ...     branches=[
+        ...         (100,  'next-node'),
+        ...         (200,  'next-node'),
+        ...         (300,  'next-node'),
+        ...         (400,  'next-node'),
+        ...    ],
+        ...    max_=True,
+        ... )
+        >>> nodes # doctest: +NORMALIZE_WHITESPACE
+        Node 0
+            Type: DECISION - Maximum Payoff
+            Name: DecisionNode
+            Branches:
+                                 Value  Next Node
+                               100.000  next-node
+                               200.000  next-node
+                               300.000  next-node
+                               400.000  next-node
+        <BLANKLINE>
+
+        """
+
         self.data[name] = {
             "type": "DECISION",
             "branches": branches,
@@ -34,7 +98,30 @@ class Nodes:
         }
 
     def terminal(self, name: str, user_fn: Any = None) -> None:
-        """Adds a terminal node"""
+        """Creates a decision tree's terminal node.
+
+        :param name:
+            A valid name for variables in Python.
+
+        :param user_fn:
+            It is a valid python function used for computing the value of the
+            terminal node in the tree. The names of the nodes must be used as
+            the parameters of the function.
+
+
+        >>> nodes = Nodes()
+        >>> def user_fn(x):
+        ...     return x
+        >>> nodes.terminal(name='terminal_node', user_fn=user_fn)
+        >>> nodes # doctest: +NORMALIZE_WHITESPACE
+        Node 0
+            Type: TERMINAL
+            Name: terminal_node
+            User fn: (User fn)
+        <BLANKLINE>
+
+        """
+
         self.data[name] = {
             "type": "TERMINAL",
             "user_fn": user_fn,
@@ -95,3 +182,9 @@ class Nodes:
                 text += repr_terminal(name=name, node=node)
 
         return "\n".join(text)
+
+
+if __name__ == "__main__":
+    import doctest
+
+    doctest.testmod()

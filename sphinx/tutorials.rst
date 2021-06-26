@@ -1,6 +1,9 @@
-Building a simple decision tree
+Tutorials
 ===============================================================================
 
-.. code: python
-    
+.. toctree::
+   :maxdepth: 2
 
+   tutorial_1
+   
+    

@@ -41,6 +41,8 @@ def test_build_tree():
     for tree_node in tree.tree_nodes:
         print(tree_node)
 
+    print(tree.export_text())
+
     assert True == 0
 
 

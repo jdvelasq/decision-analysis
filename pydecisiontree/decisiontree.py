@@ -61,6 +61,277 @@ class DecisionTree:
     def _get_next_idx(self, idx: int = None) -> List:
         return self.tree_nodes[idx].get("next_idx")
 
+    def _set_tags(self) -> None:
+        #
+        # Fills the brancbes with the tags
+        #
+        for node in self.tree_nodes:
+            name = node.get("name")
+            next_idx = node.get("next_idx")
+            if next_idx is not None:
+                for idx in next_idx:
+                    self.tree_nodes[idx]["tag"] = name
+
+    def _set_value_tags(self) -> None:
+        #
+        # Fills the nodes with the values assosiated to the tags
+        #
+        for node in self.tree_nodes:
+
+            name = node.get("name")
+            next_idx = node.get("next_idx")
+
+            if next_idx is not None:
+
+                type_ = self._get_node_type(name=name)
+                var_branches = self.variables[name].get("branches")
+
+                if type_ == "DECISION":
+                    values = [value for value, _ in var_branches]
+
+                if type_ == "CHANCE":
+                    values = [value for _, value, _ in var_branches]
+
+                for idx, value in zip(next_idx, values):
+                    self.tree_nodes[idx]["value"] = value
+
+    def _set_prob_tags(self) -> None:
+        #
+        # Fills the nodes with the probabilities assosiated to the tags
+        #
+        for node in self.tree_nodes:
+
+            name = node.get("name")
+
+            if self._get_node_type(name=name) == "CHANCE":
+
+                var_branches = self.variables[name].get("branches")
+                probs = [prob for prob, _, _ in var_branches]
+                next_idx = node.get("next_idx")
+
+                for idx, prob in zip(next_idx, probs):
+                    self.tree_nodes[idx]["prob"] = prob
+
+    def build_tree(self):
+        """This function is used to build the decision tree using the information in the
+        variables.
+        """
+
+        self._build_skeleton()
+        self._set_tags()
+        self._set_value_tags()
+        self._set_prob_tags()
+
+    def export_text(self):
+        #
+        def print_node(idx: int, is_last_node: bool) -> List:
+            def node_number():
+                text.append("| #{}".format(idx))
+
+            def tag():
+                if "tag" in self.tree_nodes[idx].keys():
+                    text.append(
+                        "| {}={}".format(
+                            self.tree_nodes[idx].get("tag"),
+                            self.tree_nodes[idx].get("value"),
+                        )
+                    )
+
+            def prob():
+                if "prob" in self.tree_nodes[idx].keys():
+                    text.append(
+                        "| Prob={:5.2f}".format(
+                            self.tree_nodes[idx].get("prob"),
+                        )
+                    )
+
+            def node_type():
+                type_ = self._get_node_type(idx=idx)
+                if type_ == "DECISION":
+                    if is_last_node is True:
+                        text.append(r"\------[D]")
+                    else:
+                        text.append("+------[D]")
+
+                if type_ == "CHANCE":
+                    if is_last_node is True:
+                        text.append(r"\------[C]")
+                    else:
+                        text.append("+------[C]")
+
+                if type_ == "TERMINAL":
+                    name = self.tree_nodes[idx].get("name")
+                    if is_last_node is True:
+                        text.append(r"\------[T] {}".format(name))
+                    else:
+                        text.append("+------[T] {}".format(name))
+
+            def node_branches():
+                next_nodes = self.tree_nodes[idx].get("next_idx")
+                if next_nodes is not None:
+                    for i_next_idx, next_idx in enumerate(next_nodes):
+
+                        if i_next_idx + 1 == len(next_nodes):
+                            next_is_last_node = True
+                        else:
+                            next_is_last_node = False
+
+                        result = print_node(next_idx, next_is_last_node)
+
+                        for t_ in result:
+                            if is_last_node is True:
+                                text.append(" " * 8 + t_)
+                            else:
+                                if t_[0] == "+":
+                                    text.append("|" + " " * 7 + t_)
+                                else:
+                                    text.append("|" + " " * 7 + "|" + t_[1:])
+
+            text = ["|"]
+            node_number()
+            tag()
+            prob()
+            node_type()
+            node_branches()
+
+            return text
+
+        text = []
+
+        text.extend(print_node(idx=0, is_last_node=True))
+
+        return "\n".join(text)
+
+    #     def print_branch(prefix, this_branch, is_node_last_branch):
+
+    #         print(prefix + "|")
+
+    #         type = this_branch.get("type")
+    #         if "id" in this_branch.keys():
+    #             print(prefix + "| #" + str(this_branch.get("id")))
+
+    #         ## prints the name and value of the variable
+    #         if "tag" in this_branch.keys():
+    #             var = this_branch["tag"]
+    #             if "value" in this_branch.keys():
+    #                 txt = "| " + var + "=" + str(this_branch["value"])
+    #             else:
+    #                 txt = "| " + var
+    #             print(prefix + txt)
+
+    #         ## prints the probability
+    #         if "prob" in this_branch.keys():
+    #             txt = "| Prob={:1.2f}".format(this_branch["prob"])
+    #             print(prefix + txt)
+
+    #         ## prints the cumulative probability
+    #         if type == "TERMINAL" and "PathProb" in this_branch.keys():
+    #             txt = "| PathProb={:1.2f}".format(this_branch["PathProb"])
+    #             print(prefix + txt)
+
+    #         if "ExpVal" in this_branch.keys() and this_branch["ExpVal"] is not None:
+    #             txt = "| ExpVal={:1.2f}".format(this_branch["ExpVal"])
+    #             print(prefix + txt)
+
+    #         if "ExpUtl" in this_branch.keys() and this_branch["ExpUtl"] is not None:
+    #             txt = "| ExpUtl={:1.2f}".format(this_branch["ExpUtl"])
+    #             print(prefix + txt)
+
+    #         if "CE" in this_branch.keys() and this_branch["CE"] is not None:
+    #             txt = "| CE={:1.2f}".format(this_branch["CE"])
+    #             print(prefix + txt)
+
+    #         if "RiskProfile" in this_branch.keys() and type != "TERMINAL":
+    #             print(prefix + "| Risk Profile:")
+    #             print(prefix + "|      Value  Prob")
+    #             for key in sorted(this_branch["RiskProfile"]):
+    #                 txt = "|   {:8.2f} {:5.2f}".format(
+    #                     key, this_branch["RiskProfile"][key]
+    #                 )
+    #                 print(prefix + txt)
+
+    #         if (
+    #             "sel_strategy" in this_branch.keys()
+    #             and this_branch["sel_strategy"] is True
+    #         ):
+    #             txt = "| (selected strategy)"
+    #             print(prefix + txt)
+
+    #         if (
+    #             "forced_branch_idx" in this_branch.keys()
+    #             and this_branch["forced_branch_idx"] is not None
+    #         ):
+    #             txt = "| (forced branch = {:1d})".format(
+    #                 this_branch["forced_branch_idx"]
+    #             )
+    #             print(prefix + txt)
+
+    #         next_branches = (
+    #             this_branch["next_branches"]
+    #             if "next_branches" in this_branch.keys()
+    #             else None
+    #         )
+
+    #         if is_node_last_branch is True:
+    #             if type == "DECISION":
+    #                 txt = r"\-------[D]"
+    #             if type == "CHANCE":
+    #                 txt = r"\-------[C]"
+    #             if type == "TERMINAL":
+    #                 txt = r"\-------[T] {:s}".format(this_branch["expr"])
+    #         else:
+    #             if type == "DECISION":
+    #                 txt = "+-------[D]"
+    #             if type == "CHANCE":
+    #                 txt = "+-------[C]"
+    #             if type == "TERMINAL":
+    #                 txt = "+-------[T] {:s}".format(this_branch["expr"])
+    #         print(prefix + txt)
+
+    #         if maxdeep is not None and self.current_deep == maxdeep:
+    #             return
+
+    #         self.current_deep += 1
+
+    #         if next_branches is not None:
+
+    #             if selected_strategy is True and type == "DECISION":
+    #                 optbranch = this_branch["opt_branch_idx"]
+    #                 if is_node_last_branch is True:
+    #                     print_branch(
+    #                         prefix + " " * 9,
+    #                         self.tree[next_branches[optbranch]],
+    #                         is_node_last_branch=True,
+    #                     )
+    #                 else:
+    #                     print_branch(
+    #                         prefix + "|" + " " * 8,
+    #                         self.tree[next_branches[optbranch]],
+    #                         is_node_last_branch=True,
+    #                     )
+    #             else:
+    #                 for next_branch_idx, next_branch_id in enumerate(next_branches):
+    #                     is_last_tree_branch = (
+    #                         True if next_branch_idx == len(next_branches) - 1 else False
+    #                     )
+    #                     if is_node_last_branch is True:
+    #                         print_branch(
+    #                             prefix + " " * 9,
+    #                             self.tree[next_branch_id],
+    #                             is_node_last_branch=is_last_tree_branch,
+    #                         )
+    #                     else:
+    #                         print_branch(
+    #                             prefix + "|" + " " * 8,
+    #                             self.tree[next_branch_id],
+    #                             is_node_last_branch=is_last_tree_branch,
+    #                         )
+
+    #         self.current_deep -= 1
+
+    #     self.current_deep = 0
+    #     print_branch(prefix="", this_branch=self.tree[0], is_node_last_branch=True)
+
     def _build_user_fn_args(self) -> None:
         def set_fn_args(idx: int, args: dict) -> None:
 
@@ -110,12 +381,11 @@ class DecisionTree:
                 user_args = node.get("user_args")
                 node["ExpVal"] = user_fn(**user_args)
 
-    def build_tree(self):
+    def evaluate_tree(self):
         """This function is used to build the decision tree using the information in the
         variables.
         """
 
-        self._build_skeleton()
         self._build_user_fn_args()
         self._evaluate_terminal_nodes()
 

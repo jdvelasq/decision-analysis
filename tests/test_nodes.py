@@ -1,7 +1,7 @@
 """Test module
 """
 
-from pydecisiontree.nodes import Nodes
+from decision_analyzer.nodes import Nodes
 
 #
 #

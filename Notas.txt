@@ -1,0 +1,6 @@
+Configuración de pytest
+-----------------------------------------
+
+La opción --doctest-modules incluye la carpeta principal en los tests con doctest.
+
+

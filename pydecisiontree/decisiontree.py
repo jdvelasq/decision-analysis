@@ -50,23 +50,23 @@ class DecisionTree:
         self.tree_nodes: List = []
         build_tree_node(current_variable=initial_variable)
 
-    def _fill_node_properties(self, variables: dict) -> None:
+    # def _fill_node_properties(self, variables: dict) -> None:
 
-        for node in self.tree_nodes:
+    #     for node in self.tree_nodes:
 
-            var = variables[node["name"]]
-            if var.get("type") == "DECISION":
-                node["max_"] = var.get("max_")
-                for idx, branch in zip(node.get("next"), var.get("branches")):
-                    self.tree_nodes[idx]["arg"] = {node["name"]: branch[0]}
+    #         var = variables[node["name"]]
+    #         if var.get("type") == "DECISION":
+    #             node["max_"] = var.get("max_")
+    #             for idx, branch in zip(node.get("next"), var.get("branches")):
+    #                 self.tree_nodes[idx]["arg"] = {node["name"]: branch[0]}
 
-            if var.get("type") == "CHANCE":
-                for idx, branch in zip(node.get("next"), var.get("branches")):
-                    self.tree_nodes[idx]["prob"] = branch[0]
-                    self.tree_nodes[idx]["arg"] = {node["name"]: branch[1]}
+    #         if var.get("type") == "CHANCE":
+    #             for idx, branch in zip(node.get("next"), var.get("branches")):
+    #                 self.tree_nodes[idx]["prob"] = branch[0]
+    #                 self.tree_nodes[idx]["arg"] = {node["name"]: branch[1]}
 
-            if var.get("type") == "TERMINAL":
-                node["user_fn"] = var.get("user_fn")
+    #         if var.get("type") == "TERMINAL":
+    #             node["user_fn"] = var.get("user_fn")
 
     # def prepare_user_fn_args(self):
     #     """.

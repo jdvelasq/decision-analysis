@@ -29,7 +29,7 @@ Building a simple decision tree
 ...     user_fn=None,
 ... )
 
->>> print(nodes)
+>>> nodes
 Node 0
     Type: DECISION - Maximum Payoff
     Name: BID

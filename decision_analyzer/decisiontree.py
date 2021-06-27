@@ -152,12 +152,14 @@ class DecisionTree:
                     )
 
             def exp_val():
-                if "ExpVal" in self.tree_nodes[idx].keys():
-                    text.append(
-                        "| ExpVal={:.2f}".format(
-                            self.tree_nodes[idx].get("ExpVal"),
+                type_ = self._get_node_type(idx=idx)
+                if type_ != "TERMINAL":
+                    if "ExpVal" in self.tree_nodes[idx].keys():
+                        text.append(
+                            "| ExpVal={:.2f}".format(
+                                self.tree_nodes[idx].get("ExpVal"),
+                            )
                         )
-                    )
 
             def node_type():
                 type_ = self._get_node_type(idx=idx)
@@ -175,10 +177,21 @@ class DecisionTree:
 
                 if type_ == "TERMINAL":
                     name = self.tree_nodes[idx].get("name")
-                    if is_last_node is True:
-                        text.append("\\-------[T] {}".format(name))
+
+                    if "ExpVal" in self.tree_nodes[idx].keys():
+
+                        value = self.tree_nodes[idx].get("ExpVal")
+
+                        if is_last_node is True:
+                            text.append("\\-------[T] {}={:.2f}".format(name, value))
+                        else:
+                            text.append("+-------[T] {}={:.2f}".format(name, value))
+
                     else:
-                        text.append("+-------[T] {}".format(name))
+                        if is_last_node is True:
+                            text.append("\\-------[T] {}".format(name))
+                        else:
+                            text.append("+-------[T] {}".format(name))
 
             def node_branches():
                 next_nodes = self.tree_nodes[idx].get("next_idx")

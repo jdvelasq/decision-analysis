@@ -1,8 +1,8 @@
-"""
+r"""
 Building a simple decision tree
 ===============================================================================
 
-
+**Creation of the nodes.**
 
 >>> from decision_analyzer.nodes import Nodes
 >>> nodes = Nodes()
@@ -52,6 +52,58 @@ Node 2
     Name: PROFIT
     User fn: (cumulative)
 <BLANKLINE>
+
+
+**Tree creation and building.**
+
+>>> from decision_analyzer.decisiontree import DecisionTree
+>>> tree = DecisionTree(variables=nodes, initial_variable="BID")
+>>> tree.build()
+
+**Visualization as text.**
+
+>>> print(tree.export_text())
+|
+| #0
+\-------[D]
+         |
+         | #1
+         | BID=500
+         +-------[C]
+         |        |
+         |        | #2
+         |        | COMPBID=400
+         |        | Prob=35.00
+         |        +-------[T] PROFIT
+         |        |
+         |        | #3
+         |        | COMPBID=600
+         |        | Prob=50.00
+         |        +-------[T] PROFIT
+         |        |
+         |        | #4
+         |        | COMPBID=800
+         |        | Prob=15.00
+         |        |-------[T] PROFIT
+         |
+         | #5
+         | BID=700
+         \-------[C]
+                  |
+                  | #6
+                  | COMPBID=400
+                  | Prob=35.00
+                  +-------[T] PROFIT
+                  |
+                  | #7
+                  | COMPBID=600
+                  | Prob=50.00
+                  +-------[T] PROFIT
+                  |
+                  | #8
+                  | COMPBID=800
+                  | Prob=15.00
+                  \-------[T] PROFIT
 
 
 """

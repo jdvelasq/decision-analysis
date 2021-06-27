@@ -116,7 +116,7 @@ class DecisionTree:
                 for idx, prob in zip(next_idx, probs):
                     self.tree_nodes[idx]["prob"] = prob
 
-    def build_tree(self):
+    def build(self):
         """This function is used to build the decision tree using the information in the
         variables.
         """
@@ -130,6 +130,7 @@ class DecisionTree:
         """Exports the tree as text diagram."""
 
         def print_node(idx: int, is_last_node: bool) -> List:
+            #
             def node_number():
                 text.append("| #{}".format(idx))
 
@@ -154,22 +155,22 @@ class DecisionTree:
                 type_ = self._get_node_type(idx=idx)
                 if type_ == "DECISION":
                     if is_last_node is True:
-                        text.append(r"\------[D]")
+                        text.append("\\-------[D]")
                     else:
-                        text.append("+------[D]")
+                        text.append("+-------[D]")
 
                 if type_ == "CHANCE":
                     if is_last_node is True:
-                        text.append(r"\------[C]")
+                        text.append("\\-------[C]")
                     else:
-                        text.append("+------[C]")
+                        text.append("+-------[C]")
 
                 if type_ == "TERMINAL":
                     name = self.tree_nodes[idx].get("name")
                     if is_last_node is True:
-                        text.append(r"\------[T] {}".format(name))
+                        text.append("\\-------[T] {}".format(name))
                     else:
-                        text.append("+------[T] {}".format(name))
+                        text.append("+-------[T] {}".format(name))
 
             def node_branches():
                 next_nodes = self.tree_nodes[idx].get("next_idx")
@@ -185,12 +186,12 @@ class DecisionTree:
 
                         for t_ in result:
                             if is_last_node is True:
-                                text.append(" " * 8 + t_)
+                                text.append(" " * 9 + t_)
                             else:
                                 if t_[0] == "+":
-                                    text.append("|" + " " * 7 + t_)
+                                    text.append("|" + " " * 8 + t_)
                                 else:
-                                    text.append("|" + " " * 7 + "|" + t_[1:])
+                                    text.append("|" + " " * 8 + "|" + t_[1:])
 
             text = ["|"]
             node_number()

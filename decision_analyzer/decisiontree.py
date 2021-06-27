@@ -192,14 +192,11 @@ class DecisionTree:
 
                         result = print_node(next_idx, next_is_last_node)
 
-                        for t_ in result:
+                        for txt in result:
                             if is_last_node is True:
-                                text.append(" " * 9 + t_)
+                                text.append(" " * 9 + txt)
                             else:
-                                if t_[0] == "+":
-                                    text.append("|" + " " * 8 + t_)
-                                else:
-                                    text.append("|" + " " * 8 + "|" + t_[1:])
+                                text.append("|" + " " * 8 + txt)
 
             text = ["|"]
             node_number()

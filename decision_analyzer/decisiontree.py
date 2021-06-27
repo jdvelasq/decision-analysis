@@ -18,8 +18,6 @@ class DecisionTree:
         self.variables = variables
         self.initial_variable = initial_variable
 
-        self._build()
-
     def _build_skeleton(self) -> None:
         #
         def build_tree_node(current_variable: str) -> int:
@@ -118,7 +116,7 @@ class DecisionTree:
                 for idx, prob in zip(next_idx, probs):
                     self.tree_nodes[idx]["prob"] = prob
 
-    def _build(self):
+    def build(self):
         """This function is used to build the decision tree using the information in the
         variables.
         """
@@ -150,6 +148,14 @@ class DecisionTree:
                     text.append(
                         "| Prob={:5.2f}".format(
                             self.tree_nodes[idx].get("prob"),
+                        )
+                    )
+
+            def exp_val():
+                if "ExpVal" in self.tree_nodes[idx].keys():
+                    text.append(
+                        "| ExpVal={:.2f}".format(
+                            self.tree_nodes[idx].get("ExpVal"),
                         )
                     )
 
@@ -199,6 +205,7 @@ class DecisionTree:
             node_number()
             tag()
             prob()
+            exp_val()
             node_type()
             node_branches()
 
@@ -389,7 +396,7 @@ class DecisionTree:
                 user_args = node.get("user_args")
                 node["ExpVal"] = user_fn(**user_args)
 
-    def evaluate_tree(self):
+    def evaluate(self):
         """This function is used to build the decision tree using the information in the
         variables.
         """

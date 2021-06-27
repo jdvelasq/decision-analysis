@@ -18,6 +18,8 @@ class DecisionTree:
         self.variables = variables
         self.initial_variable = initial_variable
 
+        self._build()
+
     def _build_skeleton(self) -> None:
         #
         def build_tree_node(current_variable: str) -> int:
@@ -116,7 +118,7 @@ class DecisionTree:
                 for idx, prob in zip(next_idx, probs):
                     self.tree_nodes[idx]["prob"] = prob
 
-    def build(self):
+    def _build(self):
         """This function is used to build the decision tree using the information in the
         variables.
         """

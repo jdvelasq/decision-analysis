@@ -58,7 +58,6 @@ Node 2
 
 >>> from decision_analyzer.decisiontree import DecisionTree
 >>> tree = DecisionTree(variables=nodes, initial_variable="BID")
->>> tree.build()
 
 **Visualization as text.**
 

@@ -14,7 +14,7 @@ class DecisionTree:
     """Decision Tree Model"""
 
     def __init__(self, variables: List, initial_variable: str) -> None:
-        self.tree_nodes = None
+        self.nodes = None
         self.variables = variables
         self.initial_variable = initial_variable
 
@@ -23,10 +23,10 @@ class DecisionTree:
         def build_tree_node(current_variable: str) -> int:
 
             # position of the variable in the table of nodes
-            current_idx = len(self.tree_nodes)
+            current_idx = len(self.nodes)
 
             # adds the new node
-            self.tree_nodes.append(
+            self.nodes.append(
                 {
                     "idx": current_idx,
                     "name": current_variable,
@@ -46,11 +46,11 @@ class DecisionTree:
                     branch_idx: int = build_tree_node(current_variable=branch[-1])
                     next_idx.append(branch_idx)
 
-                self.tree_nodes[current_idx]["next_idx"] = next_idx
+                self.nodes[current_idx]["next_idx"] = next_idx
 
             return current_idx
 
-        self.tree_nodes: List = []
+        self.nodes: List = []
         build_tree_node(current_variable=self.initial_variable)
 
     def _get_node_type(self, name: str = None, idx: int = None) -> str:
@@ -59,28 +59,28 @@ class DecisionTree:
         # table of variables
         #
         if idx is not None:
-            name = self.tree_nodes[idx].get("name")
+            name = self.nodes[idx].get("name")
         return self.variables[name].get("type")
 
     def _get_next_idx(self, idx: int = None) -> List:
-        return self.tree_nodes[idx].get("next_idx")
+        return self.nodes[idx].get("next_idx")
 
     def _set_tags(self) -> None:
         #
         # Fills the brancbes with the tags
         #
-        for node in self.tree_nodes:
+        for node in self.nodes:
             name = node.get("name")
             next_idx = node.get("next_idx")
             if next_idx is not None:
                 for idx in next_idx:
-                    self.tree_nodes[idx]["tag"] = name
+                    self.nodes[idx]["tag"] = name
 
     def _set_value_tags(self) -> None:
         #
         # Fills the nodes with the values assosiated to the tags
         #
-        for node in self.tree_nodes:
+        for node in self.nodes:
 
             name = node.get("name")
             next_idx = node.get("next_idx")
@@ -97,13 +97,13 @@ class DecisionTree:
                     values = [value for _, value, _ in var_branches]
 
                 for idx, value in zip(next_idx, values):
-                    self.tree_nodes[idx]["value"] = value
+                    self.nodes[idx]["value"] = value
 
     def _set_prob_tags(self) -> None:
         #
         # Fills the nodes with the probabilities assosiated to the tags
         #
-        for node in self.tree_nodes:
+        for node in self.nodes:
 
             name = node.get("name")
 
@@ -114,7 +114,7 @@ class DecisionTree:
                 next_idx = node.get("next_idx")
 
                 for idx, prob in zip(next_idx, probs):
-                    self.tree_nodes[idx]["prob"] = prob
+                    self.nodes[idx]["prob"] = prob
 
     def build(self):
         """This function is used to build the decision tree using the information in the
@@ -135,43 +135,43 @@ class DecisionTree:
                 text.append("| #{}".format(idx))
 
             def tag():
-                if "tag" in self.tree_nodes[idx].keys():
+                if "tag" in self.nodes[idx].keys():
                     text.append(
                         "| {}={}".format(
-                            self.tree_nodes[idx].get("tag"),
-                            self.tree_nodes[idx].get("value"),
+                            self.nodes[idx].get("tag"),
+                            self.nodes[idx].get("value"),
                         )
                     )
 
             def prob():
-                if "prob" in self.tree_nodes[idx].keys():
+                if "prob" in self.nodes[idx].keys():
                     text.append(
                         "| Prob={:5.2f}".format(
-                            self.tree_nodes[idx].get("prob"),
+                            self.nodes[idx].get("prob"),
                         )
                     )
 
             def path_prob():
-                if "PathProb" in self.tree_nodes[idx].keys():
+                if "PathProb" in self.nodes[idx].keys():
                     text.append(
                         "| PathProb={:.2f}".format(
-                            self.tree_nodes[idx].get("PathProb"),
+                            self.nodes[idx].get("PathProb"),
                         )
                     )
 
             def exp_val():
                 type_ = self._get_node_type(idx=idx)
                 if type_ != "TERMINAL":
-                    if "ExpVal" in self.tree_nodes[idx].keys():
+                    if "ExpVal" in self.nodes[idx].keys():
                         text.append(
                             "| ExpVal={:.2f}".format(
-                                self.tree_nodes[idx].get("ExpVal"),
+                                self.nodes[idx].get("ExpVal"),
                             )
                         )
 
             def selected_strategy():
-                if "selected_strategy" in self.tree_nodes[idx].keys():
-                    if self.tree_nodes[idx]["selected_strategy"] is True:
+                if "selected_strategy" in self.nodes[idx].keys():
+                    if self.nodes[idx]["selected_strategy"] is True:
                         text.append("| (selected strategy)")
 
             def node_type():
@@ -189,11 +189,11 @@ class DecisionTree:
                         text.append("+-------[C]")
 
                 if type_ == "TERMINAL":
-                    name = self.tree_nodes[idx].get("name")
+                    name = self.nodes[idx].get("name")
 
-                    if "ExpVal" in self.tree_nodes[idx].keys():
+                    if "ExpVal" in self.nodes[idx].keys():
 
-                        value = self.tree_nodes[idx].get("ExpVal")
+                        value = self.nodes[idx].get("ExpVal")
 
                         if is_last_node is True:
                             text.append("\\-------[T] {}={:.2f}".format(name, value))
@@ -207,7 +207,7 @@ class DecisionTree:
                             text.append("+-------[T] {}".format(name))
 
             def node_branches():
-                next_nodes = self.tree_nodes[idx].get("next_idx")
+                next_nodes = self.nodes[idx].get("next_idx")
                 if next_nodes is not None:
                     for i_next_idx, next_idx in enumerate(next_nodes):
 
@@ -378,13 +378,13 @@ class DecisionTree:
             type_ = self._get_node_type(idx=idx)
 
             if type_ == "TERMINAL":
-                self.tree_nodes[idx]["user_args"] = args
+                self.nodes[idx]["user_args"] = args
                 return
 
             #
             # collecte the values of the branches
             #
-            name = self.tree_nodes[idx].get("name")
+            name = self.nodes[idx].get("name")
             var_branches = self.variables[name].get("branches")
 
             if type_ == "DECISION":
@@ -411,7 +411,7 @@ class DecisionTree:
             return sum(v for _, v in kwargs.items())
 
         #
-        for node in self.tree_nodes:
+        for node in self.nodes:
             name = node.get("name")
             type_ = self._get_node_type(name=name)
             if type_ == "TERMINAL":
@@ -424,11 +424,11 @@ class DecisionTree:
     def _compute_expected_values(self):
         #
         def terminal_node(idx: int) -> float:
-            return self.tree_nodes[idx].get("ExpVal")
+            return self.nodes[idx].get("ExpVal")
 
         def decision_node(idx: int) -> float:
 
-            name: str = self.tree_nodes[idx]["name"]
+            name: str = self.nodes[idx]["name"]
             max_: bool = self.variables[name]["max_"]
             node_branches: List = self._get_next_idx(idx=idx)
 
@@ -450,13 +450,13 @@ class DecisionTree:
                         optimal_value = value
                         optimal_branch = i_branch
 
-            self.tree_nodes[idx]["ExpVal"] = optimal_value
-            self.tree_nodes[idx]["optimal_branch"] = optimal_branch
+            self.nodes[idx]["ExpVal"] = optimal_value
+            self.nodes[idx]["optimal_branch"] = optimal_branch
             return optimal_value
 
         def chance_node(idx: int) -> float:
 
-            name: str = self.tree_nodes[idx]["name"]
+            name: str = self.nodes[idx]["name"]
 
             var_branches = self.variables[name]["branches"]
             probs = [prob for prob, _, _ in var_branches]
@@ -469,7 +469,7 @@ class DecisionTree:
                 value: float = compute_expval(idx=next_idx)
                 node_value += prob * value / 100.0
 
-            self.tree_nodes[idx]["ExpVal"] = node_value
+            self.nodes[idx]["ExpVal"] = node_value
             return node_value
 
         #
@@ -494,11 +494,11 @@ class DecisionTree:
     def _path_probability(self) -> None:
         #
         def terminal_node(idx: int, cum_prob: float) -> None:
-            self.tree_nodes[idx]["PathProb"] = cum_prob * 100.0
+            self.nodes[idx]["PathProb"] = cum_prob * 100.0
 
         def decision_node(idx: int, cum_prob: float) -> None:
-            optimal_branch = self.tree_nodes[idx].get("optimal_branch")
-            branches = self.tree_nodes[idx].get("next_idx")
+            optimal_branch = self.nodes[idx].get("optimal_branch")
+            branches = self.nodes[idx].get("next_idx")
             for i_branch, idx_branch in enumerate(branches):
                 if i_branch == optimal_branch:
                     compute_path_prob(idx=idx_branch, cum_prob=1.0)
@@ -507,8 +507,8 @@ class DecisionTree:
 
         def chance_node(idx: int, cum_prob: float) -> None:
 
-            branches = self.tree_nodes[idx].get("next_idx")
-            name: str = self.tree_nodes[idx]["name"]
+            branches = self.nodes[idx].get("next_idx")
+            name: str = self.nodes[idx]["name"]
             var_branches = self.variables[name]["branches"]
             probs = [prob for prob, _, _ in var_branches]
 
@@ -533,18 +533,18 @@ class DecisionTree:
     def _selected_strategy(self) -> None:
         #
         def terminal_node(idx: int, selected_strategy: bool) -> None:
-            self.tree_nodes[idx]["selected_strategy"] = selected_strategy
+            self.nodes[idx]["selected_strategy"] = selected_strategy
 
         def chance_node(idx: int, selected_strategy: bool) -> None:
-            self.tree_nodes[idx]["selected_strategy"] = selected_strategy
-            branches = self.tree_nodes[idx].get("next_idx")
+            self.nodes[idx]["selected_strategy"] = selected_strategy
+            branches = self.nodes[idx].get("next_idx")
             for idx_branch in branches:
                 dispatch(idx=idx_branch, selected_strategy=selected_strategy)
 
         def decision_node(idx: int, selected_strategy: bool) -> None:
-            self.tree_nodes[idx]["selected_strategy"] = selected_strategy
-            branches = self.tree_nodes[idx].get("next_idx")
-            optimal_branch = self.tree_nodes[idx].get("optimal_branch")
+            self.nodes[idx]["selected_strategy"] = selected_strategy
+            branches = self.nodes[idx].get("next_idx")
+            optimal_branch = self.nodes[idx].get("optimal_branch")
             for i_branch, idx_branch in enumerate(branches):
                 if i_branch == optimal_branch:
                     dispatch(idx=idx_branch, selected_strategy=selected_strategy)

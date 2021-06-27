@@ -260,7 +260,7 @@ Node 3
 
 >>> tree.evaluate()
 
->>> tree.print_nodes()
+# >>> tree.print_nodes()
 
 >>> print(tree.export_text())
 |

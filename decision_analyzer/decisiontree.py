@@ -330,6 +330,38 @@ class DecisionTree:
 
         dispatch(idx=0, cum_prob=100.0)
 
+    def _selected_strategy(self) -> None:
+        #
+        def terminal_node(idx: int, selected_strategy: bool) -> None:
+            self.nodes[idx]["selected_strategy"] = selected_strategy
+
+        def chance_node(idx: int, selected_strategy: bool) -> None:
+            self.nodes[idx]["selected_strategy"] = selected_strategy
+            successors = self.nodes[idx].get("successors")
+            for successor in successors:
+                dispatch(idx=successor, selected_strategy=selected_strategy)
+
+        def decision_node(idx: int, selected_strategy: bool) -> None:
+            self.nodes[idx]["selected_strategy"] = selected_strategy
+            successors = self.nodes[idx].get("successors")
+            optimal_successor = self.nodes[idx].get("optimal_successor")
+            for successor in successors:
+                if successor == optimal_successor:
+                    dispatch(idx=successor, selected_strategy=selected_strategy)
+                else:
+                    dispatch(idx=successor, selected_strategy=False)
+
+        def dispatch(idx: int, selected_strategy: bool) -> None:
+            type_: str = self._get_node_type(idx=idx)
+            if type_ == "TERMINAL":
+                terminal_node(idx=idx, selected_strategy=selected_strategy)
+            if type_ == "DECISION":
+                decision_node(idx=idx, selected_strategy=selected_strategy)
+            if type_ == "CHANCE":
+                chance_node(idx=idx, selected_strategy=selected_strategy)
+
+        dispatch(idx=0, selected_strategy=True)
+
     def evaluate(self):
         """This function is used to build the decision tree using the information in the
         variables.
@@ -339,7 +371,7 @@ class DecisionTree:
         self._compute_expval_in_terminals_nodes()
         self._compute_expval_in_intermediate_nodes()
         self._compute_path_probabilities()
-        # self._selected_strategy()
+        self._selected_strategy()
 
     #
     #
@@ -488,42 +520,6 @@ class DecisionTree:
 
     #     self.current_deep = 0
     #     print_branch(prefix="", this_branch=self.tree[0], is_node_last_branch=True)
-
-    # def _selected_strategy(self) -> None:
-    #     #
-    #     def terminal_node(idx: int, selected_strategy: bool) -> None:
-    #         self.nodes[idx]["selected_strategy"] = selected_strategy
-
-    #     def chance_node(idx: int, selected_strategy: bool) -> None:
-    #         self.nodes[idx]["selected_strategy"] = selected_strategy
-    #         branches = self.nodes[idx].get("next_idx")
-    #         for idx_branch in branches:
-    #             dispatch(idx=idx_branch, selected_strategy=selected_strategy)
-
-    #     def decision_node(idx: int, selected_strategy: bool) -> None:
-    #         self.nodes[idx]["selected_strategy"] = selected_strategy
-    #         branches = self.nodes[idx].get("next_idx")
-    #         optimal_branch = self.nodes[idx].get("optimal_branch")
-    #         for i_branch, idx_branch in enumerate(branches):
-    #             if i_branch == optimal_branch:
-    #                 dispatch(idx=idx_branch, selected_strategy=selected_strategy)
-    #             else:
-    #                 dispatch(idx=idx_branch, selected_strategy=False)
-
-    #     #
-    #     def dispatch(idx: int, selected_strategy: bool) -> None:
-
-    #         type_: str = self._get_node_type(idx=idx)
-    #         if type_ == "TERMINAL":
-    #             terminal_node(idx=idx, selected_strategy=selected_strategy)
-
-    #         if type_ == "DECISION":
-    #             decision_node(idx=idx, selected_strategy=selected_strategy)
-
-    #         if type_ == "CHANCE":
-    #             chance_node(idx=idx, selected_strategy=selected_strategy)
-
-    #     dispatch(idx=0, selected_strategy=True)
 
     # def _evaluate_user_fn(self):
     #     def cumulative(**kwargs):

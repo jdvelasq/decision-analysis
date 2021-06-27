@@ -229,7 +229,183 @@ Node 3
 
 **Tree evaluation.**
 
+# >>> tree.tree_nodes
+
 >>> tree.evaluate()
 >>> print(tree.export_text())
+|
+| #0
+| ExpVal=65.00
+| (selected strategy)
+\-------[D]
+         |
+         | #1
+         | BID=500
+         | ExpVal=65.00
+         | (selected strategy)
+         +-------[C]
+         |        |
+         |        | #2
+         |        | COMPBID=400
+         |        | Prob=35.00
+         |        | ExpVal=0.00
+         |        | (selected strategy)
+         |        +-------[C]
+         |        |        |
+         |        |        | #3
+         |        |        | COST=200
+         |        |        | Prob=25.00
+         |        |        | PathProb=8.75
+         |        |        | (selected strategy)
+         |        |        +-------[T] PROFIT=0.00
+         |        |        |
+         |        |        | #4
+         |        |        | COST=400
+         |        |        | Prob=50.00
+         |        |        | PathProb=17.50
+         |        |        | (selected strategy)
+         |        |        +-------[T] PROFIT=0.00
+         |        |        |
+         |        |        | #5
+         |        |        | COST=600
+         |        |        | Prob=25.00
+         |        |        | PathProb=8.75
+         |        |        | (selected strategy)
+         |        |        \-------[T] PROFIT=0.00
+         |        |
+         |        | #6
+         |        | COMPBID=600
+         |        | Prob=50.00
+         |        | ExpVal=100.00
+         |        | (selected strategy)
+         |        +-------[C]
+         |        |        |
+         |        |        | #7
+         |        |        | COST=200
+         |        |        | Prob=25.00
+         |        |        | PathProb=12.50
+         |        |        | (selected strategy)
+         |        |        +-------[T] PROFIT=300.00
+         |        |        |
+         |        |        | #8
+         |        |        | COST=400
+         |        |        | Prob=50.00
+         |        |        | PathProb=25.00
+         |        |        | (selected strategy)
+         |        |        +-------[T] PROFIT=100.00
+         |        |        |
+         |        |        | #9
+         |        |        | COST=600
+         |        |        | Prob=25.00
+         |        |        | PathProb=12.50
+         |        |        | (selected strategy)
+         |        |        \-------[T] PROFIT=-100.00
+         |        |
+         |        | #10
+         |        | COMPBID=800
+         |        | Prob=15.00
+         |        | ExpVal=100.00
+         |        | (selected strategy)
+         |        \-------[C]
+         |                 |
+         |                 | #11
+         |                 | COST=200
+         |                 | Prob=25.00
+         |                 | PathProb=3.75
+         |                 | (selected strategy)
+         |                 +-------[T] PROFIT=300.00
+         |                 |
+         |                 | #12
+         |                 | COST=400
+         |                 | Prob=50.00
+         |                 | PathProb=7.50
+         |                 | (selected strategy)
+         |                 +-------[T] PROFIT=100.00
+         |                 |
+         |                 | #13
+         |                 | COST=600
+         |                 | Prob=25.00
+         |                 | PathProb=3.75
+         |                 | (selected strategy)
+         |                 \-------[T] PROFIT=-100.00
+         |
+         | #14
+         | BID=700
+         | ExpVal=45.00
+         \-------[C]
+                  |
+                  | #15
+                  | COMPBID=400
+                  | Prob=35.00
+                  | ExpVal=0.00
+                  +-------[C]
+                  |        |
+                  |        | #16
+                  |        | COST=200
+                  |        | Prob=25.00
+                  |        | PathProb=0.00
+                  |        +-------[T] PROFIT=0.00
+                  |        |
+                  |        | #17
+                  |        | COST=400
+                  |        | Prob=50.00
+                  |        | PathProb=0.00
+                  |        +-------[T] PROFIT=0.00
+                  |        |
+                  |        | #18
+                  |        | COST=600
+                  |        | Prob=25.00
+                  |        | PathProb=0.00
+                  |        \-------[T] PROFIT=0.00
+                  |
+                  | #19
+                  | COMPBID=600
+                  | Prob=50.00
+                  | ExpVal=0.00
+                  +-------[C]
+                  |        |
+                  |        | #20
+                  |        | COST=200
+                  |        | Prob=25.00
+                  |        | PathProb=0.00
+                  |        +-------[T] PROFIT=0.00
+                  |        |
+                  |        | #21
+                  |        | COST=400
+                  |        | Prob=50.00
+                  |        | PathProb=0.00
+                  |        +-------[T] PROFIT=0.00
+                  |        |
+                  |        | #22
+                  |        | COST=600
+                  |        | Prob=25.00
+                  |        | PathProb=0.00
+                  |        \-------[T] PROFIT=0.00
+                  |
+                  | #23
+                  | COMPBID=800
+                  | Prob=15.00
+                  | ExpVal=300.00
+                  \-------[C]
+                           |
+                           | #24
+                           | COST=200
+                           | Prob=25.00
+                           | PathProb=0.00
+                           +-------[T] PROFIT=500.00
+                           |
+                           | #25
+                           | COST=400
+                           | Prob=50.00
+                           | PathProb=0.00
+                           +-------[T] PROFIT=300.00
+                           |
+                           | #26
+                           | COST=600
+                           | Prob=25.00
+                           | PathProb=0.00
+                           \-------[T] PROFIT=100.00
+
+
 
 """

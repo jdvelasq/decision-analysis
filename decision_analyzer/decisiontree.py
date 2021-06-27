@@ -220,7 +220,7 @@ class DecisionTree:
 
         set_fn_args(idx=0, args={})
 
-    def _evaluate_terminal_nodes(self) -> None:
+    def _compute_expval_in_terminals_nodes(self) -> None:
         #
         def cumulative(**kwargs):
             return sum(v for _, v in kwargs.items())
@@ -234,75 +234,101 @@ class DecisionTree:
                     user_fn = cumulative
                 node["ExpVal"] = user_fn(**user_args)
 
-    # def _compute_expected_values(self):
-    #     #
-    #     def terminal_node(idx: int) -> float:
-    #         return self.nodes[idx].get("ExpVal")
+    def _compute_expval_in_intermediate_nodes(self):
+        #
+        def decision_node(idx: int) -> None:
 
-    #     def decision_node(idx: int) -> float:
+            max_: bool = self.nodes[idx].get("max")
+            successors: list = self.nodes[idx].get("successors")
 
-    #         name: str = self.nodes[idx]["name"]
-    #         max_: bool = self.variables[name]["max_"]
-    #         node_branches: List = self._get_next_idx(idx=idx)
+            expected_value: float = None
+            optimal_successor: int = None
 
-    #         optimal_value: float = None
-    #         optimal_branch: int = None
+            for successor in successors:
 
-    #         for i_branch, next_idx in enumerate(node_branches):
+                dispatch(idx=successor)
+                value = self.nodes[successor].get("ExpVal")
 
-    #             value = compute_expval(idx=next_idx)
+                expected_value = value if expected_value is None else expected_value
+                optimal_successor = (
+                    successor if optimal_successor is None else optimal_successor
+                )
 
-    #             if max_ is True:
+                if max_ is True and value > expected_value:
+                    expected_value = value
+                    optimal_successor = successor
 
-    #                 if optimal_value is None or value > optimal_value:
-    #                     optimal_value = value
-    #                     optimal_branch = i_branch
+                if max_ is False and value < expected_value:
+                    expected_value = value
+                    optimal_successor = successor
 
-    #             else:
-    #                 if optimal_value is None or value < optimal_value:
-    #                     optimal_value = value
-    #                     optimal_branch = i_branch
+            self.nodes[idx]["ExpVal"] = expected_value
+            self.nodes[idx]["optimal_successor"] = optimal_successor
 
-    #         self.nodes[idx]["ExpVal"] = optimal_value
-    #         self.nodes[idx]["optimal_branch"] = optimal_branch
-    #         return optimal_value
+        def chance_node(idx: int) -> None:
 
-    #     def chance_node(idx: int) -> float:
+            successors: list = self.nodes[idx].get("successors")
+            expected_value: float = 0
 
-    #         name: str = self.nodes[idx]["name"]
+            for successor in successors:
+                dispatch(idx=successor)
+                prob: float = self.nodes[successor].get("tag_prob")
+                value: float = self.nodes[successor].get("ExpVal")
+                expected_value += prob * value / 100.0
 
-    #         var_branches = self.variables[name]["branches"]
-    #         probs = [prob for prob, _, _ in var_branches]
+            self.nodes[idx]["ExpVal"] = expected_value
 
-    #         node_branches: List = self._get_next_idx(idx=idx)
+        def dispatch(idx: int) -> None:
+            #
+            # In this point, expected values in terminal nodes are already
+            # computed.
+            #
+            type_: str = self._get_node_type(idx=idx)
+            if type_ == "DECISION":
+                decision_node(idx=idx)
+            if type_ == "CHANCE":
+                chance_node(idx=idx)
 
-    #         node_value: float = 0
+        dispatch(idx=0)
 
-    #         for next_idx, prob in zip(node_branches, probs):
-    #             value: float = compute_expval(idx=next_idx)
-    #             node_value += prob * value / 100.0
+    def _compute_path_probabilities(self) -> None:
+        #
+        def terminal_node(idx: int, cum_prob: float) -> None:
+            prob = self.nodes[idx].get("tag_prob")
+            cum_prob = cum_prob if prob is None else cum_prob * prob / 100.0
+            self.nodes[idx]["PathProb"] = cum_prob
 
-    #         self.nodes[idx]["ExpVal"] = node_value
-    #         return node_value
+        def decision_node(idx: int, cum_prob: float) -> None:
+            optimal_successor = self.nodes[idx].get("optimal_successor")
+            successors = self.nodes[idx].get("successors")
+            for successor in successors:
+                if successor == optimal_successor:
+                    dispatch(idx=successor, cum_prob=cum_prob)
+                else:
+                    dispatch(idx=successor, cum_prob=0.0)
 
-    #     #
-    #     def compute_expval(idx: int) -> float:
+        def chance_node(idx: int, cum_prob: float) -> None:
 
-    #         type_: str = self._get_node_type(idx=idx)
+            successors = self.nodes[idx].get("successors")
+            prob = self.nodes[idx].get("tag_prob")
+            cum_prob = cum_prob if prob is None else cum_prob * prob / 100.0
+            for successor in successors:
+                dispatch(idx=successor, cum_prob=cum_prob)
 
-    #         if type_ == "TERMINAL":
-    #             retval = terminal_node(idx=idx)
+        def dispatch(idx: int, cum_prob: float) -> None:
 
-    #         if type_ == "DECISION":
-    #             retval = decision_node(idx=idx)
+            type_: str = self._get_node_type(idx=idx)
 
-    #         if type_ == "CHANCE":
-    #             retval = chance_node(idx=idx)
+            if type_ == "TERMINAL":
+                terminal_node(idx=idx, cum_prob=cum_prob)
 
-    #         return retval
+            if type_ == "DECISION":
+                decision_node(idx=idx, cum_prob=cum_prob)
 
-    #     #
-    #     compute_expval(idx=0)
+            if type_ == "CHANCE":
+                chance_node(idx=idx, cum_prob=cum_prob)
+
+        dispatch(idx=0, cum_prob=100.0)
 
     def evaluate(self):
         """This function is used to build the decision tree using the information in the
@@ -310,9 +336,9 @@ class DecisionTree:
         """
 
         self._build_call_kwargs()
-        self._evaluate_terminal_nodes()
-        # self._compute_expected_values()
-        # self._path_probability()
+        self._compute_expval_in_terminals_nodes()
+        self._compute_expval_in_intermediate_nodes()
+        self._compute_path_probabilities()
         # self._selected_strategy()
 
     #
@@ -462,45 +488,6 @@ class DecisionTree:
 
     #     self.current_deep = 0
     #     print_branch(prefix="", this_branch=self.tree[0], is_node_last_branch=True)
-
-    # def _path_probability(self) -> None:
-    #     #
-    #     def terminal_node(idx: int, cum_prob: float) -> None:
-    #         self.nodes[idx]["PathProb"] = cum_prob * 100.0
-
-    #     def decision_node(idx: int, cum_prob: float) -> None:
-    #         optimal_branch = self.nodes[idx].get("optimal_branch")
-    #         branches = self.nodes[idx].get("next_idx")
-    #         for i_branch, idx_branch in enumerate(branches):
-    #             if i_branch == optimal_branch:
-    #                 compute_path_prob(idx=idx_branch, cum_prob=1.0)
-    #             else:
-    #                 compute_path_prob(idx=idx_branch, cum_prob=0.0)
-
-    #     def chance_node(idx: int, cum_prob: float) -> None:
-
-    #         branches = self.nodes[idx].get("next_idx")
-    #         name: str = self.nodes[idx]["name"]
-    #         var_branches = self.variables[name]["branches"]
-    #         probs = [prob for prob, _, _ in var_branches]
-
-    #         for prob, idx_branch in zip(probs, branches):
-    #             compute_path_prob(idx=idx_branch, cum_prob=cum_prob * prob / 100)
-
-    #     def compute_path_prob(idx: int, cum_prob: float) -> None:
-
-    #         type_: str = self._get_node_type(idx=idx)
-
-    #         if type_ == "TERMINAL":
-    #             terminal_node(idx=idx, cum_prob=cum_prob)
-
-    #         if type_ == "DECISION":
-    #             decision_node(idx=idx, cum_prob=cum_prob)
-
-    #         if type_ == "CHANCE":
-    #             chance_node(idx=idx, cum_prob=cum_prob)
-
-    #     compute_path_prob(idx=0, cum_prob=1.0)
 
     # def _selected_strategy(self) -> None:
     #     #

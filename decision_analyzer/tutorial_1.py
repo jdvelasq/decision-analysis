@@ -119,7 +119,7 @@ Node 3
          |        |        | #5
          |        |        | COST=600
          |        |        | Prob=25.00
-         |        |        |-------[T] PROFIT
+         |        \        \-------[T] PROFIT
          |        |
          |        | #6
          |        | COMPBID=600
@@ -139,7 +139,7 @@ Node 3
          |        |        | #9
          |        |        | COST=600
          |        |        | Prob=25.00
-         |        |        |-------[T] PROFIT
+         |        \        \-------[T] PROFIT
          |        |
          |        | #10
          |        | COMPBID=800
@@ -159,7 +159,7 @@ Node 3
          |        |        | #13
          |        |        | COST=600
          |        |        | Prob=25.00
-         |        |        \-------[T] PROFIT
+         |        \        \-------[T] PROFIT
          |
          | #14
          | BID=700
@@ -183,7 +183,7 @@ Node 3
                   |        | #18
                   |        | COST=600
                   |        | Prob=25.00
-                  |        |-------[T] PROFIT
+                  |        \-------[T] PROFIT
                   |
                   | #19
                   | COMPBID=600
@@ -203,7 +203,7 @@ Node 3
                   |        | #22
                   |        | COST=600
                   |        | Prob=25.00
-                  |        |-------[T] PROFIT
+                  |        \-------[T] PROFIT
                   |
                   | #23
                   | COMPBID=800

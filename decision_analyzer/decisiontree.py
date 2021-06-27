@@ -7,51 +7,200 @@ Decision Tree Model
 
 """
 
-from typing import List
+# from typing import List
 
 
 class DecisionTree:
     """Decision Tree Model"""
 
-    def __init__(self, variables: List, initial_variable: str) -> None:
+    def __init__(self, variables: list, initial_variable: str) -> None:
         self.nodes = None
         self.variables = variables
         self.initial_variable = initial_variable
 
     def _build_skeleton(self) -> None:
         #
-        def build_tree_node(current_variable: str) -> int:
+        # Builds a structure where nodes are:
+        #
+        #   [
+        #       {name: ..., type: ... successors: [ ... ]}
+        #   ]
+        #
+        def build(name: str) -> int:
+            idx: int = len(self.nodes)
+            type_: str = self.variables[name]["type"]
+            self.nodes.append({"name": name, "type": type_})
+            if "max" in self.variables[name].keys():
+                self.nodes[idx]["max"] = self.variables[name]["max"]
+            if "branches" in self.variables[name].keys():
+                successors: list = []
+                for branch in self.variables[name].get("branches"):
+                    successor: int = build(name=branch[-1])
+                    successors.append(successor)
+                self.nodes[idx]["successors"] = successors
+            return idx
 
-            # position of the variable in the table of nodes
-            current_idx = len(self.nodes)
+        #
+        self.nodes: list = []
+        build(name=self.initial_variable)
 
-            # adds the new node
-            self.nodes.append(
-                {
-                    "idx": current_idx,
-                    "name": current_variable,
-                    "next_idx": None,
-                }
-            )
+    def _set_tag_attributes(self) -> None:
+        #
+        # tag_value: is the value of the branch of the predecesor node
+        # tag_prob: is the probability of the branch of the predecesor (chance) node
+        #
+        for node in self.nodes:
 
-            # adds branch nodes
-            if "branches" in self.variables[current_variable].keys():
+            if "successors" not in node.keys():
+                continue
 
-                next_idx = []
+            name: str = node.get("name")
+            successors: list = node.get("successors")
+            type_: str = node.get("type")
+            branches: list = self.variables[name].get("branches")
 
-                for branch in self.variables[current_variable].get("branches"):
+            if type_ == "DECISION":
+                values = [x for x, _ in branches]
+                for successor, value in zip(successors, values):
+                    self.nodes[successor]["tag_name"] = name
+                    self.nodes[successor]["tag_value"] = value
 
-                    # The last position of each branch in a variable contains
-                    # the name of the next variable (type)
-                    branch_idx: int = build_tree_node(current_variable=branch[-1])
-                    next_idx.append(branch_idx)
+            if type_ == "CHANCE":
+                values = [x for _, x, _ in branches]
+                probs = [x for x, _, _ in branches]
+                for successor, value, prob in zip(successors, values, probs):
+                    self.nodes[successor]["tag_name"] = name
+                    self.nodes[successor]["tag_value"] = value
+                    self.nodes[successor]["tag_prob"] = prob
 
-                self.nodes[current_idx]["next_idx"] = next_idx
+    def build(self):
+        """This function is used to build the decision tree using the information in the
+        variables.
+        """
 
-            return current_idx
+        self._build_skeleton()
+        self._set_tag_attributes()
 
-        self.nodes: List = []
-        build_tree_node(current_variable=self.initial_variable)
+    def print_nodes(self) -> None:
+        """Prints the database of nodes."""
+        for i_node, node in enumerate(self.nodes):
+            print("#{:<3s} {}".format(str(i_node), node))
+
+    def export_text(self):
+        """Exports the tree as text diagram."""
+
+        def node_type_chance(text: list, is_last_node: bool) -> list:
+            text: list = text.copy()
+            if is_last_node is True:
+                text.append("\\-------[C]")
+            else:
+                text.append("+-------[C]")
+            return text
+
+        def node_type_decision(text: list, is_last_node: bool) -> list:
+            text: list = text.copy()
+            if is_last_node is True:
+                text.append("\\-------[D]")
+            else:
+                text.append("+-------[D]")
+            return text
+
+        def node_type_terminal(text: list, idx: int, is_last_node: bool) -> list:
+            text = text.copy()
+            name = self.nodes[idx].get("name")
+            if "ExpVal" in self.nodes[idx].keys():
+                value = self.nodes[idx].get("ExpVal")
+                if is_last_node is True:
+                    text.append("\\-------[T] {}={:.2f}".format(name, value))
+                else:
+                    text.append("+-------[T] {}={:.2f}".format(name, value))
+            else:
+                if is_last_node is True:
+                    text.append("\\-------[T] {}".format(name))
+                else:
+                    text.append("+-------[T] {}".format(name))
+            return text
+
+        def node_type(text, idx, is_last_node):
+            type_ = self.nodes[idx]["type"]
+            if type_ == "TERMINAL":
+                text = node_type_terminal(text, idx, is_last_node)
+            if type_ == "DECISION":
+                text = node_type_decision(text, is_last_node)
+            if type_ == "CHANCE":
+                text = node_type_chance(text, is_last_node)
+            return text
+
+        def newline(text, idx, key, formatstr):
+            text = text.copy()
+            if key in self.nodes[idx].keys():
+                value = self.nodes[idx].get(key)
+                text.append(formatstr.format(value))
+            return text
+
+        def selected_strategy(text, idx):
+            text = text.copy()
+            if "selected_strategy" in self.nodes[idx].keys():
+                if self.nodes[idx]["selected_strategy"] is True:
+                    text.append("| (selected strategy)")
+            return text
+
+        def export_branches(text: list, idx: int, is_last_node: bool) -> list:
+
+            text = text.copy()
+            if "successors" not in self.nodes[idx].keys():
+                return text
+
+            successors = self.nodes[idx]["successors"]
+            for successor in successors:
+
+                next_is_last_node = successor == successors[-1]
+
+                result = export_node(successor, next_is_last_node)
+
+                for txt in result:
+                    if is_last_node is True:
+                        text.append(" " * 9 + txt)
+                    else:
+                        text.append("|" + " " * 8 + txt)
+
+            return text
+
+        def export_node(idx: int, is_last_node: bool) -> list:
+
+            type_ = self.nodes[idx]["type"]
+
+            text = ["|"]
+
+            text.append("| #{}".format(idx))
+            #
+            if "tag_name" in self.nodes[idx].keys():
+                text.append(
+                    "| {}={}".format(
+                        self.nodes[idx].get("tag_name"),
+                        self.nodes[idx].get("tag_value"),
+                    )
+                )
+
+            text = newline(text, idx, "tag_prob", "| Prob={:.2f}")
+            if type_ != "TERMINAL":
+                text = newline(text, idx, "ExpVal", "| ExpVal={:.2f}")
+            text = newline(text, idx, "PathProb", "| PathProb={:.2f}")
+            text = selected_strategy(text, idx)
+            text = node_type(text, idx, is_last_node)
+            text = export_branches(text, idx, is_last_node)
+
+            return text
+
+        text = export_node(idx=0, is_last_node=True)
+
+        return "\n".join(text)
+
+    #
+    #
+    #  R E F A C T O R I N G
+    #
+    #
 
     def _get_node_type(self, name: str = None, idx: int = None) -> str:
         #
@@ -62,185 +211,8 @@ class DecisionTree:
             name = self.nodes[idx].get("name")
         return self.variables[name].get("type")
 
-    def _get_next_idx(self, idx: int = None) -> List:
+    def _get_next_idx(self, idx: int = None) -> list:
         return self.nodes[idx].get("next_idx")
-
-    def _set_tags(self) -> None:
-        #
-        # Fills the brancbes with the tags
-        #
-        for node in self.nodes:
-            name = node.get("name")
-            next_idx = node.get("next_idx")
-            if next_idx is not None:
-                for idx in next_idx:
-                    self.nodes[idx]["tag"] = name
-
-    def _set_value_tags(self) -> None:
-        #
-        # Fills the nodes with the values assosiated to the tags
-        #
-        for node in self.nodes:
-
-            name = node.get("name")
-            next_idx = node.get("next_idx")
-
-            if next_idx is not None:
-
-                type_ = self._get_node_type(name=name)
-                var_branches = self.variables[name].get("branches")
-
-                if type_ == "DECISION":
-                    values = [value for value, _ in var_branches]
-
-                if type_ == "CHANCE":
-                    values = [value for _, value, _ in var_branches]
-
-                for idx, value in zip(next_idx, values):
-                    self.nodes[idx]["value"] = value
-
-    def _set_prob_tags(self) -> None:
-        #
-        # Fills the nodes with the probabilities assosiated to the tags
-        #
-        for node in self.nodes:
-
-            name = node.get("name")
-
-            if self._get_node_type(name=name) == "CHANCE":
-
-                var_branches = self.variables[name].get("branches")
-                probs = [prob for prob, _, _ in var_branches]
-                next_idx = node.get("next_idx")
-
-                for idx, prob in zip(next_idx, probs):
-                    self.nodes[idx]["prob"] = prob
-
-    def build(self):
-        """This function is used to build the decision tree using the information in the
-        variables.
-        """
-
-        self._build_skeleton()
-        self._set_tags()
-        self._set_value_tags()
-        self._set_prob_tags()
-
-    def export_text(self):
-        """Exports the tree as text diagram."""
-
-        def print_node(idx: int, is_last_node: bool) -> List:
-            #
-            def node_number():
-                text.append("| #{}".format(idx))
-
-            def tag():
-                if "tag" in self.nodes[idx].keys():
-                    text.append(
-                        "| {}={}".format(
-                            self.nodes[idx].get("tag"),
-                            self.nodes[idx].get("value"),
-                        )
-                    )
-
-            def prob():
-                if "prob" in self.nodes[idx].keys():
-                    text.append(
-                        "| Prob={:5.2f}".format(
-                            self.nodes[idx].get("prob"),
-                        )
-                    )
-
-            def path_prob():
-                if "PathProb" in self.nodes[idx].keys():
-                    text.append(
-                        "| PathProb={:.2f}".format(
-                            self.nodes[idx].get("PathProb"),
-                        )
-                    )
-
-            def exp_val():
-                type_ = self._get_node_type(idx=idx)
-                if type_ != "TERMINAL":
-                    if "ExpVal" in self.nodes[idx].keys():
-                        text.append(
-                            "| ExpVal={:.2f}".format(
-                                self.nodes[idx].get("ExpVal"),
-                            )
-                        )
-
-            def selected_strategy():
-                if "selected_strategy" in self.nodes[idx].keys():
-                    if self.nodes[idx]["selected_strategy"] is True:
-                        text.append("| (selected strategy)")
-
-            def node_type():
-                type_ = self._get_node_type(idx=idx)
-                if type_ == "DECISION":
-                    if is_last_node is True:
-                        text.append("\\-------[D]")
-                    else:
-                        text.append("+-------[D]")
-
-                if type_ == "CHANCE":
-                    if is_last_node is True:
-                        text.append("\\-------[C]")
-                    else:
-                        text.append("+-------[C]")
-
-                if type_ == "TERMINAL":
-                    name = self.nodes[idx].get("name")
-
-                    if "ExpVal" in self.nodes[idx].keys():
-
-                        value = self.nodes[idx].get("ExpVal")
-
-                        if is_last_node is True:
-                            text.append("\\-------[T] {}={:.2f}".format(name, value))
-                        else:
-                            text.append("+-------[T] {}={:.2f}".format(name, value))
-
-                    else:
-                        if is_last_node is True:
-                            text.append("\\-------[T] {}".format(name))
-                        else:
-                            text.append("+-------[T] {}".format(name))
-
-            def node_branches():
-                next_nodes = self.nodes[idx].get("next_idx")
-                if next_nodes is not None:
-                    for i_next_idx, next_idx in enumerate(next_nodes):
-
-                        if i_next_idx + 1 == len(next_nodes):
-                            next_is_last_node = True
-                        else:
-                            next_is_last_node = False
-
-                        result = print_node(next_idx, next_is_last_node)
-
-                        for txt in result:
-                            if is_last_node is True:
-                                text.append(" " * 9 + txt)
-                            else:
-                                text.append("|" + " " * 8 + txt)
-
-            text = ["|"]
-            node_number()
-            tag()
-            prob()
-            exp_val()
-            path_prob()
-            selected_strategy()
-            node_type()
-            node_branches()
-
-            return text
-
-        text = []
-
-        text.extend(print_node(idx=0, is_last_node=True))
-
-        return "\n".join(text)
 
     #     def print_branch(prefix, this_branch, is_node_last_branch):
 
@@ -372,210 +344,210 @@ class DecisionTree:
     #     self.current_deep = 0
     #     print_branch(prefix="", this_branch=self.tree[0], is_node_last_branch=True)
 
-    def _build_user_fn_args(self) -> None:
-        def set_fn_args(idx: int, args: dict) -> None:
+    # def _build_user_fn_args(self) -> None:
+    #     def set_fn_args(idx: int, args: dict) -> None:
 
-            type_ = self._get_node_type(idx=idx)
+    #         type_ = self._get_node_type(idx=idx)
 
-            if type_ == "TERMINAL":
-                self.nodes[idx]["user_args"] = args
-                return
+    #         if type_ == "TERMINAL":
+    #             self.nodes[idx]["user_args"] = args
+    #             return
 
-            #
-            # collecte the values of the branches
-            #
-            name = self.nodes[idx].get("name")
-            var_branches = self.variables[name].get("branches")
+    #         #
+    #         # collecte the values of the branches
+    #         #
+    #         name = self.nodes[idx].get("name")
+    #         var_branches = self.variables[name].get("branches")
 
-            if type_ == "DECISION":
-                values = [value for value, _ in var_branches]
+    #         if type_ == "DECISION":
+    #             values = [value for value, _ in var_branches]
 
-            if type_ == "CHANCE":
-                values = [value for _, value, _ in var_branches]
+    #         if type_ == "CHANCE":
+    #             values = [value for _, value, _ in var_branches]
 
-            #
-            # Fills the next node with value of the current branch
-            #
-            node_branches = self._get_next_idx(idx=idx)
-            if node_branches is not None:
-                for next_idx, value in zip(node_branches, values):
-                    new_args = args.copy()
-                    new_args = {**new_args, **{name: value}}
-                    set_fn_args(idx=next_idx, args=new_args)
+    #         #
+    #         # Fills the next node with value of the current branch
+    #         #
+    #         node_branches = self._get_next_idx(idx=idx)
+    #         if node_branches is not None:
+    #             for next_idx, value in zip(node_branches, values):
+    #                 new_args = args.copy()
+    #                 new_args = {**new_args, **{name: value}}
+    #                 set_fn_args(idx=next_idx, args=new_args)
 
-        set_fn_args(idx=0, args={})
+    #     set_fn_args(idx=0, args={})
 
-    def _evaluate_terminal_nodes(self) -> None:
-        #
-        def cumulative(**kwargs):
-            return sum(v for _, v in kwargs.items())
+    # def _evaluate_terminal_nodes(self) -> None:
+    #     #
+    #     def cumulative(**kwargs):
+    #         return sum(v for _, v in kwargs.items())
 
-        #
-        for node in self.nodes:
-            name = node.get("name")
-            type_ = self._get_node_type(name=name)
-            if type_ == "TERMINAL":
-                user_fn = self.variables[name].get("user_fn")
-                if user_fn is None:
-                    user_fn = cumulative
-                user_args = node.get("user_args")
-                node["ExpVal"] = user_fn(**user_args)
+    #     #
+    #     for node in self.nodes:
+    #         name = node.get("name")
+    #         type_ = self._get_node_type(name=name)
+    #         if type_ == "TERMINAL":
+    #             user_fn = self.variables[name].get("user_fn")
+    #             if user_fn is None:
+    #                 user_fn = cumulative
+    #             user_args = node.get("user_args")
+    #             node["ExpVal"] = user_fn(**user_args)
 
-    def _compute_expected_values(self):
-        #
-        def terminal_node(idx: int) -> float:
-            return self.nodes[idx].get("ExpVal")
+    # def _compute_expected_values(self):
+    #     #
+    #     def terminal_node(idx: int) -> float:
+    #         return self.nodes[idx].get("ExpVal")
 
-        def decision_node(idx: int) -> float:
+    #     def decision_node(idx: int) -> float:
 
-            name: str = self.nodes[idx]["name"]
-            max_: bool = self.variables[name]["max_"]
-            node_branches: List = self._get_next_idx(idx=idx)
+    #         name: str = self.nodes[idx]["name"]
+    #         max_: bool = self.variables[name]["max_"]
+    #         node_branches: List = self._get_next_idx(idx=idx)
 
-            optimal_value: float = None
-            optimal_branch: int = None
+    #         optimal_value: float = None
+    #         optimal_branch: int = None
 
-            for i_branch, next_idx in enumerate(node_branches):
+    #         for i_branch, next_idx in enumerate(node_branches):
 
-                value = compute_expval(idx=next_idx)
+    #             value = compute_expval(idx=next_idx)
 
-                if max_ is True:
+    #             if max_ is True:
 
-                    if optimal_value is None or value > optimal_value:
-                        optimal_value = value
-                        optimal_branch = i_branch
+    #                 if optimal_value is None or value > optimal_value:
+    #                     optimal_value = value
+    #                     optimal_branch = i_branch
 
-                else:
-                    if optimal_value is None or value < optimal_value:
-                        optimal_value = value
-                        optimal_branch = i_branch
+    #             else:
+    #                 if optimal_value is None or value < optimal_value:
+    #                     optimal_value = value
+    #                     optimal_branch = i_branch
 
-            self.nodes[idx]["ExpVal"] = optimal_value
-            self.nodes[idx]["optimal_branch"] = optimal_branch
-            return optimal_value
+    #         self.nodes[idx]["ExpVal"] = optimal_value
+    #         self.nodes[idx]["optimal_branch"] = optimal_branch
+    #         return optimal_value
 
-        def chance_node(idx: int) -> float:
+    #     def chance_node(idx: int) -> float:
 
-            name: str = self.nodes[idx]["name"]
+    #         name: str = self.nodes[idx]["name"]
 
-            var_branches = self.variables[name]["branches"]
-            probs = [prob for prob, _, _ in var_branches]
+    #         var_branches = self.variables[name]["branches"]
+    #         probs = [prob for prob, _, _ in var_branches]
 
-            node_branches: List = self._get_next_idx(idx=idx)
+    #         node_branches: List = self._get_next_idx(idx=idx)
 
-            node_value: float = 0
+    #         node_value: float = 0
 
-            for next_idx, prob in zip(node_branches, probs):
-                value: float = compute_expval(idx=next_idx)
-                node_value += prob * value / 100.0
+    #         for next_idx, prob in zip(node_branches, probs):
+    #             value: float = compute_expval(idx=next_idx)
+    #             node_value += prob * value / 100.0
 
-            self.nodes[idx]["ExpVal"] = node_value
-            return node_value
+    #         self.nodes[idx]["ExpVal"] = node_value
+    #         return node_value
 
-        #
-        def compute_expval(idx: int) -> float:
+    #     #
+    #     def compute_expval(idx: int) -> float:
 
-            type_: str = self._get_node_type(idx=idx)
+    #         type_: str = self._get_node_type(idx=idx)
 
-            if type_ == "TERMINAL":
-                retval = terminal_node(idx=idx)
+    #         if type_ == "TERMINAL":
+    #             retval = terminal_node(idx=idx)
 
-            if type_ == "DECISION":
-                retval = decision_node(idx=idx)
+    #         if type_ == "DECISION":
+    #             retval = decision_node(idx=idx)
 
-            if type_ == "CHANCE":
-                retval = chance_node(idx=idx)
+    #         if type_ == "CHANCE":
+    #             retval = chance_node(idx=idx)
 
-            return retval
+    #         return retval
 
-        #
-        compute_expval(idx=0)
+    #     #
+    #     compute_expval(idx=0)
 
-    def _path_probability(self) -> None:
-        #
-        def terminal_node(idx: int, cum_prob: float) -> None:
-            self.nodes[idx]["PathProb"] = cum_prob * 100.0
+    # def _path_probability(self) -> None:
+    #     #
+    #     def terminal_node(idx: int, cum_prob: float) -> None:
+    #         self.nodes[idx]["PathProb"] = cum_prob * 100.0
 
-        def decision_node(idx: int, cum_prob: float) -> None:
-            optimal_branch = self.nodes[idx].get("optimal_branch")
-            branches = self.nodes[idx].get("next_idx")
-            for i_branch, idx_branch in enumerate(branches):
-                if i_branch == optimal_branch:
-                    compute_path_prob(idx=idx_branch, cum_prob=1.0)
-                else:
-                    compute_path_prob(idx=idx_branch, cum_prob=0.0)
+    #     def decision_node(idx: int, cum_prob: float) -> None:
+    #         optimal_branch = self.nodes[idx].get("optimal_branch")
+    #         branches = self.nodes[idx].get("next_idx")
+    #         for i_branch, idx_branch in enumerate(branches):
+    #             if i_branch == optimal_branch:
+    #                 compute_path_prob(idx=idx_branch, cum_prob=1.0)
+    #             else:
+    #                 compute_path_prob(idx=idx_branch, cum_prob=0.0)
 
-        def chance_node(idx: int, cum_prob: float) -> None:
+    #     def chance_node(idx: int, cum_prob: float) -> None:
 
-            branches = self.nodes[idx].get("next_idx")
-            name: str = self.nodes[idx]["name"]
-            var_branches = self.variables[name]["branches"]
-            probs = [prob for prob, _, _ in var_branches]
+    #         branches = self.nodes[idx].get("next_idx")
+    #         name: str = self.nodes[idx]["name"]
+    #         var_branches = self.variables[name]["branches"]
+    #         probs = [prob for prob, _, _ in var_branches]
 
-            for prob, idx_branch in zip(probs, branches):
-                compute_path_prob(idx=idx_branch, cum_prob=cum_prob * prob / 100)
+    #         for prob, idx_branch in zip(probs, branches):
+    #             compute_path_prob(idx=idx_branch, cum_prob=cum_prob * prob / 100)
 
-        def compute_path_prob(idx: int, cum_prob: float) -> None:
+    #     def compute_path_prob(idx: int, cum_prob: float) -> None:
 
-            type_: str = self._get_node_type(idx=idx)
+    #         type_: str = self._get_node_type(idx=idx)
 
-            if type_ == "TERMINAL":
-                terminal_node(idx=idx, cum_prob=cum_prob)
+    #         if type_ == "TERMINAL":
+    #             terminal_node(idx=idx, cum_prob=cum_prob)
 
-            if type_ == "DECISION":
-                decision_node(idx=idx, cum_prob=cum_prob)
+    #         if type_ == "DECISION":
+    #             decision_node(idx=idx, cum_prob=cum_prob)
 
-            if type_ == "CHANCE":
-                chance_node(idx=idx, cum_prob=cum_prob)
+    #         if type_ == "CHANCE":
+    #             chance_node(idx=idx, cum_prob=cum_prob)
 
-        compute_path_prob(idx=0, cum_prob=1.0)
+    #     compute_path_prob(idx=0, cum_prob=1.0)
 
-    def _selected_strategy(self) -> None:
-        #
-        def terminal_node(idx: int, selected_strategy: bool) -> None:
-            self.nodes[idx]["selected_strategy"] = selected_strategy
+    # def _selected_strategy(self) -> None:
+    #     #
+    #     def terminal_node(idx: int, selected_strategy: bool) -> None:
+    #         self.nodes[idx]["selected_strategy"] = selected_strategy
 
-        def chance_node(idx: int, selected_strategy: bool) -> None:
-            self.nodes[idx]["selected_strategy"] = selected_strategy
-            branches = self.nodes[idx].get("next_idx")
-            for idx_branch in branches:
-                dispatch(idx=idx_branch, selected_strategy=selected_strategy)
+    #     def chance_node(idx: int, selected_strategy: bool) -> None:
+    #         self.nodes[idx]["selected_strategy"] = selected_strategy
+    #         branches = self.nodes[idx].get("next_idx")
+    #         for idx_branch in branches:
+    #             dispatch(idx=idx_branch, selected_strategy=selected_strategy)
 
-        def decision_node(idx: int, selected_strategy: bool) -> None:
-            self.nodes[idx]["selected_strategy"] = selected_strategy
-            branches = self.nodes[idx].get("next_idx")
-            optimal_branch = self.nodes[idx].get("optimal_branch")
-            for i_branch, idx_branch in enumerate(branches):
-                if i_branch == optimal_branch:
-                    dispatch(idx=idx_branch, selected_strategy=selected_strategy)
-                else:
-                    dispatch(idx=idx_branch, selected_strategy=False)
+    #     def decision_node(idx: int, selected_strategy: bool) -> None:
+    #         self.nodes[idx]["selected_strategy"] = selected_strategy
+    #         branches = self.nodes[idx].get("next_idx")
+    #         optimal_branch = self.nodes[idx].get("optimal_branch")
+    #         for i_branch, idx_branch in enumerate(branches):
+    #             if i_branch == optimal_branch:
+    #                 dispatch(idx=idx_branch, selected_strategy=selected_strategy)
+    #             else:
+    #                 dispatch(idx=idx_branch, selected_strategy=False)
 
-        #
-        def dispatch(idx: int, selected_strategy: bool) -> None:
+    #     #
+    #     def dispatch(idx: int, selected_strategy: bool) -> None:
 
-            type_: str = self._get_node_type(idx=idx)
-            if type_ == "TERMINAL":
-                terminal_node(idx=idx, selected_strategy=selected_strategy)
+    #         type_: str = self._get_node_type(idx=idx)
+    #         if type_ == "TERMINAL":
+    #             terminal_node(idx=idx, selected_strategy=selected_strategy)
 
-            if type_ == "DECISION":
-                decision_node(idx=idx, selected_strategy=selected_strategy)
+    #         if type_ == "DECISION":
+    #             decision_node(idx=idx, selected_strategy=selected_strategy)
 
-            if type_ == "CHANCE":
-                chance_node(idx=idx, selected_strategy=selected_strategy)
+    #         if type_ == "CHANCE":
+    #             chance_node(idx=idx, selected_strategy=selected_strategy)
 
-        dispatch(idx=0, selected_strategy=True)
+    #     dispatch(idx=0, selected_strategy=True)
 
-    def evaluate(self):
-        """This function is used to build the decision tree using the information in the
-        variables.
-        """
+    # def evaluate(self):
+    #     """This function is used to build the decision tree using the information in the
+    #     variables.
+    #     """
 
-        self._build_user_fn_args()
-        self._evaluate_terminal_nodes()
-        self._compute_expected_values()
-        self._path_probability()
-        self._selected_strategy()
+    #     self._build_user_fn_args()
+    #     self._evaluate_terminal_nodes()
+    #     self._compute_expected_values()
+    #     self._path_probability()
+    #     self._selected_strategy()
 
     # def _evaluate_user_fn(self):
     #     def cumulative(**kwargs):

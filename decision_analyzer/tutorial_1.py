@@ -89,6 +89,35 @@ Node 3
 >>> from decision_analyzer.decisiontree import DecisionTree
 >>> tree = DecisionTree(variables=nodes, initial_variable="BID")
 >>> tree.build()
+>>> tree.print_nodes()
+#0   {'name': 'BID', 'type': 'DECISION', 'max': True, 'successors': [1, 14]}
+#1   {'name': 'COMPBID', 'type': 'CHANCE', 'successors': [2, 6, 10], 'tag_name': 'BID', 'tag_value': 500}
+#2   {'name': 'COST', 'type': 'CHANCE', 'successors': [3, 4, 5], 'tag_name': 'COMPBID', 'tag_value': 400, 'tag_prob': 35.0}
+#3   {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 200, 'tag_prob': 25.0}
+#4   {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 400, 'tag_prob': 50.0}
+#5   {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 600, 'tag_prob': 25.0}
+#6   {'name': 'COST', 'type': 'CHANCE', 'successors': [7, 8, 9], 'tag_name': 'COMPBID', 'tag_value': 600, 'tag_prob': 50.0}
+#7   {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 200, 'tag_prob': 25.0}
+#8   {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 400, 'tag_prob': 50.0}
+#9   {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 600, 'tag_prob': 25.0}
+#10  {'name': 'COST', 'type': 'CHANCE', 'successors': [11, 12, 13], 'tag_name': 'COMPBID', 'tag_value': 800, 'tag_prob': 15.0}
+#11  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 200, 'tag_prob': 25.0}
+#12  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 400, 'tag_prob': 50.0}
+#13  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 600, 'tag_prob': 25.0}
+#14  {'name': 'COMPBID', 'type': 'CHANCE', 'successors': [15, 19, 23], 'tag_name': 'BID', 'tag_value': 700}
+#15  {'name': 'COST', 'type': 'CHANCE', 'successors': [16, 17, 18], 'tag_name': 'COMPBID', 'tag_value': 400, 'tag_prob': 35.0}
+#16  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 200, 'tag_prob': 25.0}
+#17  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 400, 'tag_prob': 50.0}
+#18  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 600, 'tag_prob': 25.0}
+#19  {'name': 'COST', 'type': 'CHANCE', 'successors': [20, 21, 22], 'tag_name': 'COMPBID', 'tag_value': 600, 'tag_prob': 50.0}
+#20  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 200, 'tag_prob': 25.0}
+#21  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 400, 'tag_prob': 50.0}
+#22  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 600, 'tag_prob': 25.0}
+#23  {'name': 'COST', 'type': 'CHANCE', 'successors': [24, 25, 26], 'tag_name': 'COMPBID', 'tag_value': 800, 'tag_prob': 15.0}
+#24  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 200, 'tag_prob': 25.0}
+#25  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 400, 'tag_prob': 50.0}
+#26  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 600, 'tag_prob': 25.0}
+
 
 **Visualization as text.**
 
@@ -228,8 +257,6 @@ Node 3
 
 
 **Tree evaluation.**
-
-# >>> tree.tree_nodes
 
 >>> tree.evaluate()
 >>> print(tree.export_text())

@@ -98,7 +98,7 @@ class Nodes:
         self.data[name] = {
             "type": "DECISION",
             "branches": branches,
-            "max_": max_,
+            "max": max_,
         }
 
     def terminal(self, name: str, user_fn: Any = None) -> None:
@@ -137,7 +137,7 @@ class Nodes:
             text = []
             text.append("    Type: " + node.get("type"))
             text[-1] += (
-                " - Maximum Payoff" if node.get("max_") is True else " - Minimum Payoff"
+                " - Maximum Payoff" if node.get("max") is True else " - Minimum Payoff"
             )
             text.append("    Name: " + name)
             text.append("    Branches:")

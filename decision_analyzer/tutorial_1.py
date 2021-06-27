@@ -259,6 +259,9 @@ Node 3
 **Tree evaluation.**
 
 >>> tree.evaluate()
+
+>>> tree.print_nodes()
+
 >>> print(tree.export_text())
 |
 | #0

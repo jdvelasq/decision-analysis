@@ -196,6 +196,41 @@ class DecisionTree:
 
         return "\n".join(text)
 
+    def _build_call_kwargs(self) -> None:
+        #
+        # Builts kwargs for user function in terminal nodes
+        #
+        def set_fn_args(idx: int, args: dict) -> None:
+
+            args = args.copy()
+
+            if "tag_name" in self.nodes[idx].keys():
+                name = self.nodes[idx]["tag_name"]
+                value = self.nodes[idx]["tag_value"]
+                args = {**args, **{name: value}}
+
+            type_ = self._get_node_type(idx=idx)
+
+            if type_ == "TERMINAL":
+                self.nodes[idx]["user_args"] = args
+            else:
+                if "successors" in self.nodes[idx].keys():
+                    for successor in self.nodes[idx]["successors"]:
+                        set_fn_args(idx=successor, args=args)
+
+        set_fn_args(idx=0, args={})
+
+    def evaluate(self):
+        """This function is used to build the decision tree using the information in the
+        variables.
+        """
+
+        self._build_call_kwargs()
+        # self._evaluate_terminal_nodes()
+        # self._compute_expected_values()
+        # self._path_probability()
+        # self._selected_strategy()
+
     #
     #
     #  R E F A C T O R I N G
@@ -343,39 +378,6 @@ class DecisionTree:
 
     #     self.current_deep = 0
     #     print_branch(prefix="", this_branch=self.tree[0], is_node_last_branch=True)
-
-    # def _build_user_fn_args(self) -> None:
-    #     def set_fn_args(idx: int, args: dict) -> None:
-
-    #         type_ = self._get_node_type(idx=idx)
-
-    #         if type_ == "TERMINAL":
-    #             self.nodes[idx]["user_args"] = args
-    #             return
-
-    #         #
-    #         # collecte the values of the branches
-    #         #
-    #         name = self.nodes[idx].get("name")
-    #         var_branches = self.variables[name].get("branches")
-
-    #         if type_ == "DECISION":
-    #             values = [value for value, _ in var_branches]
-
-    #         if type_ == "CHANCE":
-    #             values = [value for _, value, _ in var_branches]
-
-    #         #
-    #         # Fills the next node with value of the current branch
-    #         #
-    #         node_branches = self._get_next_idx(idx=idx)
-    #         if node_branches is not None:
-    #             for next_idx, value in zip(node_branches, values):
-    #                 new_args = args.copy()
-    #                 new_args = {**new_args, **{name: value}}
-    #                 set_fn_args(idx=next_idx, args=new_args)
-
-    #     set_fn_args(idx=0, args={})
 
     # def _evaluate_terminal_nodes(self) -> None:
     #     #
@@ -537,17 +539,6 @@ class DecisionTree:
     #             chance_node(idx=idx, selected_strategy=selected_strategy)
 
     #     dispatch(idx=0, selected_strategy=True)
-
-    # def evaluate(self):
-    #     """This function is used to build the decision tree using the information in the
-    #     variables.
-    #     """
-
-    #     self._build_user_fn_args()
-    #     self._evaluate_terminal_nodes()
-    #     self._compute_expected_values()
-    #     self._path_probability()
-    #     self._selected_strategy()
 
     # def _evaluate_user_fn(self):
     #     def cumulative(**kwargs):

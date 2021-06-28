@@ -85,7 +85,8 @@ class DecisionTree:
         def build(name: str) -> int:
             idx: int = len(self.nodes)
             type_: str = self.variables[name]["type"]
-            self.nodes.append({"name": name, "type": type_})
+            forced: int = self.variables[name]["forced_branch"]
+            self.nodes.append({"name": name, "type": type_, "forced": forced})
             if "max" in self.variables[name].keys():
                 self.nodes[idx]["max"] = self.variables[name]["max"]
             if "branches" in self.variables[name].keys():
@@ -369,6 +370,7 @@ class DecisionTree:
 
             max_: bool = self.nodes[idx].get("max")
             successors: list = self.nodes[idx].get("successors")
+            forced: int = self.nodes[idx].get("forced")
 
             expected_val: float = None
             expected_utl: float = None
@@ -376,7 +378,7 @@ class DecisionTree:
 
             optimal_successor: int = None
 
-            for successor in successors:
+            for i_succesor, successor in enumerate(successors):
 
                 dispatch(idx=successor)
 
@@ -392,13 +394,19 @@ class DecisionTree:
                     successor if optimal_successor is None else optimal_successor
                 )
 
-                if max_ is True and cequiv > expected_ceq:
+                if forced is None and max_ is True and cequiv > expected_ceq:
                     expected_val = expval
                     expected_utl = exputl
                     expected_ceq = cequiv
                     optimal_successor = successor
 
-                if max_ is False and cequiv < expected_ceq:
+                if forced is None and max_ is False and cequiv < expected_ceq:
+                    expected_val = expval
+                    expected_utl = exputl
+                    expected_ceq = cequiv
+                    optimal_successor = successor
+
+                if forced is not None and i_succesor == forced:
                     expected_val = expval
                     expected_utl = exputl
                     expected_ceq = cequiv
@@ -412,16 +420,25 @@ class DecisionTree:
         def chance_node(idx: int) -> None:
 
             successors: list = self.nodes[idx].get("successors")
+            forced: int = self.nodes[idx].get("forced")
             expected_val: float = 0
             expected_utl: float = 0
 
-            for successor in successors:
+            for i_successor, successor in enumerate(successors):
                 dispatch(idx=successor)
-                prob: float = self.nodes[successor].get("tag_prob")
-                expval: float = self.nodes[successor].get("ExpVal")
-                exputl: float = self.nodes[successor].get("ExpUtl")
-                expected_val += prob * expval / 100.0
-                expected_utl += prob * exputl / 100.0
+                if forced is None:
+                    prob: float = self.nodes[successor].get("tag_prob")
+                    expval: float = self.nodes[successor].get("ExpVal")
+                    exputl: float = self.nodes[successor].get("ExpUtl")
+                    expected_val += prob * expval / 100.0
+                    expected_utl += prob * exputl / 100.0
+                else:
+                    if i_successor == forced:
+                        prob: float = self.nodes[successor].get("tag_prob")
+                        expval: float = self.nodes[successor].get("ExpVal")
+                        exputl: float = self.nodes[successor].get("ExpUtl")
+                        expected_val = expval
+                        expected_utl = exputl
 
             self.nodes[idx]["ExpVal"] = expected_val
             self.nodes[idx]["ExpUtl"] = expected_utl

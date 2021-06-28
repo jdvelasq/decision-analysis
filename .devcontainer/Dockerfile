@@ -43,6 +43,9 @@ RUN pip3 --disable-pip-version-check --no-cache-dir install \
     sphinx_copybutton \    
     pygments 
 
+RUN pip3 --disable-pip-version-check --no-cache-dir install \
+    numpy \
+    matplotlib
 
 
 # [Optional] If your pip requirements rarely change, uncomment this section to add them to the image.

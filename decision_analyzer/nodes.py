@@ -19,11 +19,14 @@ class Nodes:
         return self.data[name]
 
     def copy(self):
+        """Creates a copy of the object."""
         result = Nodes()
         result.data = copy.deepcopy(self.data)
         return result
 
-    def chance(self, name: str, branches: List[tuple]) -> None:
+    def chance(
+        self, name: str, branches: List[tuple], forced_branch: int = None
+    ) -> None:
         """Adds a chance node.
 
         :param name:
@@ -59,9 +62,16 @@ class Nodes:
         self.data[name] = {
             "type": "CHANCE",
             "branches": branches,
+            "forced_branch": forced_branch,
         }
 
-    def decision(self, name: str, branches: List[tuple], max_: bool = False) -> None:
+    def decision(
+        self,
+        name: str,
+        branches: List[tuple],
+        max_: bool = False,
+        forced_branch: int = None,
+    ) -> None:
         """Creates a decisions tree's internal decision node.
 
         :param name:
@@ -105,6 +115,7 @@ class Nodes:
             "type": "DECISION",
             "branches": branches,
             "max": max_,
+            "forced_branch": forced_branch,
         }
 
     def terminal(self, name: str, user_fn: Any = None) -> None:

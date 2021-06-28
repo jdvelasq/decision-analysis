@@ -179,7 +179,17 @@ that, in this point the tree has not been evaluated.
 #26  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 600, 'tag_prob': 25.0}
 
 
-**Visualization as text.**
+**Visualization.**
+
+
+The tree can be viewed using the plot function. 
+
+>>> tree.plot()
+
+.. image:: ./images/tut-1-fig-1.png
+    :width: 650px
+    :align: center
+
 
 The decision tree can be exported as text using the `export_text` function.
 
@@ -318,27 +328,13 @@ The decision tree can be exported as text using the `export_text` function.
 
 
 
-**Subtree export.**
+**Subtree visualization.**
 
->>> print(tree.export_text(max_deep=0))
-|
-| #0
-\-------[D]
+>>> tree.plot(max_deep=2)
 
-
->>> print(tree.export_text(max_deep=1))
-|
-| #0
-\-------[D]
-         |
-         | #1
-         | BID=500
-         +-------[C]
-         |
-         | #14
-         | BID=700
-         \-------[C]
-
+.. image:: ./images/tut-1-fig-2.png
+    :width: 450px
+    :align: center
 
 >>> print(tree.export_text(max_deep=2))
 |
@@ -387,6 +383,11 @@ The decision tree can be exported as text using the `export_text` function.
 **Tree evaluation.**
 
 >>> tree.evaluate()
+
+
+.. image:: ./images/tut-1-fig-3.png
+    :width: 700px
+    :align: center
 
 >>> print(tree.export_text())
 |

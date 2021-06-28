@@ -4,7 +4,13 @@ Installation
 Requeriments
 -------------------------------------------------------------------------------
 
-**Fuzzy-Expert** was developed in Python 3.9, and requires `Numpy` version 1.20 or higher. 
+**DMAK** was developed in Python 3.9, and it depends on the following packages:
+
+* `Numpy`. 
+
+* `Matplotlib`.
+
+* `Graphviz+. 
 
 
 How to install 
@@ -14,11 +20,11 @@ The current stable version can be installed from the command line using:
 
 .. code:: bash
 
-    $ pip install fuzzy_expert
+    $ pip install dmak
 
 
 The current development version can be installed by clonning the GitHub repo 
-`<https://github.com/jdvelasq/fuzzy-expert>`_ and executing 
+`<https://github.com/jdvelasq/dmak-dev>`_ and executing 
 
 .. code:: bash
 

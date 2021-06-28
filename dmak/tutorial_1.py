@@ -565,9 +565,16 @@ The decision tree can be exported as text using the `export_text` function.
 
 
 
+**Policy suggestion**.
+
+>>> tree.plot(policy_suggestion=True)
+
+.. image:: ./images/tut-1-fig-4.png
+    :width: 700px
+    :align: center
 
 
->>> print(tree.export_text(strategy=True))
+>>> print(tree.export_text(policy_suggestion=True))
 |
 | #0
 | ExpVal=65.00

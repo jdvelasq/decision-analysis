@@ -6,17 +6,73 @@ Decision Tree Model
 
 
 """
+import numpy as np
 
 # from typing import List
+
+
+def _exp_utility_fn(param: float):
+    def util_fn(value: float) -> float:
+        return 1.0 - np.exp(-value / param)
+
+    def inv_fn(value: float) -> float:
+        return -1.0 * param * np.log(1 - value)
+
+    return util_fn, inv_fn
+
+
+def _log_utility_fn(param: float):
+    def util_fn(value: float) -> float:
+        return np.log(value + param)
+
+    def inv_fn(value: float):
+        return np.exp(value) - param
+
+    return util_fn, inv_fn
+
+
+def _sqrt_utility_fn(param: float):
+    def util_fn(value: float) -> float:
+        return np.sqrt(value + param)
+
+    def inv_fn(value: float):
+        return np.power(value, 2) - param
+
+    return util_fn, inv_fn
+
+
+def _dummy_fn(value: float) -> float:
+    return value
 
 
 class DecisionTree:
     """Decision Tree Model"""
 
-    def __init__(self, variables: list, initial_variable: str) -> None:
+    def __init__(
+        self,
+        variables: list,
+        initial_variable: str,
+        utility: str = None,
+        param: float = 0,
+    ) -> None:
+
         self.nodes = None
-        self.variables = variables
+        self.variables = variables.copy()
         self.initial_variable = initial_variable
+        self._use_utility_fn = True
+
+        if utility is None:
+            util_fn = _dummy_fn
+            inv_fn = _dummy_fn
+            self._use_utility_fn = False
+        if utility == "exp":
+            util_fn, inv_fn = _exp_utility_fn(param)
+        if utility == "log":
+            util_fn, inv_fn = _log_utility_fn(param)
+        if utility == "sqrt":
+            util_fn, inv_fn = _sqrt_utility_fn(param)
+        self._util_fn = util_fn
+        self._inv_fn = inv_fn
 
     def _build_skeleton(self) -> None:
         #
@@ -233,6 +289,10 @@ class DecisionTree:
             if type_ != "TERMINAL":
                 text = newline(text, idx, "ExpVal", "| ExpVal={:.2f}")
             text = newline(text, idx, "PathProb", "| PathProb={:.2f}")
+            if self._use_utility_fn is True:
+                text = newline(text, idx, "ExpUtl", "| ExpUtl={:.2f}")
+                text = newline(text, idx, "CE", "| CE={:.2f}")
+
             if risk_profile is True:
                 text = riskprofile(text, idx)
             text = selected_strategy(text, idx)
@@ -287,13 +347,21 @@ class DecisionTree:
             return sum(v for _, v in kwargs.items())
 
         for node in self.nodes:
+
             user_args = node.get("user_args")
+
             if user_args:
+                #
                 name = node.get("name")
                 user_fn = self.variables[name].get("user_fn")
                 if user_fn is None:
                     user_fn = cumulative
-                node["ExpVal"] = user_fn(**user_args)
+                expval = user_fn(**user_args)
+                node["ExpVal"] = expval
+                #
+                exputil = self._util_fn(expval)
+                node["ExpUtl"] = exputil
+                node["CE"] = expval
 
     def _compute_expval_in_intermediate_nodes(self):
         #
@@ -302,42 +370,62 @@ class DecisionTree:
             max_: bool = self.nodes[idx].get("max")
             successors: list = self.nodes[idx].get("successors")
 
-            expected_value: float = None
+            expected_val: float = None
+            expected_utl: float = None
+            expected_ceq: float = None
+
             optimal_successor: int = None
 
             for successor in successors:
 
                 dispatch(idx=successor)
-                value = self.nodes[successor].get("ExpVal")
 
-                expected_value = value if expected_value is None else expected_value
+                expval = self.nodes[successor].get("ExpVal")
+                exputl = self.nodes[successor].get("ExpUtl")
+                cequiv = self.nodes[successor].get("CE")
+
+                expected_val = expval if expected_val is None else expected_val
+                expected_utl = exputl if expected_utl is None else expected_utl
+                expected_ceq = cequiv if expected_ceq is None else expected_ceq
+
                 optimal_successor = (
                     successor if optimal_successor is None else optimal_successor
                 )
 
-                if max_ is True and value > expected_value:
-                    expected_value = value
+                if max_ is True and cequiv > expected_ceq:
+                    expected_val = expval
+                    expected_utl = exputl
+                    expected_ceq = cequiv
                     optimal_successor = successor
 
-                if max_ is False and value < expected_value:
-                    expected_value = value
+                if max_ is False and cequiv < expected_ceq:
+                    expected_val = expval
+                    expected_utl = exputl
+                    expected_ceq = cequiv
                     optimal_successor = successor
 
-            self.nodes[idx]["ExpVal"] = expected_value
+            self.nodes[idx]["ExpVal"] = expected_val
+            self.nodes[idx]["ExpUtl"] = expected_utl
+            self.nodes[idx]["CE"] = expected_ceq
             self.nodes[idx]["optimal_successor"] = optimal_successor
 
         def chance_node(idx: int) -> None:
 
             successors: list = self.nodes[idx].get("successors")
-            expected_value: float = 0
+            expected_val: float = 0
+            expected_utl: float = 0
 
             for successor in successors:
                 dispatch(idx=successor)
                 prob: float = self.nodes[successor].get("tag_prob")
-                value: float = self.nodes[successor].get("ExpVal")
-                expected_value += prob * value / 100.0
+                expval: float = self.nodes[successor].get("ExpVal")
+                exputl: float = self.nodes[successor].get("ExpUtl")
+                expected_val += prob * expval / 100.0
+                expected_utl += prob * exputl / 100.0
 
-            self.nodes[idx]["ExpVal"] = expected_value
+            self.nodes[idx]["ExpVal"] = expected_val
+            self.nodes[idx]["ExpUtl"] = expected_utl
+            self.nodes[idx]["CE"] = self._inv_fn(expected_utl)
 
         def dispatch(idx: int) -> None:
             #

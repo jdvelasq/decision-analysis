@@ -1,7 +1,7 @@
 Library reference
 ===============================================================================
 
-Description of the functions, classes and modules contained within **Fuzzy-Expert**.
+Description of the functions, classes and modules contained within **DMAK**.
 
 .. toctree::
    :maxdepth: 2

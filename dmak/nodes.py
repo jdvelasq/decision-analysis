@@ -1,6 +1,15 @@
 """
-Variables
+Node types
 -------------------------------------------------------------------------------
+
+This module is used to create and characterize the nodes of the tree. The 
+package implements three types of nodes:
+
+* Terminal nodes.
+
+* Decision nodes.
+
+* Chance nodes.
 
 
 """
@@ -10,7 +19,10 @@ import copy
 
 
 class Nodes:
-    """Creates a dictionary with the variables used internally by the decision tree."""
+    """This is a bag used to create and contain the different types of the
+    tree nodes. The functions `terminal`, `chance`, and `decision` are used
+    to create the nodes.
+    """
 
     def __init__(self):
         self.data = {}
@@ -19,7 +31,8 @@ class Nodes:
         return self.data[name]
 
     def copy(self):
-        """Creates a copy of the object."""
+        """Creates a deep copy of the bag. This function is used internally
+        by the package."""
         result = Nodes()
         result.data = copy.deepcopy(self.data)
         return result
@@ -27,15 +40,30 @@ class Nodes:
     def chance(
         self, name: str, branches: List[tuple], forced_branch: int = None
     ) -> None:
-        """Adds a chance node.
+        """Adds a chance node to the bag.
 
         :param name:
-                     Name of the variable.
+            Name assigned to the node.
 
         :param branches:
-                    A list of tuples, where each tuple contains the corresponding information of
-                    each branch in the node. Each tuple has the probability, the value of the
-                    branch and the name of the next node.
+            A list of tuples, where each tuple contains the following information:
+
+            * Probability.
+
+            * Associated value to the branch.
+
+            * Name of the successor node.
+
+        :param forced_branch:
+            When used, this parameter uses the only the indicated branch in the
+            computations. It is equivalent to know with certainty what state of
+            ther world will occurrs. It is used to analyze the impact of the
+            occurrence of a certain event on the decision.
+
+        **Example**
+
+        The following code a chance node with three branches; the first value
+        of each branch is the probability.
 
         >>> nodes = Nodes()
         >>> nodes.chance(
@@ -72,19 +100,32 @@ class Nodes:
         max_: bool = False,
         forced_branch: int = None,
     ) -> None:
-        """Creates a decisions tree's internal decision node.
+        """Adds a decision node to the bag.
 
         :param name:
-            A valid name for variables in Python.
+            Name assigned to the node.
+
 
         :param branches:
-            A list of tuples, where each tuple contains the corresponding
-            information of each branch in the node. Each tuple has the value
-            of the branch and the name of the next node.
+            A list of tuples, where each tuple contains the following information:
+
+            * Associated value to the branch.
+
+            * Name of the successor node.
 
         :param max_:
             When it is `True`, selects the branch with the maximum expected value.
 
+
+        :param forced_branch:
+            When used, this parameter uses the only the indicated branch in the
+            computations. It is equivalent to know with certainty what state of
+            ther world will occurrs. It is used to analyze the impact of the
+            occurrence of a certain event on the decision.
+
+        **Example**
+
+        The following code a decision node with four branches.
 
         >>> nodes = Nodes()
         >>> nodes.decision(
@@ -119,16 +160,21 @@ class Nodes:
         }
 
     def terminal(self, name: str, user_fn: Any = None) -> None:
-        """Creates a decision tree's terminal node.
+        """Adds a decision node to the bag.
+
 
         :param name:
-            A valid name for variables in Python.
+            Name assigned to the node.
 
         :param user_fn:
-            It is a valid python function used for computing the value of the
-            terminal node in the tree. The names of the nodes must be used as
-            the parameters of the function.
+            It is a valid python function used for computing the value
+            of the terminal node in the tree. The names of the created
+            nodes must be used as the parameters of the function.
 
+        **Example**
+
+        The following code creates a terminal node that uses a
+        user-defined function to compute its expected value.
 
         >>> nodes = Nodes()
         >>> def user_fn(x):

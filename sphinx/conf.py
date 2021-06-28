@@ -55,7 +55,7 @@ source_suffix = [".rst", ".md"]
 master_doc = "index"
 
 # General information about the project.
-project = "Decision-Analyzer: Decision Tree Analysis in Python"
+project = "dmak: Decision Tree Analysis Toolkit"
 copyright = "2021, Juan D. Velasquez"
 author = "Juan D. Velasquez"
 
@@ -232,8 +232,8 @@ latex_elements = {
 latex_documents = [
     (
         master_doc,
-        "decision-analyzer.tex",
-        "Decision-Analyzer User Guide",
+        "dmak.tex",
+        "DMAK User Guide",
         "Juan D. Velasquez",
         "manual",
     ),
@@ -264,9 +264,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    (master_doc, "Decision-Analyzer", "Decision-Analyzer Documentation", [author], 1)
-]
+man_pages = [(master_doc, "DMAK", "DMAK Documentation", [author], 1)]
 
 # If true, show URL addresses after external links.
 # man_show_urls = False
@@ -280,11 +278,11 @@ man_pages = [
 texinfo_documents = [
     (
         master_doc,
-        "Decision-Analyzer",
-        "Decision-Analyzer User Guide",
+        "DMAK",
+        "DMAK User Guide",
         author,
-        "Fuzzy-Expert",
-        "A Package for Decision Analysis in Python",
+        "DMAK",
+        "Decision-Making Analysis Toolkit",
         "Miscellaneous",
     ),
 ]

@@ -6,6 +6,7 @@ Variables
 """
 
 from typing import Any, List
+import copy
 
 
 class Nodes:
@@ -16,6 +17,11 @@ class Nodes:
 
     def __getitem__(self, name: str) -> dict:
         return self.data[name]
+
+    def copy(self):
+        result = Nodes()
+        result.data = copy.deepcopy(self.data)
+        return result
 
     def chance(self, name: str, branches: List[tuple]) -> None:
         """Adds a chance node.

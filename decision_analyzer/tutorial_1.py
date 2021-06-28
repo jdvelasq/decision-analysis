@@ -320,7 +320,7 @@ Node 3
                   | COMPBID=800
                   | Prob=15.00
                   \-------[C]
-  
+
 
 **Tree evaluation.**
 
@@ -826,6 +826,249 @@ Node 3
 
 >>> b700
 [15.0, 21.0, 27.0, 33.0, 39.0, 45.0, 51.0, 57.0, 63.0, 69.0, 75.0]
+
+
+**Utility functions**
+
+
+>>> tree = DecisionTree(
+...     variables=nodes,
+...     initial_variable="BID",
+...     utility="exp",
+...     param=100,
+... )
+>>> tree.build()
+>>> tree.evaluate()
+>>> print(tree.export_text())
+|
+| #0
+| ExpVal=45.00
+| ExpUtl=0.13
+| CE=14.18
+| (selected strategy)
+\-------[D]
+         |
+         | #1
+         | BID=500
+         | ExpVal=65.00
+         | ExpUtl=0.08
+         | CE=8.41
+         +-------[C]
+         |        |
+         |        | #2
+         |        | COMPBID=400
+         |        | Prob=35.00
+         |        | ExpVal=0.00
+         |        | ExpUtl=0.00
+         |        | CE=-0.00
+         |        +-------[C]
+         |        |        |
+         |        |        | #3
+         |        |        | COST=200
+         |        |        | Prob=25.00
+         |        |        | PathProb=0.00
+         |        |        | ExpUtl=0.00
+         |        |        | CE=0.00
+         |        |        +-------[T] PROFIT=0.00
+         |        |        |
+         |        |        | #4
+         |        |        | COST=400
+         |        |        | Prob=50.00
+         |        |        | PathProb=0.00
+         |        |        | ExpUtl=0.00
+         |        |        | CE=0.00
+         |        |        +-------[T] PROFIT=0.00
+         |        |        |
+         |        |        | #5
+         |        |        | COST=600
+         |        |        | Prob=25.00
+         |        |        | PathProb=0.00
+         |        |        | ExpUtl=0.00
+         |        |        | CE=0.00
+         |        |        \-------[T] PROFIT=0.00
+         |        |
+         |        | #6
+         |        | COMPBID=600
+         |        | Prob=50.00
+         |        | ExpVal=100.00
+         |        | ExpUtl=0.12
+         |        | CE=13.24
+         |        +-------[C]
+         |        |        |
+         |        |        | #7
+         |        |        | COST=200
+         |        |        | Prob=25.00
+         |        |        | PathProb=0.00
+         |        |        | ExpUtl=0.95
+         |        |        | CE=300.00
+         |        |        +-------[T] PROFIT=300.00
+         |        |        |
+         |        |        | #8
+         |        |        | COST=400
+         |        |        | Prob=50.00
+         |        |        | PathProb=0.00
+         |        |        | ExpUtl=0.63
+         |        |        | CE=100.00
+         |        |        +-------[T] PROFIT=100.00
+         |        |        |
+         |        |        | #9
+         |        |        | COST=600
+         |        |        | Prob=25.00
+         |        |        | PathProb=0.00
+         |        |        | ExpUtl=-1.72
+         |        |        | CE=-100.00
+         |        |        \-------[T] PROFIT=-100.00
+         |        |
+         |        | #10
+         |        | COMPBID=800
+         |        | Prob=15.00
+         |        | ExpVal=100.00
+         |        | ExpUtl=0.12
+         |        | CE=13.24
+         |        \-------[C]
+         |                 |
+         |                 | #11
+         |                 | COST=200
+         |                 | Prob=25.00
+         |                 | PathProb=0.00
+         |                 | ExpUtl=0.95
+         |                 | CE=300.00
+         |                 +-------[T] PROFIT=300.00
+         |                 |
+         |                 | #12
+         |                 | COST=400
+         |                 | Prob=50.00
+         |                 | PathProb=0.00
+         |                 | ExpUtl=0.63
+         |                 | CE=100.00
+         |                 +-------[T] PROFIT=100.00
+         |                 |
+         |                 | #13
+         |                 | COST=600
+         |                 | Prob=25.00
+         |                 | PathProb=0.00
+         |                 | ExpUtl=-1.72
+         |                 | CE=-100.00
+         |                 \-------[T] PROFIT=-100.00
+         |
+         | #14
+         | BID=700
+         | ExpVal=45.00
+         | ExpUtl=0.13
+         | CE=14.18
+         | (selected strategy)
+         \-------[C]
+                  |
+                  | #15
+                  | COMPBID=400
+                  | Prob=35.00
+                  | ExpVal=0.00
+                  | ExpUtl=0.00
+                  | CE=-0.00
+                  | (selected strategy)
+                  +-------[C]
+                  |        |
+                  |        | #16
+                  |        | COST=200
+                  |        | Prob=25.00
+                  |        | PathProb=8.75
+                  |        | ExpUtl=0.00
+                  |        | CE=0.00
+                  |        | (selected strategy)
+                  |        +-------[T] PROFIT=0.00
+                  |        |
+                  |        | #17
+                  |        | COST=400
+                  |        | Prob=50.00
+                  |        | PathProb=17.50
+                  |        | ExpUtl=0.00
+                  |        | CE=0.00
+                  |        | (selected strategy)
+                  |        +-------[T] PROFIT=0.00
+                  |        |
+                  |        | #18
+                  |        | COST=600
+                  |        | Prob=25.00
+                  |        | PathProb=8.75
+                  |        | ExpUtl=0.00
+                  |        | CE=0.00
+                  |        | (selected strategy)
+                  |        \-------[T] PROFIT=0.00
+                  |
+                  | #19
+                  | COMPBID=600
+                  | Prob=50.00
+                  | ExpVal=0.00
+                  | ExpUtl=0.00
+                  | CE=-0.00
+                  | (selected strategy)
+                  +-------[C]
+                  |        |
+                  |        | #20
+                  |        | COST=200
+                  |        | Prob=25.00
+                  |        | PathProb=12.50
+                  |        | ExpUtl=0.00
+                  |        | CE=0.00
+                  |        | (selected strategy)
+                  |        +-------[T] PROFIT=0.00
+                  |        |
+                  |        | #21
+                  |        | COST=400
+                  |        | Prob=50.00
+                  |        | PathProb=25.00
+                  |        | ExpUtl=0.00
+                  |        | CE=0.00
+                  |        | (selected strategy)
+                  |        +-------[T] PROFIT=0.00
+                  |        |
+                  |        | #22
+                  |        | COST=600
+                  |        | Prob=25.00
+                  |        | PathProb=12.50
+                  |        | ExpUtl=0.00
+                  |        | CE=0.00
+                  |        | (selected strategy)
+                  |        \-------[T] PROFIT=0.00
+                  |
+                  | #23
+                  | COMPBID=800
+                  | Prob=15.00
+                  | ExpVal=300.00
+                  | ExpUtl=0.88
+                  | CE=213.24
+                  | (selected strategy)
+                  \-------[C]
+                           |
+                           | #24
+                           | COST=200
+                           | Prob=25.00
+                           | PathProb=3.75
+                           | ExpUtl=0.99
+                           | CE=500.00
+                           | (selected strategy)
+                           +-------[T] PROFIT=500.00
+                           |
+                           | #25
+                           | COST=400
+                           | Prob=50.00
+                           | PathProb=7.50
+                           | ExpUtl=0.95
+                           | CE=300.00
+                           | (selected strategy)
+                           +-------[T] PROFIT=300.00
+                           |
+                           | #26
+                           | COST=600
+                           | Prob=25.00
+                           | PathProb=3.75
+                           | ExpUtl=0.63
+                           | CE=100.00
+                           | (selected strategy)
+                           \-------[T] PROFIT=100.00
+
+
+
 
 
 

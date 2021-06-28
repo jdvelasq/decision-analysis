@@ -45,8 +45,15 @@ RUN pip3 --disable-pip-version-check --no-cache-dir install \
 
 RUN pip3 --disable-pip-version-check --no-cache-dir install \
     numpy \
-    matplotlib
+    matplotlib \
+    graphviz \
+    ipykernel
 
+RUN apt update \
+    && apt -yq --no-install-recommends install  graphviz \
+    && apt clean \
+    && apt autoremove -yq \
+    && rm -rf /var/lib/apt/lists/* 
 
 # [Optional] If your pip requirements rarely change, uncomment this section to add them to the image.
 # COPY requirements.txt /tmp/pip-tmp/

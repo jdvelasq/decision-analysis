@@ -146,6 +146,7 @@ class Nodes:
         self.data[name] = {
             "type": "TERMINAL",
             "user_fn": user_fn,
+            "forced_branch": None,
         }
 
     def __repr__(self):

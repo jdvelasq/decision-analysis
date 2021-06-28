@@ -1,4 +1,4 @@
-.. automodule:: decision_analyzer.decisiontree
+.. automodule:: dmak.decisiontree
     :members:
     :undoc-members:
     :show-inheritance:

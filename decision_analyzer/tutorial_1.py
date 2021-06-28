@@ -1,5 +1,5 @@
 r"""
-Building a simple decision tree
+Building a decision tree (based on SuperTree)
 ===============================================================================
 
 **Profit function.**
@@ -806,7 +806,26 @@ Node 3
                            \-------[T] PROFIT=100.00
 
 
+**Probabilistic senstitivity**
 
+>>> b500 = []
+>>> b700 = []
+>>> for p in range(0, 101, 10):
+...     tree.variables['COST']['branches'] = [
+...         (p, 200, "PROFIT"),
+...         (0, 400, "PROFIT"),
+...         (100 - p, 600, "PROFIT"),
+...     ]
+...     tree.build()
+...     tree.evaluate()
+...     b500.append(tree.nodes[1]["ExpVal"])
+...     b700.append(tree.nodes[14]["ExpVal"])
+
+>>> b500
+[-65.0, -39.0, -13.0, 13.0, 39.0, 65.0, 91.0, 117.0, 143.0, 169.0, 195.0]
+
+>>> b700
+[15.0, 21.0, 27.0, 33.0, 39.0, 45.0, 51.0, 57.0, 63.0, 69.0, 75.0]
 
 
 

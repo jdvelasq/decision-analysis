@@ -86,7 +86,7 @@ class DecisionTree:
         for i_node, node in enumerate(self.nodes):
             print("#{:<3s} {}".format(str(i_node), node))
 
-    def export_text(self, risk_profile: bool = False):
+    def export_text(self, risk_profile: bool = False, max_deep: int = None):
         """Exports the tree as text diagram."""
 
         def node_type_chance(text: list, is_last_node: bool) -> list:
@@ -145,7 +145,9 @@ class DecisionTree:
                     text.append("| (selected strategy)")
             return text
 
-        def export_branches(text: list, idx: int, is_last_node: bool) -> list:
+        def export_branches(
+            text: list, idx: int, is_last_node: bool, max_deep: int, deep: int
+        ) -> list:
 
             text = text.copy()
             if "successors" not in self.nodes[idx].keys():
@@ -156,7 +158,7 @@ class DecisionTree:
 
                 next_is_last_node = successor == successors[-1]
 
-                result = export_node(successor, next_is_last_node)
+                result = export_node(successor, next_is_last_node, max_deep, deep)
 
                 for txt in result:
                     if is_last_node is True:
@@ -178,7 +180,10 @@ class DecisionTree:
                     text.append("| {:-13.2f} {:5.2f}".format(value, prob))
             return text
 
-        def export_node(idx: int, is_last_node: bool) -> list:
+        def export_node(idx: int, is_last_node: bool, max_deep: int, deep: int) -> list:
+
+            if deep is None:
+                deep: int = 0
 
             text = ["|"]
             type_ = self.nodes[idx]["type"]
@@ -200,11 +205,15 @@ class DecisionTree:
                 text = riskprofile(text, idx)
             text = selected_strategy(text, idx)
             text = node_type(text, idx, is_last_node)
-            text = export_branches(text, idx, is_last_node)
+
+            if max_deep is None or (max_deep is not None and deep < max_deep):
+                deep += 1
+                text = export_branches(text, idx, is_last_node, max_deep, deep)
+                deep -= 1
 
             return text
 
-        text = export_node(idx=0, is_last_node=True)
+        text = export_node(idx=0, is_last_node=True, max_deep=max_deep, deep=None)
 
         return "\n".join(text)
 

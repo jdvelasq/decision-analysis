@@ -8,23 +8,23 @@ from setuptools import setup, find_packages
 #
 
 setup(
-    name="pyDecisionTree",
+    name="dmree",
     version="0.0.0",
     author="Juan D. Velasquez",
     author_email="jdvelasq@unal.edu.co",
     license="MIT",
-    url="http://github.com/jdvelasq/pyDecisionTree",
-    description="Decision Tree Analysis",
-    long_description="Decision Tree Analysis for Prescriptive Analytics",
+    url="http://github.com/jdvelasq/dmtree",
+    description="Decision Making Analysis",
+    long_description="Decision Analysis using Decision Trees for Prescriptive Analytics",
     keywords="analytics",
     platforms="any",
-    provides=["pyDecisionTree"],
+    provides=["dmtree"],
     install_requires=[
         "numpy",
         "matplotlib",
     ],
     packages=find_packages(),
-    package_dir={"pyDecisionTree": "pyDecisionTree"},
+    package_dir={"dmtree": "dmtree"},
     include_package_data=True,
     classifiers=[
         "Development Status :: 3 - Alpha",

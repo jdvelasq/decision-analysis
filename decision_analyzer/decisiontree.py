@@ -86,7 +86,12 @@ class DecisionTree:
         for i_node, node in enumerate(self.nodes):
             print("#{:<3s} {}".format(str(i_node), node))
 
-    def export_text(self, risk_profile: bool = False, max_deep: int = None):
+    def export_text(
+        self,
+        risk_profile: bool = False,
+        max_deep: int = None,
+        strategy: bool = False,
+    ):
         """Exports the tree as text diagram."""
 
         def node_type_chance(text: list, is_last_node: bool) -> list:
@@ -145,29 +150,6 @@ class DecisionTree:
                     text.append("| (selected strategy)")
             return text
 
-        def export_branches(
-            text: list, idx: int, is_last_node: bool, max_deep: int, deep: int
-        ) -> list:
-
-            text = text.copy()
-            if "successors" not in self.nodes[idx].keys():
-                return text
-
-            successors = self.nodes[idx]["successors"]
-            for successor in successors:
-
-                next_is_last_node = successor == successors[-1]
-
-                result = export_node(successor, next_is_last_node, max_deep, deep)
-
-                for txt in result:
-                    if is_last_node is True:
-                        text.append(" " * 9 + txt)
-                    else:
-                        text.append("|" + " " * 8 + txt)
-
-            return text
-
         def riskprofile(text: list, idx: int) -> list:
             text = text.copy()
             type_ = self.nodes[idx]["type"]
@@ -180,7 +162,57 @@ class DecisionTree:
                     text.append("| {:-13.2f} {:5.2f}".format(value, prob))
             return text
 
-        def export_node(idx: int, is_last_node: bool, max_deep: int, deep: int) -> list:
+        def export_branches(
+            text: list,
+            idx: int,
+            is_last_node: bool,
+            max_deep: int,
+            deep: int,
+            strategy: bool,
+        ) -> list:
+
+            text = text.copy()
+            if "successors" not in self.nodes[idx].keys():
+                return text
+
+            successors = self.nodes[idx]["successors"]
+
+            type_ = self.nodes[idx]["type"]
+
+            for successor in successors:
+
+                next_is_last_node = successor == successors[-1]
+
+                if "selected_strategy" in self.nodes[successor].keys():
+                    selected_strategy = self.nodes[successor]["selected_strategy"]
+                else:
+                    selected_strategy = False
+
+                if strategy is True and selected_strategy is False:
+                    continue
+
+                if strategy is True and type_ == "DECISION":
+                    next_is_last_node = True
+
+                result = export_node(
+                    successor, next_is_last_node, max_deep, deep, strategy
+                )
+
+                for txt in result:
+                    if is_last_node is True:
+                        text.append(" " * 9 + txt)
+                    else:
+                        text.append("|" + " " * 8 + txt)
+
+            return text
+
+        def export_node(
+            idx: int,
+            is_last_node: bool,
+            max_deep: int,
+            deep: int,
+            strategy: bool,
+        ) -> list:
 
             if deep is None:
                 deep: int = 0
@@ -208,12 +240,20 @@ class DecisionTree:
 
             if max_deep is None or (max_deep is not None and deep < max_deep):
                 deep += 1
-                text = export_branches(text, idx, is_last_node, max_deep, deep)
+                text = export_branches(
+                    text, idx, is_last_node, max_deep, deep, strategy
+                )
                 deep -= 1
 
             return text
 
-        text = export_node(idx=0, is_last_node=True, max_deep=max_deep, deep=None)
+        text = export_node(
+            idx=0,
+            is_last_node=True,
+            max_deep=max_deep,
+            deep=None,
+            strategy=strategy,
+        )
 
         return "\n".join(text)
 
@@ -351,7 +391,7 @@ class DecisionTree:
 
         dispatch(idx=0, cum_prob=100.0)
 
-    def _selected_strategy(self) -> None:
+    def _compute_selected_strategy(self) -> None:
         #
         def terminal_node(idx: int, selected_strategy: bool) -> None:
             self.nodes[idx]["selected_strategy"] = selected_strategy
@@ -435,7 +475,7 @@ class DecisionTree:
         self._compute_expval_in_terminals_nodes()
         self._compute_expval_in_intermediate_nodes()
         self._compute_path_probabilities()
-        self._selected_strategy()
+        self._compute_selected_strategy()
         self._compute_risk_profiles()
 
     #

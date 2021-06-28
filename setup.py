@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 #
 
 setup(
-    name="dmree",
+    name="dmtree",
     version="0.0.0",
     author="Juan D. Velasquez",
     author_email="jdvelasq@unal.edu.co",

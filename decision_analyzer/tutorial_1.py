@@ -256,6 +256,72 @@ Node 3
 
 
 
+**Subtree export.**
+
+>>> print(tree.export_text(max_deep=0))
+|
+| #0
+\-------[D]
+
+
+>>> print(tree.export_text(max_deep=1))
+|
+| #0
+\-------[D]
+         |
+         | #1
+         | BID=500
+         +-------[C]
+         |
+         | #14
+         | BID=700
+         \-------[C]
+
+
+>>> print(tree.export_text(max_deep=2))
+|
+| #0
+\-------[D]
+         |
+         | #1
+         | BID=500
+         +-------[C]
+         |        |
+         |        | #2
+         |        | COMPBID=400
+         |        | Prob=35.00
+         |        +-------[C]
+         |        |
+         |        | #6
+         |        | COMPBID=600
+         |        | Prob=50.00
+         |        +-------[C]
+         |        |
+         |        | #10
+         |        | COMPBID=800
+         |        | Prob=15.00
+         |        \-------[C]
+         |
+         | #14
+         | BID=700
+         \-------[C]
+                  |
+                  | #15
+                  | COMPBID=400
+                  | Prob=35.00
+                  +-------[C]
+                  |
+                  | #19
+                  | COMPBID=600
+                  | Prob=50.00
+                  +-------[C]
+                  |
+                  | #23
+                  | COMPBID=800
+                  | Prob=15.00
+                  \-------[C]
+                  
+
 **Tree evaluation.**
 
 >>> tree.evaluate()
@@ -633,6 +699,8 @@ Node 3
                            | Prob=25.00
                            | PathProb=0.00
                            \-------[T] PROFIT=100.00
+
+
 
 
 

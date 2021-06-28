@@ -1,4 +1,4 @@
-Fuzzy-Expert: Mamdani Fuzzy Inference Systems in Python
+DMAK: Decision-Making Analysis Toolkit
 ===============================================================================
 
 
@@ -12,44 +12,63 @@ Fuzzy-Expert: Mamdani Fuzzy Inference Systems in Python
 
 **What is it?**
 
-
-**Fuzzy-Expert** is a Python package for building Mamdani Fuzzy Inference Systems. **Fuzzy-Expert** admits a mix of fuzzy and crisp values and associated certainty values. The inference system returns crisp values and certainty factors for the conclusions of the rules.
+**DMAK** is a Python package for Decision-Making Analysis using decision trees. 
+**DMAK** allows the user to represent decision-making scenarios using different types
+of nodes in a decision tree.
 
 
 **Main Features**
 
 
-* Specification of membership functions using standard functions or as a list of points.
+The package allows the user to define the following types of nodes in a decision
+tree:
 
+* Chance nodes.
 
-* Different functions for specifying T-norms and Conorms.
+* Decision nodes.
 
+* End or Terminal nodes.
 
-* Different implication operators.
+A run of the decision tree can be used using monetary expected values, but, the 
+following utility functions can be used to represent risk adversion:
 
+* Exponential.
 
-* Composition using `max-min` or `max-prod` rules.
+* Logarithmic.
 
+* Squared root.
 
-* Most common functions for production aggregation.
+Different types of analysis can be conducted easily, including:
 
+* Decision analysis.
 
-* Different operators to defuzzificate fuzzy sets.
+* Sensitivity analysis.
+
+* Risk analysis.
+
+For the terminal of end nodes, the user must supply Python functions to evaluate the
+value of the node. This feature allows the user to use all capacity of Python
+programming language. It is possibe to write functions to run a complete Monte Carlo 
+simulation using other packages as scipy. In other scenarios, it is possible to 
+build complex predictive models that feed the decision model using, for example, 
+scikit-learn. Other great adventage of the **DMAK** is velocity where it is compared
+with spreadsheets; in this sense, it is possible to run complex models in a 
+fraction of the time required when a spreadsheet is used. 
 
 
 **Release Information**
 
 
-* Date:   June 24, 2021  **Version**: 0.1.0
+* Date:   July 1, 2021  **Version**: 0.1.0
 
 
-* Binary Installers:  `<https://pypi.org/project/fuzzy_expert>`_
+* Binary Installers:  `<https://pypi.org/project/dmak>`_
 
 
-* Source Repository:  `<https://github.com/jdvelasq/fuzzy-expert>`_
+* Source Repository:  `<https://github.com/jdvelasq/dmak-dev>`_
 
 
-* Documentation:  `<https://jdvelasq.github.io/fuzzy-expert/>`_
+* Documentation:  `<https://jdvelasq.github.io/dmak/>`_
 
 
 .. toctree::

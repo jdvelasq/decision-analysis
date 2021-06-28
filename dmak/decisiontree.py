@@ -7,6 +7,7 @@ Decision Tree Model
 
 """
 import numpy as np
+from graphviz import Digraph, nohtml
 
 # from typing import List
 
@@ -147,7 +148,7 @@ class DecisionTree:
         self,
         risk_profile: bool = False,
         max_deep: int = None,
-        strategy: bool = False,
+        policy_suggestion: bool = False,
     ):
         """Exports the tree as text diagram."""
 
@@ -313,7 +314,7 @@ class DecisionTree:
             is_last_node=True,
             max_deep=max_deep,
             deep=None,
-            strategy=strategy,
+            strategy=policy_suggestion,
         )
 
         return "\n".join(text)
@@ -582,6 +583,185 @@ class DecisionTree:
         self._compute_path_probabilities()
         self._compute_selected_strategy()
         self._compute_risk_profiles()
+
+    def plot(self, max_deep: int = None, policy_suggestion: bool = False):
+        """Plots the tree"""
+
+        width = "0.15"
+        height = "0.15"
+        arrowsize = "0.3"
+        fontsize = "8.0"
+
+        def terminal(idx: int, dot, max_deep: int, deep: int):
+            name = self.nodes[idx].get("name")
+            if "ExpVal" in self.nodes[idx].keys():
+                expval = self.nodes[idx].get("ExpVal")
+                pathprob = self.nodes[idx].get("PathProb")
+                label = "{}={}, {}%".format(name, round(expval, 2), round(pathprob, 2))
+            else:
+                label = name
+
+            dot.node(
+                str(idx),
+                label,
+                shape="record",
+                orientation="90",
+                height=height,
+                style="filled",
+                color="powderblue",
+                fontsize=fontsize,
+                fontname="Courier New",
+            )
+
+            return dot
+
+        def chance(idx: int, dot, max_deep: int, deep: int):
+
+            dot.node(
+                str(idx),
+                label="",
+                shape="circle",
+                width=width,
+                height=height,
+                style="filled",
+                color="yellowgreen",
+            )
+
+            if max_deep is None or (max_deep is not None and deep < max_deep):
+
+                deep += 1
+
+                successors = self.nodes[idx].get("successors")
+                for successor in successors:
+                    dot = dispatch(idx=successor, dot=dot, max_deep=max_deep, deep=deep)
+                    tag_name = self.nodes[successor].get("tag_name")
+                    tag_value = self.nodes[successor].get("tag_value")
+                    tag_prob = self.nodes[successor].get("tag_prob")
+                    type_ = self.nodes[successor].get("type")
+                    selected_strategy = self.nodes[successor].get("selected_strategy")
+
+                    if "ExpVal" in self.nodes[successor].keys():
+                        expval = self.nodes[successor].get("ExpVal")
+
+                        if type_ != "TERMINAL":
+                            label = "{}={}, {}%\nExpVal={}".format(
+                                tag_name,
+                                tag_value,
+                                round(tag_prob, 2),
+                                round(expval, 2),
+                            )
+                        else:
+                            label = "{}={}, {}%".format(
+                                tag_name, tag_value, round(tag_prob, 2)
+                            )
+
+                    else:
+                        label = "{}={}, {}%".format(
+                            tag_name, tag_value, round(tag_prob, 2)
+                        )
+
+                    if selected_strategy is True:
+                        penwidth = "2"
+                    else:
+                        penwidth = "1"
+
+                    dot.edge(
+                        str(idx),
+                        str(successor),
+                        arrowsize=arrowsize,
+                        label=label,
+                        fontsize=fontsize,
+                        penwidth=penwidth,
+                        fontname="Courier New",
+                    )
+
+                deep -= 1
+
+            return dot
+
+        def decision(idx: int, dot, max_deep: int, deep: int):
+
+            dot.node(
+                str(idx),
+                label="",
+                shape="square",
+                width=width,
+                height=height,
+                style="filled",
+                color="brown",
+            )
+
+            if max_deep is None or (max_deep is not None and deep < max_deep):
+
+                deep += 1
+
+                successors = self.nodes[idx].get("successors")
+                for successor in successors:
+
+                    if "selected_strategy" in self.nodes[successor].keys():
+                        selected_strategy = self.nodes[successor]["selected_strategy"]
+                    else:
+                        selected_strategy = False
+
+                    if policy_suggestion is True and selected_strategy is False:
+                        continue
+
+                    dot = dispatch(idx=successor, dot=dot, max_deep=max_deep, deep=deep)
+                    tag_name = self.nodes[successor].get("tag_name")
+                    tag_value = self.nodes[successor].get("tag_value")
+                    type_ = self.nodes[successor].get("type")
+                    selected_strategy = self.nodes[successor].get("selected_strategy")
+
+                    if "ExpVal" in self.nodes[successor].keys():
+                        expval = self.nodes[successor].get("ExpVal")
+
+                        if type_ != "TERMINAL":
+                            label = "{}={}, ExpVal={}".format(
+                                tag_name, tag_value, round(expval, 2)
+                            )
+                        else:
+                            label = "{}={}".format(tag_name, tag_value)
+                    else:
+                        label = "{}={}".format(tag_name, tag_value)
+
+                    if selected_strategy is True:
+                        penwidth = "2"
+                    else:
+                        penwidth = "1"
+
+                    dot.edge(
+                        str(idx),
+                        str(successor),
+                        arrowsize=arrowsize,
+                        label=label,
+                        fontsize=fontsize,
+                        penwidth=penwidth,
+                        fontname="Courier New",
+                    )
+
+                deep -= 1
+
+            return dot
+
+        def dispatch(idx: int, dot, max_deep: int, deep: int):
+
+            type_ = self.nodes[idx].get("type")
+
+            if type_ == "TERMINAL":
+                dot = terminal(idx, dot, max_deep, deep)
+
+            if type_ == "DECISION":
+                dot = decision(idx, dot, max_deep, deep)
+
+            if type_ == "CHANCE":
+                dot = chance(idx, dot, max_deep, deep)
+
+            return dot
+
+        dot = Digraph()
+        dot.attr(rankdir="LR")  # splines="compound"
+        dot = dispatch(idx=0, dot=dot, max_deep=max_deep, deep=0)
+        return dot
 
     #
     #

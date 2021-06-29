@@ -47,7 +47,8 @@ RUN pip3 --disable-pip-version-check --no-cache-dir install \
     numpy \
     matplotlib \
     graphviz \
-    ipykernel
+    ipykernel \
+    pandas
 
 RUN apt update \
     && apt -yq --no-install-recommends install  graphviz \

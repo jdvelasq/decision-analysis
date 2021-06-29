@@ -13,8 +13,11 @@ DMAK: Decision-Making Analysis Toolkit
 **What is it?**
 
 **DMAK** is a Python package for Decision-Making Analysis using decision trees. 
-**DMAK** allows the user to represent decision-making scenarios using different types
-of nodes in a decision tree.
+**DMAK** allows the user to define a decision tree directly in Python. The 
+best experience can be obtained when the package is used in a notebook 
+inside of Jupyter Lab or Google Colab. **DMAK** has no limits in the size 
+of the decision tree created, and it can efficiently run large trees. 
+Different reports are available to facilitate tree analysis.
 
 
 **Main Features**
@@ -28,6 +31,11 @@ tree:
 * Decision nodes.
 
 * End or Terminal nodes.
+
+In the package, all model values and probabilities are entered directly as 
+node properties using typical data structures in Python. Thus, an user with
+a basic knowledge of the programming language can use effectively the 
+package. 
 
 A run of the decision tree can be used using monetary expected values, but, the 
 following utility functions can be used to represent risk adversion:
@@ -52,7 +60,7 @@ programming language. It is possibe to write functions to run a complete Monte C
 simulation using other packages as scipy. In other scenarios, it is possible to 
 build complex predictive models that feed the decision model using, for example, 
 scikit-learn. Other great adventage of the **DMAK** is velocity where it is compared
-with spreadsheets; in this sense, it is possible to run complex models in a 
+with spreadsheets; it is possible to run complex models in a 
 fraction of the time required when a spreadsheet is used. 
 
 

@@ -1,7 +1,7 @@
 """Test module
 """
 
-from decision_analyzer.nodes import Nodes
+from dmak.nodes import Nodes
 
 #
 #

@@ -2,14 +2,28 @@
 Decision Tree Model
 ===============================================================================
 
-**Node Creation**
+The **DecisionTree** is the object used to represent the decision tree model.
+This module is responsible for all functionality of the package. A typical 
+sequence of use is the following:
+
+* Create the nodes used to feed the tree (Module `nodes`).
+
+* Create the tree.
+
+* Build the internal structure of the tree.
+
+* Evaluate the tree.
+
+* Analyze plots and other results.
+
+* Modify the structure of the tree and repeat the analysis.
 
 
 """
+import matplotlib.pyplot as plt
 import numpy as np
-from graphviz import Digraph, nohtml
-
-# from typing import List
+import pandas as pd
+from graphviz import Digraph
 
 
 def _exp_utility_fn(param: float):
@@ -47,7 +61,33 @@ def _dummy_fn(value: float) -> float:
 
 
 class DecisionTree:
-    """Decision Tree Model"""
+    """Decision tree representation.
+
+
+    :param variables:
+        Types of nodes used in the tree. This parameter is created using the
+        module `Nodes`.
+
+    :param initial_variable:
+        Name of the initial variable of the tree. Usually, the first variable
+        in variables.
+
+    :param utility:
+        Utility function to be used. When is `None` the computed values of
+        terminal nodes are used as the expected utility in the internal
+        nodes of the tree. The module implements the following utility
+        functions:
+
+        * `exp`: Exponential utility function `U(x): 1 - exp(-x / param)`.
+
+        * `log`: Logarithmic utility function `U(x) = log(x + param)`.
+
+        * `sqrt`: Squared-root utility function `U(x) = + sqrt(x + param)`.
+
+    :param param:
+        Value of the parameter `param` in the utility function.
+
+    """
 
     def __init__(
         self,
@@ -58,7 +98,7 @@ class DecisionTree:
     ) -> None:
 
         self.nodes = None
-        self.variables = variables.copy()
+        self._variables = variables.copy()
         self.initial_variable = initial_variable
         self._use_utility_fn = True
 
@@ -75,6 +115,9 @@ class DecisionTree:
         self._util_fn = util_fn
         self._inv_fn = inv_fn
 
+        self._build_skeleton()
+        self._set_tag_attributes()
+
     def _build_skeleton(self) -> None:
         #
         # Builds a structure where nodes are:
@@ -83,24 +126,24 @@ class DecisionTree:
         #       {name: ..., type: ... successors: [ ... ]}
         #   ]
         #
-        def build(name: str) -> int:
+        def dispatch(name: str) -> int:
             idx: int = len(self.nodes)
-            type_: str = self.variables[name]["type"]
-            forced: int = self.variables[name]["forced_branch"]
+            type_: str = self._variables[name]["type"]
+            forced: int = self._variables[name]["forced_branch"]
             self.nodes.append({"name": name, "type": type_, "forced": forced})
-            if "max" in self.variables[name].keys():
-                self.nodes[idx]["max"] = self.variables[name]["max"]
-            if "branches" in self.variables[name].keys():
+            if "max" in self._variables[name].keys():
+                self.nodes[idx]["max"] = self._variables[name]["max"]
+            if "branches" in self._variables[name].keys():
                 successors: list = []
-                for branch in self.variables[name].get("branches"):
-                    successor: int = build(name=branch[-1])
+                for branch in self._variables[name].get("branches"):
+                    successor: int = dispatch(name=branch[-1])
                     successors.append(successor)
                 self.nodes[idx]["successors"] = successors
             return idx
 
         #
         self.nodes: list = []
-        build(name=self.initial_variable)
+        dispatch(name=self.initial_variable)
 
     def _set_tag_attributes(self) -> None:
         #
@@ -115,7 +158,7 @@ class DecisionTree:
             name: str = node.get("name")
             successors: list = node.get("successors")
             type_: str = node.get("type")
-            branches: list = self.variables[name].get("branches")
+            branches: list = self._variables[name].get("branches")
 
             if type_ == "DECISION":
                 values = [x for x, _ in branches]
@@ -131,26 +174,208 @@ class DecisionTree:
                     self.nodes[successor]["tag_value"] = value
                     self.nodes[successor]["tag_prob"] = prob
 
+    ## TODO: Deprecated
     def build(self):
-        """This function is used to build the decision tree using the information in the
-        variables.
+        """This function is used to build the internal structure of the decision tree
+        using the information of the types of variables..
         """
-
         self._build_skeleton()
         self._set_tag_attributes()
 
+    def __repr__(self):
+        def adjust_width(column: list[str]) -> list:
+
+            maxwidth: int = max([len(txtline) for txtline in column]) + 2
+            formatstr: str = "{:<" + str(maxwidth) + "s}"
+            column: list = [formatstr.format(txtline) for txtline in column]
+            return column
+
+        def structure_colum() -> list:
+
+            column: list = ["STRUCTURE", ""]
+            for i_node, node in enumerate(self.nodes):
+                type_: str = node["type"]
+                code: str = (
+                    "D" if type_ == "DECISION" else "C" if type_ == "CHANCE" else "T"
+                )
+                successors: list = node.get("successors")
+                txtline: str = "{}{}".format(i_node, code)
+                if successors is not None:
+                    successors = [str(successor) for successor in successors]
+                    txtline += " ".join(successors)
+                column.append(txtline)
+            return column
+
+        def names_column() -> list:
+            column: list = ["NAMES", ""] + [node["name"] for node in self.nodes]
+            return column
+
+        def outcomes_column() -> list:
+            column: list = []
+            for node in self.nodes:
+                type_: str = node["type"]
+                outcomes = []
+                if type_ == "DECISION":
+                    name = node["name"]
+                    branches = self.variables[name]["branches"]
+                    outcomes = [outcome for outcome, _ in branches]
+                if type_ == "CHANCE":
+                    name = node["name"]
+                    branches = self.variables[name]["branches"]
+                    outcomes = [outcome for _, outcome, _ in branches]
+                column.append(outcomes)
+
+            maxwidth: int = max(
+                [len(str(txt)) for txtline in column for txt in txtline]
+            )
+            formatstr: str = "{:<" + str(maxwidth) + "s}"
+            column = [
+                [formatstr.format(str(txt)) for txt in txtline] for txtline in column
+            ]
+            column: list = [" ".join(txtline) for txtline in column]
+            maxwidth: int = max([len(txtline) for txtline in column])
+            formatstr: str = "{:<" + str(maxwidth) + "s}"
+            column = [
+                formatstr.format("OUTCOMES"),
+                formatstr.format(""),
+            ] + column
+            return column
+
+        def probabilities_column() -> list:
+            column: list = []
+            for node in self.nodes:
+                type_: str = node["type"]
+                probabilities = []
+                if type_ == "CHANCE":
+                    name = node["name"]
+                    branches = self.variables[name]["branches"]
+                    probabilities = [probability for probability, _, _ in branches]
+                column.append(probabilities)
+
+            maxwidth: int = max(
+                [len(str(txt)) for txtline in column for txt in txtline]
+            )
+            formatstr: str = "{:<" + str(maxwidth) + "s}"
+            column = [
+                [
+                    formatstr.format("{:.2f}".format(prob / 100.0))[1:]
+                    for prob in txtline
+                ]
+                for txtline in column
+            ]
+            column: list = [" ".join(txtline) for txtline in column]
+            maxwidth: int = max([len(txtline) for txtline in column])
+            formatstr: str = "{:<" + str(maxwidth) + "s}"
+            column = [
+                formatstr.format("OUTCOMES"),
+                formatstr.format(""),
+            ] + column
+            return column
+
+        structure: list = adjust_width(structure_colum())
+        names: list = adjust_width(names_column())
+        outcomes: list = adjust_width(outcomes_column())
+        probabilities: list = adjust_width(probabilities_column())
+
+        lines = [
+            struct + name + outcom + prob
+            for struct, name, outcom, prob in zip(
+                structure, names, outcomes, probabilities
+            )
+        ]
+
+        return "\n".join(lines)
+
+        # text = ["STRUCTURE       NAMES         OUTCOMES        PROBABILITIES"]
+        # text.append("")
+        # for i_node, node in enumerate(self.nodes):
+        #     name = node["name"]
+        #     type_ = node["type"]
+
+        #     if type_ == "DECISION":
+        #         code = "D"
+        #         branches = self.variables[name]["branches"]
+        #         outcomes = [outcome for outcome, _ in branches]
+        #         successors = node.get("successors")
+        #         probabilities = ""
+
+        #         structure = "{:d}{}".format(i_node, code) + " ".join(
+        #             [str(successor) for successor in successors]
+        #         )
+        #         outcomes = " ".join([str(round(outcome, 0)) for outcome in outcomes])
+
+        #     if type_ == "CHANCE":
+        #         code = "C"
+        #         branches = self.variables[name]["branches"]
+        #         probabilities = [probability for probability, _, _ in branches]
+        #         successors = node.get("successors")
+        #         outcomes = [outcome for _, outcome, _ in branches]
+        #         probabilities = " ".join(
+        #             [
+        #                 "{:.2f}".format(probability / 100)[1:]
+        #                 for probability in probabilities
+        #             ]
+        #         )
+        #         outcomes = " ".join([str(round(outcome, 0)) for outcome in outcomes])
+
+        #         structure = "{:d}{}".format(i_node, code) + " ".join(
+        #             [str(successor) for successor in successors]
+        #         )
+
+        #     if type_ == "TERMINAL":
+        #         code = "T"
+        #         probabilities = ""
+        #         outcomes = ""
+
+        #     text.append(
+        #         "{:<14s}  {:<12s}  {:<14s}  {}".format(
+        #             structure, name, outcomes, probabilities
+        #         )
+        #     )
+
+        # return "\n".join(text)
+
     def print_nodes(self) -> None:
-        """Prints the database of nodes."""
+        """Prints the internal structure of the tree as a list of nodes."""
         for i_node, node in enumerate(self.nodes):
             print("#{:<3s} {}".format(str(i_node), node))
 
+    def risk_profile(self, idx: int = 0, cumulative: bool = False) -> tuple:
+        """Returns the values and probabilities of a risk profile in the node `idx`."""
+        keys = self.nodes[idx]["RiskProfile"].keys()
+        values = sorted(keys)
+        probabilities = [self.nodes[idx]["RiskProfile"][k] for k in keys]
+        if cumulative is True:
+            probabilities = np.cumsum(probabilities).tolist()
+        return values, probabilities
+
     def export_text(
         self,
+        idx: int = 0,
         risk_profile: bool = False,
         max_deep: int = None,
         policy_suggestion: bool = False,
-    ):
-        """Exports the tree as text diagram."""
+    ) -> str:
+        """Exports the tree as text diagram.
+
+        :param idx:
+            Id number of the root of the tree to be exported. When it is zero, the entire tree is exported.
+
+        :param risk_profile:
+            Includes the risk profile information on each node. The risk profile
+            is the possibles results (payoffs or losses) and the associated
+            probabilities for any decision strategy.
+
+        :param max_deep:
+            Controls the maximum deep of the nodes in the tree exported as text.
+
+        :param policy_suggestion:
+            When `True` exports only the subtree showing the nodes and branches
+            relevants to the optimal decision (optimal strategy).
+
+
+
+        """
 
         def node_type_chance(text: list, is_last_node: bool) -> list:
             text: list = text.copy()
@@ -310,7 +535,7 @@ class DecisionTree:
             return text
 
         text = export_node(
-            idx=0,
+            idx=idx,
             is_last_node=True,
             max_deep=max_deep,
             deep=None,
@@ -355,7 +580,7 @@ class DecisionTree:
             if user_args:
                 #
                 name = node.get("name")
-                user_fn = self.variables[name].get("user_fn")
+                user_fn = self._variables[name].get("user_fn")
                 if user_fn is None:
                     user_fn = cumulative
                 expval = user_fn(**user_args)
@@ -559,8 +784,8 @@ class DecisionTree:
 
         def dispatch(idx: int) -> None:
             #
-            if self.nodes[idx].get("selected_strategy") is False:
-                return
+            # if self.nodes[idx].get("selected_strategy") is False:
+            #     return
             #
             type_ = self.nodes[idx].get("type")
             if type_ == "TERMINAL":
@@ -573,8 +798,8 @@ class DecisionTree:
         dispatch(idx=0)
 
     def evaluate(self):
-        """This function is used to build the decision tree using the information in the
-        variables.
+        """This function is used to evaluate the nodes of the decision tree
+        using the information in the variables.
         """
 
         self._build_call_kwargs()
@@ -585,9 +810,17 @@ class DecisionTree:
         self._compute_risk_profiles()
 
     def plot(self, max_deep: int = None, policy_suggestion: bool = False):
-        """Plots the tree"""
+        """Plots the tree.
 
-        width = "0.15"
+        :param max_deep: maximum deep of the tree nodes to be plotted.
+
+        :param policy_suggestion:
+            When `True`, it plots only the subtree showing the nodes and branches
+            relevants to the optimal decision (optimal strategy).
+
+        """
+
+        width = "0.25"
         height = "0.15"
         arrowsize = "0.3"
         fontsize = "8.0"
@@ -619,12 +852,14 @@ class DecisionTree:
 
             dot.node(
                 str(idx),
-                label="",
+                label="#{}".format(idx),
                 shape="circle",
                 width=width,
-                height=height,
                 style="filled",
                 color="yellowgreen",
+                fontsize=fontsize,
+                fontname="Courier New",
+                fizedsize="shape",
             )
 
             if max_deep is None or (max_deep is not None and deep < max_deep):
@@ -683,12 +918,14 @@ class DecisionTree:
 
             dot.node(
                 str(idx),
-                label="",
+                label="#{}".format(idx),
                 shape="square",
                 width=width,
-                height=height,
                 style="filled",
                 color="brown",
+                fontsize=fontsize,
+                fontname="Courier New",
+                fizedsize="shape",
             )
 
             if max_deep is None or (max_deep is not None and deep < max_deep):
@@ -762,6 +999,11 @@ class DecisionTree:
         dot.attr(rankdir="LR")  # splines="compound"
         dot = dispatch(idx=0, dot=dot, max_deep=max_deep, deep=0)
         return dot
+
+    @property
+    def variables(self):
+        """Returns the variables used to build the decision tree."""
+        return self._variables
 
     #
     #

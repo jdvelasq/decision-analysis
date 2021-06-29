@@ -29,9 +29,9 @@ def supertree_bid():
     nodes.chance(
         name="compbid",
         branches=[
-            (35.0, 400, "cost"),
-            (50.0, 600, "cost"),
-            (15.0, 800, "cost"),
+            (0.35, 400, "cost"),
+            (0.50, 600, "cost"),
+            (0.15, 800, "cost"),
         ],
     )
 
@@ -41,9 +41,9 @@ def supertree_bid():
     nodes.chance(
         name="cost",
         branches=[
-            (25.0, 200, "profit"),
-            (50.0, 400, "profit"),
-            (25.0, 600, "profit"),
+            (0.25, 200, "profit"),
+            (0.50, 400, "profit"),
+            (0.25, 600, "profit"),
         ],
     )
 

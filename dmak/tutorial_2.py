@@ -2,11 +2,11 @@ r"""
 Building a basic decision tree
 ===============================================================================
 
-This is a classical bid example which was adapted example of the book "Decision 
+This is a classical bid example which was adapted example of the book "Decision
 Analisis for the Professional". 
 
-A company has decided to submit a proposal in a tender. There are two possible 
-bid values: $500 and $700. The costs are uncertain, and the expert has determined 
+A company has decided to submit a proposal in a tender. There are two possible
+bid values: $500 and $700. The costs are uncertain, and the expert has determined
 that they could be:
 
 * $200 with a probability of 25%.
@@ -42,15 +42,12 @@ which is written in code as:
 ...     return (BID - COST) * (1 if BID < COMPBID else 0)
 
 
-**Creation of the nodes.**
+**Creation of the nodes (or variables).**
 
-The first step is to create the variables. The first variable is the value of
-the proposal. The branches are composed of the the possible values of the
-proposal, and the name of the following node. COMPBID is the node representing
-the proposal of the competing company.
+The first step consists in create the types of nodes of the tree.  The first variable (`BID`) is the value of the proposal. The branches of this node are composed of the possible values of the proposal, and the name of the following node. COMPBID is the node representing the proposal of the competing company.
 
 
->>> from decision_analyzer.nodes import Nodes
+>>> from dmak.nodes import Nodes
 >>> nodes = Nodes()
 >>> nodes.decision(
 ...     name="BID",
@@ -61,9 +58,7 @@ the proposal of the competing company.
 ...     max_=True,
 ... )
 
-The second variable is the proposal of the competing company. The branches are
-composed of the probability, the value of the branch, and the name of the 
-following node.
+The second variable represents the proposal of the competing company. The branches are composed of the probability, the value of the branch, and the name of the following node. The next node is the cost.
 
 >>> nodes.chance(
 ...     name='COMPBID',
@@ -74,7 +69,7 @@ following node.
 ...     ]
 ... )
 
-The third variable are the costs.
+The third variable are the possible costs.
 
 >>> nodes.chance(
 ...     name='COST',
@@ -132,64 +127,68 @@ Node 3
 
 **Decision tree creation.**
 
-In the following code, the decision tree is specified by defining the variables
-used and the name of the variable in the root of the tree.
+A decision tree describes the events in a time sequence. Each node represents a point in the time; the nodes are joined using branches. The tree is builded using the types of variables defined in the previous step. For this, the user must be supply the variable containing the types of nodes and the name of the variable in the root of the tree.
 
->>> from decision_analyzer.decisiontree import DecisionTree
+
+>>> from dmak.decisiontree import DecisionTree
 >>> tree = DecisionTree(
 ...     variables=nodes,
 ...     initial_variable="BID"
 ... )
 
-Next, the internal structure of the decision tree is builded:
+**Tree building.**
+
+In the previous step the object was created, but the internal structure of the tree must be builded using the function `build`:
 
 >>> tree.build()
 
 The structure is conformed of the nodes of the tree; the first value is the id
-number of the node; `successors` indicates the nodes in the branches. Note
-that, in this point the tree has not been evaluated.
+number of the node; `successors` indicates the id numbers of the nodes in the branches. Note that, in this point the tree has not been evaluated. For the following example, the first node is identified with #0; this node has branches to the tree nodes #1 and #14.
 
 >>> tree.print_nodes()
-#0   {'name': 'BID', 'type': 'DECISION', 'max': True, 'successors': [1, 14]}
-#1   {'name': 'COMPBID', 'type': 'CHANCE', 'successors': [2, 6, 10], 'tag_name': 'BID', 'tag_value': 500}
-#2   {'name': 'COST', 'type': 'CHANCE', 'successors': [3, 4, 5], 'tag_name': 'COMPBID', 'tag_value': 400, 'tag_prob': 35.0}
-#3   {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 200, 'tag_prob': 25.0}
-#4   {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 400, 'tag_prob': 50.0}
-#5   {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 600, 'tag_prob': 25.0}
-#6   {'name': 'COST', 'type': 'CHANCE', 'successors': [7, 8, 9], 'tag_name': 'COMPBID', 'tag_value': 600, 'tag_prob': 50.0}
-#7   {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 200, 'tag_prob': 25.0}
-#8   {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 400, 'tag_prob': 50.0}
-#9   {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 600, 'tag_prob': 25.0}
-#10  {'name': 'COST', 'type': 'CHANCE', 'successors': [11, 12, 13], 'tag_name': 'COMPBID', 'tag_value': 800, 'tag_prob': 15.0}
-#11  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 200, 'tag_prob': 25.0}
-#12  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 400, 'tag_prob': 50.0}
-#13  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 600, 'tag_prob': 25.0}
-#14  {'name': 'COMPBID', 'type': 'CHANCE', 'successors': [15, 19, 23], 'tag_name': 'BID', 'tag_value': 700}
-#15  {'name': 'COST', 'type': 'CHANCE', 'successors': [16, 17, 18], 'tag_name': 'COMPBID', 'tag_value': 400, 'tag_prob': 35.0}
-#16  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 200, 'tag_prob': 25.0}
-#17  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 400, 'tag_prob': 50.0}
-#18  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 600, 'tag_prob': 25.0}
-#19  {'name': 'COST', 'type': 'CHANCE', 'successors': [20, 21, 22], 'tag_name': 'COMPBID', 'tag_value': 600, 'tag_prob': 50.0}
-#20  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 200, 'tag_prob': 25.0}
-#21  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 400, 'tag_prob': 50.0}
-#22  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 600, 'tag_prob': 25.0}
-#23  {'name': 'COST', 'type': 'CHANCE', 'successors': [24, 25, 26], 'tag_name': 'COMPBID', 'tag_value': 800, 'tag_prob': 15.0}
-#24  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 200, 'tag_prob': 25.0}
-#25  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 400, 'tag_prob': 50.0}
-#26  {'name': 'PROFIT', 'type': 'TERMINAL', 'tag_name': 'COST', 'tag_value': 600, 'tag_prob': 25.0}
+#0   {'name': 'BID', 'type': 'DECISION', 'forced': None, 'max': True, 'successors': [1, 14]}
+#1   {'name': 'COMPBID', 'type': 'CHANCE', 'forced': None, 'successors': [2, 6, 10], 'tag_name': 'BID', 'tag_value': 500}
+#2   {'name': 'COST', 'type': 'CHANCE', 'forced': None, 'successors': [3, 4, 5], 'tag_name': 'COMPBID', 'tag_value': 400, 'tag_prob': 35.0}
+#3   {'name': 'PROFIT', 'type': 'TERMINAL', 'forced': None, 'tag_name': 'COST', 'tag_value': 200, 'tag_prob': 25.0}
+#4   {'name': 'PROFIT', 'type': 'TERMINAL', 'forced': None, 'tag_name': 'COST', 'tag_value': 400, 'tag_prob': 50.0}
+#5   {'name': 'PROFIT', 'type': 'TERMINAL', 'forced': None, 'tag_name': 'COST', 'tag_value': 600, 'tag_prob': 25.0}
+#6   {'name': 'COST', 'type': 'CHANCE', 'forced': None, 'successors': [7, 8, 9], 'tag_name': 'COMPBID', 'tag_value': 600, 'tag_prob': 50.0}
+#7   {'name': 'PROFIT', 'type': 'TERMINAL', 'forced': None, 'tag_name': 'COST', 'tag_value': 200, 'tag_prob': 25.0}
+#8   {'name': 'PROFIT', 'type': 'TERMINAL', 'forced': None, 'tag_name': 'COST', 'tag_value': 400, 'tag_prob': 50.0}
+#9   {'name': 'PROFIT', 'type': 'TERMINAL', 'forced': None, 'tag_name': 'COST', 'tag_value': 600, 'tag_prob': 25.0}
+#10  {'name': 'COST', 'type': 'CHANCE', 'forced': None, 'successors': [11, 12, 13], 'tag_name': 'COMPBID', 'tag_value': 800, 'tag_prob': 15.0}
+#11  {'name': 'PROFIT', 'type': 'TERMINAL', 'forced': None, 'tag_name': 'COST', 'tag_value': 200, 'tag_prob': 25.0}
+#12  {'name': 'PROFIT', 'type': 'TERMINAL', 'forced': None, 'tag_name': 'COST', 'tag_value': 400, 'tag_prob': 50.0}
+#13  {'name': 'PROFIT', 'type': 'TERMINAL', 'forced': None, 'tag_name': 'COST', 'tag_value': 600, 'tag_prob': 25.0}
+#14  {'name': 'COMPBID', 'type': 'CHANCE', 'forced': None, 'successors': [15, 19, 23], 'tag_name': 'BID', 'tag_value': 700}
+#15  {'name': 'COST', 'type': 'CHANCE', 'forced': None, 'successors': [16, 17, 18], 'tag_name': 'COMPBID', 'tag_value': 400, 'tag_prob': 35.0}
+#16  {'name': 'PROFIT', 'type': 'TERMINAL', 'forced': None, 'tag_name': 'COST', 'tag_value': 200, 'tag_prob': 25.0}
+#17  {'name': 'PROFIT', 'type': 'TERMINAL', 'forced': None, 'tag_name': 'COST', 'tag_value': 400, 'tag_prob': 50.0}
+#18  {'name': 'PROFIT', 'type': 'TERMINAL', 'forced': None, 'tag_name': 'COST', 'tag_value': 600, 'tag_prob': 25.0}
+#19  {'name': 'COST', 'type': 'CHANCE', 'forced': None, 'successors': [20, 21, 22], 'tag_name': 'COMPBID', 'tag_value': 600, 'tag_prob': 50.0}
+#20  {'name': 'PROFIT', 'type': 'TERMINAL', 'forced': None, 'tag_name': 'COST', 'tag_value': 200, 'tag_prob': 25.0}
+#21  {'name': 'PROFIT', 'type': 'TERMINAL', 'forced': None, 'tag_name': 'COST', 'tag_value': 400, 'tag_prob': 50.0}
+#22  {'name': 'PROFIT', 'type': 'TERMINAL', 'forced': None, 'tag_name': 'COST', 'tag_value': 600, 'tag_prob': 25.0}
+#23  {'name': 'COST', 'type': 'CHANCE', 'forced': None, 'successors': [24, 25, 26], 'tag_name': 'COMPBID', 'tag_value': 800, 'tag_prob': 15.0}
+#24  {'name': 'PROFIT', 'type': 'TERMINAL', 'forced': None, 'tag_name': 'COST', 'tag_value': 200, 'tag_prob': 25.0}
+#25  {'name': 'PROFIT', 'type': 'TERMINAL', 'forced': None, 'tag_name': 'COST', 'tag_value': 400, 'tag_prob': 50.0}
+#26  {'name': 'PROFIT', 'type': 'TERMINAL', 'forced': None, 'tag_name': 'COST', 'tag_value': 600, 'tag_prob': 25.0}
 
 
-**Visualization.**
 
+**Visualization as a graph.**
 
-The tree can be viewed using the plot function. 
+An important step is to review the structure of the tree. The advantage of reviewing a tree without evaluating is that it presents much less information at each node than when it has already been evaluated, facilitating the visualizaition. The tree can be viewed using the plot function. 
 
->>> tree.plot()
+```>>> tree.plot()```
+
 
 .. image:: ./images/tut-1-fig-1.png
     :width: 650px
     :align: center
 
+
+**Visualization as text.**
 
 The decision tree can be exported as text using the `export_text` function.
 
@@ -330,7 +329,7 @@ The decision tree can be exported as text using the `export_text` function.
 
 **Subtree visualization.**
 
->>> tree.plot(max_deep=2)
+# >>> tree.plot(max_deep=2)
 
 .. image:: ./images/tut-1-fig-2.png
     :width: 450px
@@ -567,7 +566,10 @@ The decision tree can be exported as text using the `export_text` function.
 
 **Policy suggestion**.
 
->>> tree.plot(policy_suggestion=True)
+The parameter `policy_suggestion` of the functions `plot` and `export_text` are used to restrict the visualization of the tree to the nodes and branches relevant when following the optimal sequence of decisions. 
+
+
+# >>> tree.plot(policy_suggestion=True)
 
 .. image:: ./images/tut-1-fig-4.png
     :width: 700px
@@ -672,10 +674,54 @@ The decision tree can be exported as text using the `export_text` function.
                            \-------[T] PROFIT=-100.00
 
 
+**Risk Profile.**
+
+A risk profile is used to analyze the probability distribution of the possible payoffs or losses. 
+
+>>> values, prob = tree.risk_profile()
+>>> values
+[-100, 0, 100, 300]
+>>> prob
+[35.0, 16.25, 32.5, 16.25]
 
 
 
+**Sensitivity Analysis.**
+
+This analysis is used to determinate the changes in the decisions when there are changes in the input variables. In other words, sensitivity analysis aims to determine the sensibility of the optimal strategy to variations in the input variables of the model (values or probabilities).
+
+**DMAK** does not have functions to perform sensitivity analysis because the direct manipulation of the variables is very simple. In the following example, a one-way sensitivity analysis of the probability of the costs is conducted. The probability varies from 0 to 100 using a for cycle. The variable `b500` stores the expected values for `BID=500` and `b700` stores the expected values for `BID=700`.
+
+>>> b500 = []
+>>> b700 = []
+>>> probability = list(range(0, 101, 10))
+>>> for p in probability:
+...     tree.variables['COST']['branches'] = [
+...         (p, 200, "PROFIT"),
+...         (100 - p, 600, "PROFIT"),
+...     ]
+...     tree.build()
+...     tree.evaluate()
+...     b500.append(tree.nodes[1]["ExpVal"])
+...     b700.append(tree.nodes[14]["ExpVal"])
+
+>>> b500
+[-65.0, -39.0, -13.0, 13.0, 39.0, 65.0, 91.0, 117.0, 143.0, 169.0, 195.0]
+
+>>> b700
+[15.0, 21.0, 27.0, 33.0, 39.0, 45.0, 51.0, 57.0, 63.0, 69.0, 75.0]
+
+>>> import matplotlib.pyplot as plt
+>>> plt.plot(probability, b500, 'o-', color='blue', label='BID=500')
+>>> plt.plot(probability, b700, 'o-', color='red', label='BID=700')
+>>> plt.legend()
+>>> plt.show()
 
 
 
 """
+if __name__ == "__main__":
+
+    import doctest
+
+    doctest.testmod()

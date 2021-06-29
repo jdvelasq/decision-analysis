@@ -175,12 +175,12 @@ class DecisionTree:
                     self.nodes[successor]["tag_prob"] = prob
 
     ## TODO: Deprecated
-    def build(self):
-        """This function is used to build the internal structure of the decision tree
-        using the information of the types of variables..
-        """
-        self._build_skeleton()
-        self._set_tag_attributes()
+    # def build(self):
+    #     """This function is used to build the internal structure of the decision tree
+    #     using the information of the types of variables..
+    #     """
+    #     self._build_skeleton()
+    #     self._set_tag_attributes()
 
     def __repr__(self):
         def adjust_width(column: list[str]) -> list:
@@ -285,55 +285,6 @@ class DecisionTree:
         ]
 
         return "\n".join(lines)
-
-        # text = ["STRUCTURE       NAMES         OUTCOMES        PROBABILITIES"]
-        # text.append("")
-        # for i_node, node in enumerate(self.nodes):
-        #     name = node["name"]
-        #     type_ = node["type"]
-
-        #     if type_ == "DECISION":
-        #         code = "D"
-        #         branches = self.variables[name]["branches"]
-        #         outcomes = [outcome for outcome, _ in branches]
-        #         successors = node.get("successors")
-        #         probabilities = ""
-
-        #         structure = "{:d}{}".format(i_node, code) + " ".join(
-        #             [str(successor) for successor in successors]
-        #         )
-        #         outcomes = " ".join([str(round(outcome, 0)) for outcome in outcomes])
-
-        #     if type_ == "CHANCE":
-        #         code = "C"
-        #         branches = self.variables[name]["branches"]
-        #         probabilities = [probability for probability, _, _ in branches]
-        #         successors = node.get("successors")
-        #         outcomes = [outcome for _, outcome, _ in branches]
-        #         probabilities = " ".join(
-        #             [
-        #                 "{:.2f}".format(probability / 100)[1:]
-        #                 for probability in probabilities
-        #             ]
-        #         )
-        #         outcomes = " ".join([str(round(outcome, 0)) for outcome in outcomes])
-
-        #         structure = "{:d}{}".format(i_node, code) + " ".join(
-        #             [str(successor) for successor in successors]
-        #         )
-
-        #     if type_ == "TERMINAL":
-        #         code = "T"
-        #         probabilities = ""
-        #         outcomes = ""
-
-        #     text.append(
-        #         "{:<14s}  {:<12s}  {:<14s}  {}".format(
-        #             structure, name, outcomes, probabilities
-        #         )
-        #     )
-
-        # return "\n".join(text)
 
     def print_nodes(self) -> None:
         """Prints the internal structure of the tree as a list of nodes."""

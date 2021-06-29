@@ -4,37 +4,20 @@ Entering the problem
 >>> from dmak.data import supertree_bid
 >>> nodes = supertree_bid()
 >>> nodes
-Node 0
-    Type: DECISION - Maximum Payoff
-    Name: bid
-    Branches:
-                         Value  Next Node
-                       500.000  compbid
-                       700.000  compbid
-<BLANKLINE>
-Node 1
-    Type: CHANCE
-    Name: compbid
-    Branches:
-          Chance         Value  Next Node
-           35.00       400.000  cost
-           50.00       600.000  cost
-           15.00       800.000  cost
-<BLANKLINE>
-Node 2
-    Type: CHANCE
-    Name: cost
-    Branches:
-          Chance         Value  Next Node
-           25.00       200.000  profit
-           50.00       400.000  profit
-           25.00       600.000  profit
-<BLANKLINE>
-Node 3
-    Type: TERMINAL
-    Name: profit
-    User fn: (User fn)
-<BLANKLINE>
+0  D bid             500.00 compbid   
+                     700.00 compbid   
+1  C compbid   .350  400.00 cost      
+               .500  600.00 cost      
+               .150  800.00 cost      
+2  C cost      .250  200.00 profit    
+               .500  400.00 profit    
+               .250  600.00 profit    
+3  T profit    
+
+
+
+
+
 
 
 >>> from dmak.decisiontree import DecisionTree

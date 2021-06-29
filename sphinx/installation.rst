@@ -10,7 +10,7 @@ Requeriments
 
 * `Matplotlib`.
 
-* `Graphviz+. 
+* `Graphviz`. 
 
 
 How to install 

@@ -69,21 +69,13 @@ class Nodes:
         >>> nodes.chance(
         ...     name="ChanceNode",
         ...     branches=[
-        ...         (20.0, 100, "next-node"),
-        ...         (30.0, 200, "next-node"),
-        ...         (50.0, 300, "next-node"),
+        ...         (.20, 100, "next-node"),
+        ...         (.30, 200, "next-node"),
+        ...         (.50, 300, "next-node"),
         ...     ],
         ... )
-        >>> nodes # doctest: +NORMALIZE_WHITESPACE
-        Node 0
-            Type: CHANCE
-            Name: ChanceNode
-            Branches:
-                  Chance         Value  Next Node
-                   20.00       100.000  next-node
-                   30.00       200.000  next-node
-                   50.00       300.000  next-node
-        <BLANKLINE>
+        >>> nodes.summary() # doctest: +NORMALIZE_WHITESPACE
+
 
         """
 
@@ -138,7 +130,7 @@ class Nodes:
         ...    ],
         ...    max_=True,
         ... )
-        >>> nodes # doctest: +NORMALIZE_WHITESPACE
+        >>> nodes.summary() # doctest: +NORMALIZE_WHITESPACE
         Node 0
             Type: DECISION - Maximum Payoff
             Name: DecisionNode
@@ -180,7 +172,7 @@ class Nodes:
         >>> def user_fn(x):
         ...     return x
         >>> nodes.terminal(name='terminal_node', user_fn=user_fn)
-        >>> nodes # doctest: +NORMALIZE_WHITESPACE
+        >>> nodes.summary() # doctest: +NORMALIZE_WHITESPACE
         Node 0
             Type: TERMINAL
             Name: terminal_node
@@ -196,6 +188,49 @@ class Nodes:
         }
 
     def __repr__(self):
+        def repr_terminal(text: list[str], idx: int, name: str) -> list[str]:
+            text = text[:]
+            text.append("{:<2d} T {:<10s}".format(idx, name))
+            return text
+
+        def repr_chance(text: list, idx: int, name: str) -> list:
+            text = text[:]
+            for branch in self.data[name]["branches"]:
+                prob, outcome, successor = branch
+                branch_text = "{:.3f}".format(prob)[1:] + "  {:6.2f} {:<10s}".format(
+                    outcome, successor
+                )
+                if branch == self.data[name]["branches"][0]:
+                    branch_text = "{:<2d} C {:<10s}".format(idx, name) + branch_text
+                else:
+                    branch_text = " " * 15 + branch_text
+                text.append(branch_text)
+            return text
+
+        def repr_decision(text: list, idx: int, name: str) -> list:
+            text = text[:]
+            for branch in self.data[name]["branches"]:
+                outcome, successor = branch
+                branch_text = "      {:6.2f} {:<10s}".format(outcome, successor)
+                if branch == self.data[name]["branches"][0]:
+                    branch_text = "{:<2d} D {:<10s}".format(idx, name) + branch_text
+                else:
+                    branch_text = " " * 15 + branch_text
+                text.append(branch_text)
+            return text
+
+        text = []
+        for idx, name in enumerate(self.data.keys()):
+            type_ = self.data[name]["type"]
+            if type_ == "TERMINAL":
+                text = repr_terminal(text, idx, name)
+            if type_ == "CHANCE":
+                text = repr_chance(text, idx, name)
+            if type_ == "DECISION":
+                text = repr_decision(text, idx, name)
+        return "\n".join(text)
+
+    def summary(self):
         def repr_decision(name, node):
 
             text = []
@@ -221,7 +256,7 @@ class Nodes:
             text.append("          Chance         Value  Next Node")
             for (prob, outcome, next_node) in node.get("branches"):
                 text.append(
-                    "           {:5.2f}  {:12.3f}  {:s}".format(
+                    "           {:6.2f}  {:12.3f}  {:s}".format(
                         prob, outcome, next_node
                     )
                 )
@@ -249,7 +284,7 @@ class Nodes:
             if node.get("type") == "TERMINAL":
                 text += repr_terminal(name=name, node=node)
 
-        return "\n".join(text)
+        return print("\n".join(text))
 
 
 if __name__ == "__main__":

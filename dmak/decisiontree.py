@@ -520,7 +520,7 @@ class DecisionTree:
         #
         # tree evaluated and with rollback
         #
-        def display_node(idx, is_last_node):
+        def display_node(idx, is_last_node, is_optimal_choice):
             #
             def prepare_text():
 
@@ -549,6 +549,11 @@ class DecisionTree:
             branch_text = vbar + prepare_text()
 
             # ---------------------------------------------------------------------------
+            # mark optimal choice
+            if is_optimal_choice is True:
+                branch_text = ">" + branch_text[1:]
+
+            # ---------------------------------------------------------------------------
             # line between --------[?] and childrens
             if type_ == "TERMINAL":
                 text = []
@@ -575,14 +580,22 @@ class DecisionTree:
 
             # ---------------------------------------------------------------------------
             # successors
+
             successors = self.nodes[idx].get("successors")
             if successors is not None:
                 for successor in successors:
 
                     # -------------------------------------------------------------------
+                    # Mark optimal strategy
+                    optimal_strategy = self.nodes[successor].get("optimal_strategy")
+                    is_optimal_choice = type_ == "DECISION" and optimal_strategy is True
+
+                    # -------------------------------------------------------------------
                     # vbar following the line of preious node
                     is_last_child_node = successor == successors[-1]
-                    text_ = display_node(successor, is_last_child_node)
+                    text_ = display_node(
+                        successor, is_last_child_node, is_optimal_choice
+                    )
                     vbar = " " if is_last_node else "|"
 
                     # ---------------------------------------------------------------------------
@@ -590,10 +603,10 @@ class DecisionTree:
                     text_ = [
                         vbar + " " * (len_branch_text - 3) + line for line in text_
                     ]
-                    successor_type = self.nodes[successor]["type"]
 
                     # ---------------------------------------------------------------------------
                     # Adds a vertical bar as first element of a terminal node sequence
+                    successor_type = self.nodes[successor]["type"]
                     if successor_type == "TERMINAL" and successor == successors[0]:
                         successor_tag_name = self.nodes[successor].get("tag_name")
                         if successor_tag_name is not None:
@@ -611,7 +624,7 @@ class DecisionTree:
 
             return text
 
-        text = display_node(idx=idx, is_last_node=True)
+        text = display_node(idx=idx, is_last_node=True, is_optimal_choice=False)
         print("\n".join(text))
 
     def display(

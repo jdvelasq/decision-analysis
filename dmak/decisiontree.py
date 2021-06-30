@@ -516,11 +516,11 @@ class DecisionTree:
     def _display_no_rollback(self):
         pass
 
-    def _display_evaluated(self, idx):
+    def _display_evaluated(self, idx: int, max_deep: int) -> None:
         #
         # tree evaluated and with rollback
         #
-        def display_node(idx, is_last_node, is_optimal_choice):
+        def display_node(idx, is_last_node, is_optimal_choice, deep, max_deep):
             #
             def prepare_text():
 
@@ -582,7 +582,10 @@ class DecisionTree:
             # successors
 
             successors = self.nodes[idx].get("successors")
-            if successors is not None:
+            deep += 1
+            if successors is not None and (
+                max_deep is None or (max_deep is not None and deep <= max_deep)
+            ):
                 for successor in successors:
 
                     # -------------------------------------------------------------------
@@ -593,9 +596,11 @@ class DecisionTree:
                     # -------------------------------------------------------------------
                     # vbar following the line of preious node
                     is_last_child_node = successor == successors[-1]
+
                     text_ = display_node(
-                        successor, is_last_child_node, is_optimal_choice
+                        successor, is_last_child_node, is_optimal_choice, deep, max_deep
                     )
+
                     vbar = " " if is_last_node else "|"
 
                     # ---------------------------------------------------------------------------
@@ -624,7 +629,13 @@ class DecisionTree:
 
             return text
 
-        text = display_node(idx=idx, is_last_node=True, is_optimal_choice=False)
+        text = display_node(
+            idx=idx,
+            is_last_node=True,
+            is_optimal_choice=False,
+            deep=0,
+            max_deep=max_deep,
+        )
         print("\n".join(text))
 
     def display(
@@ -648,7 +659,7 @@ class DecisionTree:
 
         """
 
-        self._display_evaluated(idx=idx)
+        self._display_evaluated(idx=idx, max_deep=max_deep)
 
         # def export_branches(
         #     text: list,

@@ -94,6 +94,7 @@ class DecisionTree:
 
     # -------------------------------------------------------------------------
     #
+    #
     #  C R E A T I O N
     #
     #
@@ -218,7 +219,8 @@ class DecisionTree:
 
     # -------------------------------------------------------------------------
     #
-    #  T R E E    S T R U C T U R E:  __repr__()
+    #
+    #  T R E E    S T R U C T U R E    D I S P L A Y
     #
     #
     def __repr__(self):
@@ -335,10 +337,10 @@ class DecisionTree:
 
     # -------------------------------------------------------------------------
     #
+    #
     #  D E P E N D E N T    P R O B A B I L I T I E S
     #
     #
-
     def set_dependent_probabilities(
         self, variable: str, depends_on: Any, probabilities: dict
     ) -> None:
@@ -357,7 +359,7 @@ class DecisionTree:
             if name == variable:
 
                 if isinstance(depends_on, list):
-                    key = (args[term] for term in depends_on)
+                    key = tuple(args[term] for term in depends_on)
                 else:
                     key = args[depends_on]
 
@@ -367,8 +369,45 @@ class DecisionTree:
 
                     self._nodes[successor]["tag_prob"] = probs[i_successor]
 
-                    # print("!!! ", name, probs[i_branch])
-                    # print(successor)
+            if "successors" in self._nodes[idx].keys():
+                for successor in self._nodes[idx]["successors"]:
+                    dispatch(idx=successor, args=args)
+
+        dispatch(idx=0, args={})
+
+    # -------------------------------------------------------------------------
+    #
+    #
+    #  D E P E N D E N T    O U T C O M E S
+    #
+    #
+    def set_dependent_outcomes(
+        self, variable: str, depends_on: Any, outcomes: dict
+    ) -> None:
+        """Set outcomes in a node dependent on previous nodes"""
+
+        def dispatch(idx: int, args: dict) -> None:
+
+            args = args.copy()
+
+            if "tag_name" in self._nodes[idx].keys():
+                tag_name = self._nodes[idx]["tag_name"]
+                tag_value = self._nodes[idx]["tag_value"]
+                args = {**args, **{tag_name: tag_value}}
+
+            name = self._nodes[idx].get("name")
+            if name == variable:
+
+                if isinstance(depends_on, (list, tuple)):
+                    key = tuple(args[term] for term in depends_on)
+                else:
+                    key = args[depends_on]
+
+                outcome = outcomes[key]
+
+                for i_successor, successor in enumerate(self._nodes[idx]["successors"]):
+
+                    self._nodes[successor]["tag_value"] = outcome[i_successor]
 
             if "successors" in self._nodes[idx].keys():
                 for successor in self._nodes[idx]["successors"]:
@@ -562,6 +601,7 @@ class DecisionTree:
 
     # -------------------------------------------------------------------------
     #
+    #
     #  D I S P L A Y
     #
     #
@@ -574,7 +614,8 @@ class DecisionTree:
         """Exports the tree as text diagram.
 
         :param idx:
-            Id number of the root of the tree to be exported. When it is zero, the entire tree is exported.
+            Id number of the root of the tree to be exported. When it is zero, the
+            entire tree is exported.
 
         :param max_deep:
             Controls the maximum deep of the nodes in the tree exported as text.

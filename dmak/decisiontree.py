@@ -20,12 +20,13 @@ sequence of use is the following:
 
 
 """
+import json
+from typing import Any
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from graphviz import Digraph
-
-from typing import Any
 
 
 def _exp_utility_fn(param: float):
@@ -678,8 +679,10 @@ class DecisionTree:
     #
     def nodes(self) -> None:
         """Prints the internal structure of the tree as a list of nodes."""
+        text = {}
         for i_node, node in enumerate(self._nodes):
-            print("#{:<3s} {}".format(str(i_node), node))
+            text[i_node] = node
+        print(json.dumps(text, indent=4))
 
     # -------------------------------------------------------------------------
     #

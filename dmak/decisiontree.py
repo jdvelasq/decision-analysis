@@ -505,14 +505,6 @@ class DecisionTree:
 
         dispatch(idx=0, optimal_strategy=True)
 
-    # -------------------------------------------------------------------------
-    #
-    #  D I S P L A Y    A S    T E X T
-    #
-    #
-    def _display_no_evaluated(self, idx: int, max_deep: int) -> None:
-        pass
-
     # -----------------------------------------------------------------------------------
     #
     #  Displays a eveluated tree with rollback
@@ -684,15 +676,143 @@ class DecisionTree:
 
         """
 
-        if self._with_rollback is True:
-            self._display_with_rollback(
-                idx=idx, max_deep=max_deep, policy_suggestion=policy_suggestion
-            )
-            return
+        def display_node(idx, is_last_node, is_optimal_choice, deep, max_deep):
+            #
+            def prepare_text():
 
-        # if self._is_evaluated is True:
-        self._display_with_rollback(idx=idx, max_deep=max_deep, policy_suggestion=False)
-        return
+                tag_prob = self.nodes[idx].get("tag_prob")
+                tag_value = self.nodes[idx].get("tag_value")
+                expval = self.nodes[idx].get("ExpVal")
+
+                text = " "
+                if tag_prob is not None:
+                    text += "{:.3f} ".format(tag_prob)[1:]
+                if tag_value is not None:
+                    text += "{:8.2f} ".format(tag_value)
+                if expval is not None:
+                    text += "{:8.2f} ".format(expval)
+
+                return text
+
+            # ---------------------------------------------------------------------------
+            type_ = self.nodes[idx]["type"]
+            tag_name = self.nodes[idx].get("tag_name")
+
+            # ---------------------------------------------------------------------------
+            # vertical bar in the last node of terminals
+            if type_ == "TERMINAL":
+                vbar = "\\" if is_last_node is True else "|"
+            else:
+                vbar = "|"
+            branch_text = vbar + prepare_text()
+
+            # ---------------------------------------------------------------------------
+            # mark optimal choice
+            if is_optimal_choice is True:
+                branch_text = ">" + branch_text[1:]
+
+            # ---------------------------------------------------------------------------
+            # line between --------[?] and childrens
+            if type_ == "TERMINAL":
+                text = []
+            else:
+                if tag_name is not None:
+                    text = ["| {}".format(tag_name)]
+                else:
+                    text = ["|"]
+
+            # ---------------------------------------------------------------------------
+            # values on the branch
+            text.append(branch_text)
+
+            # ---------------------------------------------------------------------------
+            # Node -----------[?]
+            letter = "D" if type_ == "DECISION" else "C" if type_ == "CHANCE" else "T"
+            len_branch_text = max(7, len(branch_text))
+            if type_ != "TERMINAL":
+                if is_last_node is True:
+                    branch = "\\" + "-" * (len_branch_text - 4) + "[{}]".format(letter)
+                else:
+                    branch = "+" + "-" * (len_branch_text - 4) + "[{}]".format(letter)
+                text.append(branch)
+
+            # ---------------------------------------------------------------------------
+            # successors
+            successors = self.nodes[idx].get("successors")
+
+            # ---------------------------------------------------------------------------
+            # max deep
+            deep += 1
+
+            if successors is not None and (
+                max_deep is None or (max_deep is not None and deep <= max_deep)
+            ):
+                for successor in successors:
+
+                    # -------------------------------------------------------------------
+                    # Mark optimal strategy
+                    optimal_strategy = self.nodes[successor].get("optimal_strategy")
+                    is_optimal_choice = type_ == "DECISION" and optimal_strategy is True
+
+                    # -------------------------------------------------------------------
+                    # policy suggestion
+                    if optimal_strategy is False and policy_suggestion is True:
+                        continue
+
+                    # -------------------------------------------------------------------
+                    # vbar following the line of preious node
+                    if policy_suggestion is False:
+                        is_last_child_node = successor == successors[-1]
+                    else:
+                        if type_ == "DECISION":
+                            is_last_child_node = True
+                        else:
+                            is_last_child_node = successor == successors[-1]
+
+                    text_ = display_node(
+                        successor, is_last_child_node, is_optimal_choice, deep, max_deep
+                    )
+
+                    vbar = " " if is_last_node else "|"
+
+                    # ---------------------------------------------------------------------------
+                    # indents the childrens
+                    text_ = [
+                        vbar + " " * (len_branch_text - 3) + line for line in text_
+                    ]
+
+                    # ---------------------------------------------------------------------------
+                    # Adds a vertical bar as first element of a terminal node sequence
+                    successor_type = self.nodes[successor]["type"]
+                    if successor_type == "TERMINAL" and successor == successors[0]:
+                        successor_tag_name = self.nodes[successor].get("tag_name")
+                        if successor_tag_name is not None:
+                            text.extend(
+                                [
+                                    vbar
+                                    + " " * (len_branch_text - 3)
+                                    + "| {}".format(successor_tag_name)
+                                ]
+                            )
+                        else:
+                            text.extend([vbar + " " * (len_branch_text - 3) + "|"])
+
+                    text.extend(text_)
+
+            return text
+
+        if self._with_rollback is False:
+            policy_suggestion = False
+
+        text = display_node(
+            idx=idx,
+            is_last_node=True,
+            is_optimal_choice=False,
+            deep=0,
+            max_deep=max_deep,
+        )
+
+        print("\n".join(text))
 
         # self._display_no_evaluated(idx=idx, max_deep=max_deep)
 

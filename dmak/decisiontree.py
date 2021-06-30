@@ -127,7 +127,7 @@ class DecisionTree:
         self._set_tag_attributes()
         self._build_call_kwargs()
         self._is_evaluated = False
-        self._is_rollback = False
+        self._with_rollback = False
 
     #
     # Auxiliary functions
@@ -372,7 +372,7 @@ class DecisionTree:
 
         self._compute_expval()
         self._compute_optimal_strategy()
-        self._is_rollback = True
+        self._with_rollback = True
         return self.nodes[0]["ExpVal"]
 
     #
@@ -510,14 +510,14 @@ class DecisionTree:
     #  D I S P L A Y    A S    T E X T
     #
     #
-    def _display_no_evaluated(self):
+    def _display_no_evaluated(self, idx: int, max_deep: int) -> None:
         pass
 
-    def _display_no_rollback(self):
+    def _display_is_evaluated(self, idx: int, max_deep: int) -> None:
         #
         # tree evaluated and without rollback (only expected values)
         #
-        def display_node(idx, is_last_node, is_optimal_choice, deep, max_deep):
+        def display_node(idx, is_last_node, deep, max_deep):
             #
             def prepare_text():
 
@@ -544,11 +544,6 @@ class DecisionTree:
             else:
                 vbar = "|"
             branch_text = vbar + prepare_text()
-
-            # ---------------------------------------------------------------------------
-            # mark optimal choice
-            if is_optimal_choice is True:
-                branch_text = ">" + branch_text[1:]
 
             # ---------------------------------------------------------------------------
             # line between --------[?] and childrens
@@ -632,7 +627,6 @@ class DecisionTree:
         text = display_node(
             idx=idx,
             is_last_node=True,
-            is_optimal_choice=False,
             deep=0,
             max_deep=max_deep,
         )
@@ -643,7 +637,7 @@ class DecisionTree:
     #  Displays a eveluated tree with rollback
     #
     #
-    def _display_evaluated(
+    def _display_with_rollback(
         self, idx: int, max_deep: int, policy_suggestion: bool
     ) -> None:
         #
@@ -662,7 +656,9 @@ class DecisionTree:
                     text += "{:.3f} ".format(tag_prob)[1:]
                 if tag_value is not None:
                     text += "{:8.2f} ".format(tag_value)
-                text += "{:8.2f} ".format(expval)
+                if expval is not None:
+                    text += "{:8.2f} ".format(expval)
+
                 return text
 
             # ---------------------------------------------------------------------------
@@ -699,7 +695,7 @@ class DecisionTree:
             # ---------------------------------------------------------------------------
             # Node -----------[?]
             letter = "D" if type_ == "DECISION" else "C" if type_ == "CHANCE" else "T"
-            len_branch_text = len(branch_text)
+            len_branch_text = max(7, len(branch_text))
             if type_ != "TERMINAL":
                 if is_last_node is True:
                     branch = "\\" + "-" * (len_branch_text - 4) + "[{}]".format(letter)
@@ -807,9 +803,19 @@ class DecisionTree:
 
         """
 
-        self._display_evaluated(
-            idx=idx, max_deep=max_deep, policy_suggestion=policy_suggestion
-        )
+        if self._with_rollback is True:
+            self._display_with_rollback(
+                idx=idx, max_deep=max_deep, policy_suggestion=policy_suggestion
+            )
+            return
+
+        if self._is_evaluated is True:
+            self._display_with_rollback(
+                idx=idx, max_deep=max_deep, policy_suggestion=False
+            )
+            return
+
+        self._display_no_evaluated(idx=idx, max_deep=max_deep)
 
         # def export_branches(
         #     text: list,

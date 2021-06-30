@@ -538,6 +538,7 @@ class DecisionTree:
 
             # ---------------------------------------------------------------------------
             type_ = self.nodes[idx]["type"]
+            tag_name = self.nodes[idx].get("tag_name")
 
             # ---------------------------------------------------------------------------
             # vertical bar in the last node of terminals
@@ -552,7 +553,10 @@ class DecisionTree:
             if type_ == "TERMINAL":
                 text = []
             else:
-                text = ["|"]
+                if tag_name is not None:
+                    text = ["| {}".format(tag_name)]
+                else:
+                    text = ["|"]
 
             # ---------------------------------------------------------------------------
             # values on the branch
@@ -591,7 +595,17 @@ class DecisionTree:
                     # ---------------------------------------------------------------------------
                     # Adds a vertical bar as first element of a terminal node sequence
                     if successor_type == "TERMINAL" and successor == successors[0]:
-                        text.extend([vbar + " " * (len_branch_text - 3) + "|"])
+                        successor_tag_name = self.nodes[successor].get("tag_name")
+                        if successor_tag_name is not None:
+                            text.extend(
+                                [
+                                    vbar
+                                    + " " * (len_branch_text - 3)
+                                    + "| {}".format(successor_tag_name)
+                                ]
+                            )
+                        else:
+                            text.extend([vbar + " " * (len_branch_text - 3) + "|"])
 
                     text.extend(text_)
 

@@ -749,19 +749,30 @@ class DecisionTree:
 
         dispatch(idx=idx)
 
+    #
+    # Plots
+    #
     def _plot_risk_profile(self, idx: int, cumulative: bool, single: bool) -> None:
         #
-        def plot_stem_single():
+        def plot_stem_single(idx: int, linefmt: str = "-k", color: str = "black"):
 
             risk_profile = self._nodes[idx].get("RiskProfile").copy()
             values = sorted(risk_profile.keys())
             probs = [risk_profile[value] for value in values]
 
+            expval = self._nodes[idx].get("ExpVal")
+            tag_value = self._nodes[idx].get("tag_value")
+            if tag_value is not None:
+                label = "{};EV={}".format(tag_value, expval)
+            else:
+                label = "EV={}".format(expval)
+
             markerline, _, _ = plt.gca().stem(
-                values, probs, linefmt="black", basefmt="gray"
+                values, probs, linefmt=linefmt, basefmt="gray", label=label
             )
-            markerline.set_markerfacecolor("black")
-            markerline.set_markeredgecolor("black")
+
+            markerline.set_markerfacecolor(color)
+            markerline.set_markeredgecolor(color)
 
             plt.gca().spines["bottom"].set_visible(False)
             plt.gca().spines["left"].set_visible(False)
@@ -770,8 +781,9 @@ class DecisionTree:
 
             plt.gca().set_xlabel("Expected values")
             plt.gca().set_ylabel("Probability")
+            plt.gca().legend()
 
-        def plot_step_single():
+        def plot_step_single(idx: int, linefmt: str = "-k") -> None:
 
             risk_profile = self._nodes[idx].get("RiskProfile").copy()
             values = sorted(risk_profile.keys())
@@ -780,7 +792,14 @@ class DecisionTree:
             cumprobs = [0] + np.cumsum(probs).tolist()
             values = values + [values[-1]]
 
-            plt.gca().step(values, cumprobs, "k")
+            expval = self._nodes[idx].get("ExpVal")
+            tag_value = self._nodes[idx].get("tag_value")
+            if tag_value is not None:
+                label = "{};EV={}".format(tag_value, expval)
+            else:
+                label = "EV={}".format(expval)
+
+            plt.gca().step(values, cumprobs, linefmt, label=label)
 
             plt.gca().spines["bottom"].set_visible(False)
             plt.gca().spines["left"].set_visible(False)
@@ -789,11 +808,44 @@ class DecisionTree:
 
             plt.gca().set_xlabel("Expected values")
             plt.gca().set_ylabel("Cumulative probability")
+            plt.gca().legend()
+
+        def plot_stem_multiple(idx: int) -> None:
+
+            successors = self._nodes[idx].get("successors")
+            for i_successor, successor in enumerate(successors):
+                plot_stem_single(successor, linefmts[i_successor], colors[i_successor])
+
+        def plot_step_multiple(idx: int) -> None:
+
+            successors = self._nodes[idx].get("successors")
+            for i_successor, successor in enumerate(successors):
+                plot_step_single(successor, linefmts[i_successor])
+
+        linefmts = [
+            "-k",
+            "-b",
+            "-r",
+            "-g",
+            "--k",
+            "--b",
+            "--r",
+            "--g",
+            "-.k",
+            "-.b",
+            "-.r",
+            "-.g",
+        ]
+        colors = ["black", "blue", "red", "green"] * 3
 
         if cumulative is False and single is True:
-            plot_stem_single()
+            plot_stem_single(idx)
         if cumulative is True and single is True:
-            plot_step_single()
+            plot_step_single(idx)
+        if cumulative is False and single is False:
+            plot_stem_multiple(idx)
+        if cumulative is True and single is False:
+            plot_step_multiple(idx)
 
     #
     #

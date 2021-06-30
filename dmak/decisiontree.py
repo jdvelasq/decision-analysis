@@ -751,7 +751,7 @@ class DecisionTree:
 
     def _plot_risk_profile(self, idx: int, cumulative: bool, single: bool) -> None:
         #
-        def plot_histogram_single():
+        def plot_stem_single():
 
             risk_profile = self._nodes[idx].get("RiskProfile").copy()
             values = sorted(risk_profile.keys())
@@ -771,7 +771,7 @@ class DecisionTree:
             plt.gca().set_xlabel("Expected values")
             plt.gca().set_ylabel("Probability")
 
-        def plot_histogram_cumulative():
+        def plot_step_single():
 
             risk_profile = self._nodes[idx].get("RiskProfile").copy()
             values = sorted(risk_profile.keys())
@@ -791,9 +791,9 @@ class DecisionTree:
             plt.gca().set_ylabel("Cumulative probability")
 
         if cumulative is False and single is True:
-            plot_histogram_single()
+            plot_stem_single()
         if cumulative is True and single is True:
-            plot_histogram_cumulative()
+            plot_step_single()
 
     #
     #

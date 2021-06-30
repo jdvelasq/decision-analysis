@@ -89,6 +89,11 @@ class DecisionTree:
 
     """
 
+    # -------------------------------------------------------------------------
+    #
+    #  C R E A T I O N
+    #
+    #
     def __init__(
         self,
         variables: list,
@@ -115,8 +120,18 @@ class DecisionTree:
         self._util_fn = util_fn
         self._inv_fn = inv_fn
 
+        #
+        # Prepares the empty structure of the tree
+        #
         self._build_skeleton()
         self._set_tag_attributes()
+        self._build_call_kwargs()
+        self._is_evaluated = False
+        self._is_rollback = False
+
+    #
+    # Auxiliary functions
+    #
 
     def _build_skeleton(self) -> None:
         #
@@ -174,17 +189,40 @@ class DecisionTree:
                     self.nodes[successor]["tag_value"] = value
                     self.nodes[successor]["tag_prob"] = prob
 
-    ## TODO: Deprecated
-    # def build(self):
-    #     """This function is used to build the internal structure of the decision tree
-    #     using the information of the types of variables..
-    #     """
-    #     self._build_skeleton()
-    #     self._set_tag_attributes()
+    def _build_call_kwargs(self) -> None:
+        #
+        # Builts kwargs for user function in terminal nodes
+        #
+        def set_fn_args(idx: int, args: dict) -> None:
 
+            args = args.copy()
+
+            if "tag_name" in self.nodes[idx].keys():
+                name = self.nodes[idx]["tag_name"]
+                value = self.nodes[idx]["tag_value"]
+                args = {**args, **{name: value}}
+
+            type_ = self.nodes[idx].get("type")
+
+            if type_ == "TERMINAL":
+                self.nodes[idx]["user_args"] = args
+            else:
+                if "successors" in self.nodes[idx].keys():
+                    for successor in self.nodes[idx]["successors"]:
+                        set_fn_args(idx=successor, args=args)
+
+        set_fn_args(idx=0, args={})
+
+    # -------------------------------------------------------------------------
+    #
+    #  T R E E    S T R U C T U R E:  __repr__()
+    #
+    #
     def __repr__(self):
+        #
+        # Shows the tree structure
+        #
         def adjust_width(column: list[str]) -> list:
-
             maxwidth: int = max([len(txtline) for txtline in column]) + 2
             formatstr: str = "{:<" + str(maxwidth) + "s}"
             column: list = [formatstr.format(txtline) for txtline in column]
@@ -257,10 +295,7 @@ class DecisionTree:
             )
             formatstr: str = "{:<" + str(maxwidth) + "s}"
             column = [
-                [
-                    formatstr.format("{:.2f}".format(prob / 100.0))[1:]
-                    for prob in txtline
-                ]
+                [formatstr.format("{:.3f}".format(prob))[1:] for prob in txtline]
                 for txtline in column
             ]
             column: list = [" ".join(txtline) for txtline in column]
@@ -285,6 +320,535 @@ class DecisionTree:
         ]
 
         return "\n".join(lines)
+
+    # -------------------------------------------------------------------------
+    #
+    #  E V A L U A T I O N
+    #
+    #
+    def evaluate(self) -> None:
+        """Calculates the values at the end of the tree (terminal nodes)."""
+
+        def cumulative(**kwargs):
+            return sum(v for _, v in kwargs.items())
+
+        for node in self.nodes:
+
+            user_args = node.get("user_args")
+
+            if user_args:
+                #
+                name = node.get("name")
+                user_fn = self._variables[name].get("user_fn")
+                if user_fn is None:
+                    user_fn = cumulative
+                expval = user_fn(**user_args)
+                node["ExpVal"] = expval
+                #
+                exputil = self._util_fn(expval)
+                node["ExpUtl"] = exputil
+                node["CE"] = expval
+
+        self._is_evaluated = True
+
+    # -------------------------------------------------------------------------
+    #
+    #  R O L L B A C K
+    #
+    #
+    def rollback(self) -> float:
+        """Computes the preferred decision by calculating the expected
+        values at each internal node, and returns the expected value of the
+        preferred decision.
+
+
+        Computation begins at the terminal nodes towards the root node. In each
+        chance node, the expected values are calculated as the sum of
+        probabilities in each branch  multiplied by the expected value in
+        the corresponding node. For decision nodes, the expected value is
+        the maximum (or minimum) value of its branches.
+
+        """
+
+        self._compute_expval()
+        self._compute_optimal_strategy()
+        self._is_rollback = True
+        return self.nodes[0]["ExpVal"]
+
+    #
+    # Auxiliary functions
+    #
+    def _compute_expval(self) -> None:
+        #
+        # Computes the expected values at intemediate nodes.
+        #
+        def decision_node(idx: int) -> None:
+
+            max_: bool = self.nodes[idx].get("max")
+            successors: list = self.nodes[idx].get("successors")
+            forced: int = self.nodes[idx].get("forced")
+
+            expected_val: float = None
+            expected_utl: float = None
+            expected_ceq: float = None
+
+            optimal_successor: int = None
+
+            for i_succesor, successor in enumerate(successors):
+
+                dispatch(idx=successor)
+
+                expval = self.nodes[successor].get("ExpVal")
+                exputl = self.nodes[successor].get("ExpUtl")
+                cequiv = self.nodes[successor].get("CE")
+
+                expected_val = expval if expected_val is None else expected_val
+                expected_utl = exputl if expected_utl is None else expected_utl
+                expected_ceq = cequiv if expected_ceq is None else expected_ceq
+
+                optimal_successor = (
+                    successor if optimal_successor is None else optimal_successor
+                )
+
+                if forced is None and max_ is True and cequiv > expected_ceq:
+                    expected_val = expval
+                    expected_utl = exputl
+                    expected_ceq = cequiv
+                    optimal_successor = successor
+
+                if forced is None and max_ is False and cequiv < expected_ceq:
+                    expected_val = expval
+                    expected_utl = exputl
+                    expected_ceq = cequiv
+                    optimal_successor = successor
+
+                if forced is not None and i_succesor == forced:
+                    expected_val = expval
+                    expected_utl = exputl
+                    expected_ceq = cequiv
+                    optimal_successor = successor
+
+            self.nodes[idx]["ExpVal"] = expected_val
+            self.nodes[idx]["ExpUtl"] = expected_utl
+            self.nodes[idx]["CE"] = expected_ceq
+            self.nodes[idx]["optimal_successor"] = optimal_successor
+
+        def chance_node(idx: int) -> None:
+
+            successors: list = self.nodes[idx].get("successors")
+            forced: int = self.nodes[idx].get("forced")
+            expected_val: float = 0
+            expected_utl: float = 0
+
+            for i_successor, successor in enumerate(successors):
+                dispatch(idx=successor)
+                if forced is None:
+                    prob: float = self.nodes[successor].get("tag_prob")
+                    expval: float = self.nodes[successor].get("ExpVal")
+                    exputl: float = self.nodes[successor].get("ExpUtl")
+                    expected_val += prob * expval
+                    expected_utl += prob * exputl
+                else:
+                    if i_successor == forced:
+                        prob: float = self.nodes[successor].get("tag_prob")
+                        expval: float = self.nodes[successor].get("ExpVal")
+                        exputl: float = self.nodes[successor].get("ExpUtl")
+                        expected_val = expval
+                        expected_utl = exputl
+
+            self.nodes[idx]["ExpVal"] = expected_val
+            self.nodes[idx]["ExpUtl"] = expected_utl
+            self.nodes[idx]["CE"] = self._inv_fn(expected_utl)
+
+        def dispatch(idx: int) -> None:
+            #
+            # In this point, expected values in terminal nodes are already
+            # computed.
+            #
+            type_: str = self.nodes[idx].get("type")
+            if type_ == "DECISION":
+                decision_node(idx=idx)
+            if type_ == "CHANCE":
+                chance_node(idx=idx)
+
+        dispatch(idx=0)
+
+    def _compute_optimal_strategy(self) -> None:
+        #
+        def terminal_node(idx: int, optimal_strategy: bool) -> None:
+            self.nodes[idx]["optimal_strategy"] = optimal_strategy
+
+        def chance_node(idx: int, optimal_strategy: bool) -> None:
+            self.nodes[idx]["optimal_strategy"] = optimal_strategy
+            successors = self.nodes[idx].get("successors")
+            for successor in successors:
+                dispatch(idx=successor, optimal_strategy=optimal_strategy)
+
+        def decision_node(idx: int, optimal_strategy: bool) -> None:
+            self.nodes[idx]["optimal_strategy"] = optimal_strategy
+            successors = self.nodes[idx].get("successors")
+            optimal_successor = self.nodes[idx].get("optimal_successor")
+            for successor in successors:
+                if successor == optimal_successor:
+                    dispatch(idx=successor, optimal_strategy=optimal_strategy)
+                else:
+                    dispatch(idx=successor, optimal_strategy=False)
+
+        def dispatch(idx: int, optimal_strategy: bool) -> None:
+            type_: str = self.nodes[idx].get("type")
+            if type_ == "TERMINAL":
+                terminal_node(idx=idx, optimal_strategy=optimal_strategy)
+            if type_ == "DECISION":
+                decision_node(idx=idx, optimal_strategy=optimal_strategy)
+            if type_ == "CHANCE":
+                chance_node(idx=idx, optimal_strategy=optimal_strategy)
+
+        dispatch(idx=0, optimal_strategy=True)
+
+    # -------------------------------------------------------------------------
+    #
+    #  D I S P L A Y    A S    T E X T
+    #
+    #
+    def _display_no_evaluated(self):
+        pass
+
+    def _display_no_rollback(self):
+        pass
+
+    def _display_evaluated(self, idx):
+        #
+        # tree evaluated and with rollback
+        #
+        def display_node(idx, is_last_node):
+            #
+            def prepare_text():
+
+                tag_prob = self.nodes[idx].get("tag_prob")
+                tag_value = self.nodes[idx].get("tag_value")
+                expval = self.nodes[idx].get("ExpVal")
+
+                text = " "
+                if tag_prob is not None:
+                    text += "{:.3f} ".format(tag_prob)[1:]
+                if tag_value is not None:
+                    text += "{:8.2f} ".format(tag_value)
+                text += "{:8.2f} ".format(expval)
+                return text
+
+            # ---------------------------------------------------------------------------
+            type_ = self.nodes[idx]["type"]
+
+            # ---------------------------------------------------------------------------
+            # vertical bar in the last node of terminals
+            if type_ == "TERMINAL":
+                vbar = "\\" if is_last_node is True else "|"
+            else:
+                vbar = "|"
+            branch_text = vbar + prepare_text()
+
+            # ---------------------------------------------------------------------------
+            # line between --------[?] and childrens
+            if type_ == "TERMINAL":
+                text = []
+            else:
+                text = ["|"]
+
+            # ---------------------------------------------------------------------------
+            # values on the branch
+            text.append(branch_text)
+
+            # ---------------------------------------------------------------------------
+            # Node -----------[?]
+            letter = "D" if type_ == "DECISION" else "C" if type_ == "CHANCE" else "T"
+            len_branch_text = len(branch_text)
+            if type_ != "TERMINAL":
+                if is_last_node is True:
+                    branch = "\\" + "-" * (len_branch_text - 4) + "[{}]".format(letter)
+                else:
+                    branch = "+" + "-" * (len_branch_text - 4) + "[{}]".format(letter)
+                text.append(branch)
+
+            # ---------------------------------------------------------------------------
+            # successors
+            successors = self.nodes[idx].get("successors")
+            if successors is not None:
+                for successor in successors:
+
+                    # -------------------------------------------------------------------
+                    # vbar following the line of preious node
+                    is_last_child_node = successor == successors[-1]
+                    text_ = display_node(successor, is_last_child_node)
+                    vbar = " " if is_last_node else "|"
+
+                    # ---------------------------------------------------------------------------
+                    # indents the childrens
+                    text_ = [
+                        vbar + " " * (len_branch_text - 3) + line for line in text_
+                    ]
+                    successor_type = self.nodes[successor]["type"]
+
+                    # ---------------------------------------------------------------------------
+                    # Adds a vertical bar as first element of a terminal node sequence
+                    if successor_type == "TERMINAL" and successor == successors[0]:
+                        text.extend([vbar + " " * (len_branch_text - 3) + "|"])
+
+                    text.extend(text_)
+
+            return text
+
+        text = display_node(idx=idx, is_last_node=True)
+        print("\n".join(text))
+
+    def display(
+        self,
+        idx: int = 0,
+        max_deep: int = None,
+        policy_suggestion: bool = False,
+    ) -> None:
+        """Exports the tree as text diagram.
+
+        :param idx:
+            Id number of the root of the tree to be exported. When it is zero, the entire tree is exported.
+
+        :param max_deep:
+            Controls the maximum deep of the nodes in the tree exported as text.
+
+        :param policy_suggestion:
+            When `True` exports only the subtree showing the nodes and branches
+            relevants to the optimal decision (optimal strategy).
+
+
+        """
+
+        self._display_evaluated(idx=idx)
+
+        # def export_branches(
+        #     text: list,
+        #     idx: int,
+        #     is_last_node: bool,
+        #     max_deep: int,
+        #     deep: int,
+        #     strategy: bool,
+        #     parent_type: str,
+        # ) -> list:
+
+        #     text = text.copy()
+        #     if "successors" not in self.nodes[idx].keys():
+        #         return text
+
+        #     successors = self.nodes[idx]["successors"]
+
+        #     type_ = self.nodes[idx]["type"]
+
+        #     for successor in successors:
+
+        #         next_is_last_node = successor == successors[-1]
+
+        #         if "selected_strategy" in self.nodes[successor].keys():
+        #             selected_strategy = self.nodes[successor]["selected_strategy"]
+        #         else:
+        #             selected_strategy = False
+
+        #         if strategy is True and selected_strategy is False:
+        #             continue
+
+        #         if strategy is True and type_ == "DECISION":
+        #             next_is_last_node = True
+
+        #         result = export_node(
+        #             successor, next_is_last_node, max_deep, deep, strategy, parent_type
+        #         )
+
+        #         for txt in result:
+        #             if deep == 1:
+        #                 space = 12
+        #             else:
+        #                 if type_ == "CHANCE":
+        #                     space = 23
+        #                 else:
+        #                     space = 13
+        #             if is_last_node is True:
+        #                 text.append("*" * space + txt)
+        #             else:
+        #                 text.append("|" + " " * (space - 1) + txt)
+
+        #     return text
+
+        # def node_type_chance(
+        #     text: list, is_last_node: bool, deep: int, parent_type: str
+        # ) -> list:
+        #     text: list = text.copy()
+        #     if deep == 0:
+        #         space = 10
+        #     else:
+        #         if parent_type is None or parent_type == "CHANCE":
+        #             space = 21
+        #         else:
+        #             space = 16
+        #     if is_last_node is True:
+        #         text.append("\\" + "-" * space + "[C]")
+        #     else:
+        #         text.append("+" + "-" * space + "[C]")
+        #     return text
+
+        # def node_type_decision(
+        #     text: list, is_last_node: bool, deep: int, parent_type: str
+        # ) -> list:
+        #     text: list = text.copy()
+        #     if deep == 0:
+        #         space = 10
+        #     else:
+        #         if parent_type is None or parent_type == "CHANCE":
+        #             space = 15
+        #         else:
+        #             space = 10
+        #     if is_last_node is True:
+        #         text.append("\\" + "-" * space + "[D]")
+        #     else:
+        #         text.append("+" + "-" * space + "[D]")
+        #     return text
+
+        # def node_type_terminal(text: list, idx: int, is_last_node: bool) -> list:
+        #     text = text.copy()
+        #     name = self.nodes[idx].get("name")
+        #     if "ExpVal" in self.nodes[idx].keys():
+        #         value = self.nodes[idx].get("ExpVal")
+        #         if is_last_node is True:
+        #             text.append("\\" + "-" * 13 + "[T] {}={:.2f}".format(name, value))
+        #         else:
+        #             text.append("+" + "-" * 13 + "[T] {}={:.2f}".format(name, value))
+        #     else:
+        #         if is_last_node is True:
+        #             text.append("\\" + "-" * 13 + "[T] {}".format(name))
+        #         else:
+        #             text.append("+" + "-" * 13 + "[T] {}".format(name))
+        #     return text
+
+        # def node_type(
+        #     text: str, idx: int, is_last_node: bool, deep: int, parent_type: str
+        # ):
+        #     type_ = self.nodes[idx]["type"]
+        #     if type_ == "TERMINAL":
+        #         pass
+        #         # text = node_type_terminal(text, idx, is_last_node)
+        #     if type_ == "DECISION":
+        #         text = node_type_decision(text, is_last_node, deep, parent_type)
+        #     if type_ == "CHANCE":
+        #         text = node_type_chance(text, is_last_node, deep, parent_type)
+        #     return text
+
+        # def export_node(
+        #     idx: int,
+        #     is_last_node: bool,
+        #     max_deep: int,
+        #     deep: int,
+        #     strategy: bool,
+        #     parent_type: str,
+        # ) -> list:
+
+        #     if deep is None:
+        #         deep: int = 0
+
+        #     text = []
+
+        #     type_ = self.nodes[idx]["type"]
+
+        #     if deep == 0:
+
+        #         if "ExpVal" in self.nodes[idx].keys():
+
+        #             text.append(
+        #                 "| {:8.2f}".format(
+        #                     self.nodes[idx].get("ExpVal"),
+        #                 )
+        #             )
+
+        #         else:
+        #             text.append("|" + " " * 15)
+
+        #     else:
+
+        #         if is_last_node is True and type_ == "TERMINAL":
+        #             txtline = "\\"
+        #         else:
+        #             txtline = "|"
+
+        #         if "tag_prob" in self.nodes[idx].keys():
+        #             prob = self.nodes[idx].get("tag_prob")
+        #             txtline += " " + "{:0.3f} ".format(prob)[1:]
+        #         else:
+        #             txtline += " " * 11
+
+        #         if "tag_value" in self.nodes[idx].keys():
+        #             value = self.nodes[idx].get("tag_value")
+        #             txtline += "{:6.2f} ".format(value)
+        #         else:
+        #             txtline += " " * 11
+
+        #         if "ExpVal" in self.nodes[idx].keys():
+        #             expval = self.nodes[idx].get("ExpVal")
+        #             txtline += "{:8.2f} ".format(expval)
+        #         else:
+        #             txtline += " " * 11
+
+        #         text.append(txtline)
+
+        #     # if self._use_utility_fn is True:
+        #     #     text = newline(text, idx, "ExpUtl", "| ExpUtl={:.2f}")
+        #     #     text = newline(text, idx, "CE", "| CE={:.2f}")
+
+        #     text = node_type(text, idx, is_last_node, deep, parent_type)
+
+        #     if max_deep is None or (max_deep is not None and deep < max_deep):
+        #         deep += 1
+        #         text = export_branches(
+        #             text, idx, is_last_node, max_deep, deep, strategy, type_
+        #         )
+        #         deep -= 1
+
+        #     return text
+
+        # text = export_node(
+        #     idx=idx,
+        #     is_last_node=True,
+        #     max_deep=max_deep,
+        #     deep=None,
+        #     strategy=policy_suggestion,
+        #     parent_type=None,
+        # )
+
+        # print("\n".join(text))
+        #
+        # ---------------------------------------------------------------------------
+        #
+
+    #
+    # Pendiente
+    #
+    def pendiente(self):
+
+        self._compute_path_probabilities()
+
+        self._compute_risk_profiles()
+
+    #
+    #
+    #  I N T E R N A L   F U N C T I O N S
+    #
+    #
+
+    # =========================================================================
+    #
+    # __init__()
+    #
+    # =========================================================================
+
+    #
+    #
+    #   R E F A C T O R I N G!
+    #
+    #
 
     def print_nodes(self) -> None:
         """Prints the internal structure of the tree as a list of nodes."""
@@ -495,145 +1059,6 @@ class DecisionTree:
 
         return "\n".join(text)
 
-    def _build_call_kwargs(self) -> None:
-        #
-        # Builts kwargs for user function in terminal nodes
-        #
-        def set_fn_args(idx: int, args: dict) -> None:
-
-            args = args.copy()
-
-            if "tag_name" in self.nodes[idx].keys():
-                name = self.nodes[idx]["tag_name"]
-                value = self.nodes[idx]["tag_value"]
-                args = {**args, **{name: value}}
-
-            type_ = self.nodes[idx].get("type")
-
-            if type_ == "TERMINAL":
-                self.nodes[idx]["user_args"] = args
-            else:
-                if "successors" in self.nodes[idx].keys():
-                    for successor in self.nodes[idx]["successors"]:
-                        set_fn_args(idx=successor, args=args)
-
-        set_fn_args(idx=0, args={})
-
-    def _compute_expval_in_terminals_nodes(self) -> None:
-        #
-        def cumulative(**kwargs):
-            return sum(v for _, v in kwargs.items())
-
-        for node in self.nodes:
-
-            user_args = node.get("user_args")
-
-            if user_args:
-                #
-                name = node.get("name")
-                user_fn = self._variables[name].get("user_fn")
-                if user_fn is None:
-                    user_fn = cumulative
-                expval = user_fn(**user_args)
-                node["ExpVal"] = expval
-                #
-                exputil = self._util_fn(expval)
-                node["ExpUtl"] = exputil
-                node["CE"] = expval
-
-    def _compute_expval_in_intermediate_nodes(self):
-        #
-        def decision_node(idx: int) -> None:
-
-            max_: bool = self.nodes[idx].get("max")
-            successors: list = self.nodes[idx].get("successors")
-            forced: int = self.nodes[idx].get("forced")
-
-            expected_val: float = None
-            expected_utl: float = None
-            expected_ceq: float = None
-
-            optimal_successor: int = None
-
-            for i_succesor, successor in enumerate(successors):
-
-                dispatch(idx=successor)
-
-                expval = self.nodes[successor].get("ExpVal")
-                exputl = self.nodes[successor].get("ExpUtl")
-                cequiv = self.nodes[successor].get("CE")
-
-                expected_val = expval if expected_val is None else expected_val
-                expected_utl = exputl if expected_utl is None else expected_utl
-                expected_ceq = cequiv if expected_ceq is None else expected_ceq
-
-                optimal_successor = (
-                    successor if optimal_successor is None else optimal_successor
-                )
-
-                if forced is None and max_ is True and cequiv > expected_ceq:
-                    expected_val = expval
-                    expected_utl = exputl
-                    expected_ceq = cequiv
-                    optimal_successor = successor
-
-                if forced is None and max_ is False and cequiv < expected_ceq:
-                    expected_val = expval
-                    expected_utl = exputl
-                    expected_ceq = cequiv
-                    optimal_successor = successor
-
-                if forced is not None and i_succesor == forced:
-                    expected_val = expval
-                    expected_utl = exputl
-                    expected_ceq = cequiv
-                    optimal_successor = successor
-
-            self.nodes[idx]["ExpVal"] = expected_val
-            self.nodes[idx]["ExpUtl"] = expected_utl
-            self.nodes[idx]["CE"] = expected_ceq
-            self.nodes[idx]["optimal_successor"] = optimal_successor
-
-        def chance_node(idx: int) -> None:
-
-            successors: list = self.nodes[idx].get("successors")
-            forced: int = self.nodes[idx].get("forced")
-            expected_val: float = 0
-            expected_utl: float = 0
-
-            for i_successor, successor in enumerate(successors):
-                dispatch(idx=successor)
-                if forced is None:
-                    prob: float = self.nodes[successor].get("tag_prob")
-                    expval: float = self.nodes[successor].get("ExpVal")
-                    exputl: float = self.nodes[successor].get("ExpUtl")
-                    expected_val += prob * expval / 100.0
-                    expected_utl += prob * exputl / 100.0
-                else:
-                    if i_successor == forced:
-                        prob: float = self.nodes[successor].get("tag_prob")
-                        expval: float = self.nodes[successor].get("ExpVal")
-                        exputl: float = self.nodes[successor].get("ExpUtl")
-                        expected_val = expval
-                        expected_utl = exputl
-
-            self.nodes[idx]["ExpVal"] = expected_val
-            self.nodes[idx]["ExpUtl"] = expected_utl
-            self.nodes[idx]["CE"] = self._inv_fn(expected_utl)
-
-        def dispatch(idx: int) -> None:
-            #
-            # In this point, expected values in terminal nodes are already
-            # computed.
-            #
-            type_: str = self.nodes[idx].get("type")
-            if type_ == "DECISION":
-                decision_node(idx=idx)
-            if type_ == "CHANCE":
-                chance_node(idx=idx)
-
-        dispatch(idx=0)
-
     def _compute_path_probabilities(self) -> None:
         #
         def terminal_node(idx: int, cum_prob: float) -> None:
@@ -672,38 +1097,6 @@ class DecisionTree:
                 chance_node(idx=idx, cum_prob=cum_prob)
 
         dispatch(idx=0, cum_prob=100.0)
-
-    def _compute_selected_strategy(self) -> None:
-        #
-        def terminal_node(idx: int, selected_strategy: bool) -> None:
-            self.nodes[idx]["selected_strategy"] = selected_strategy
-
-        def chance_node(idx: int, selected_strategy: bool) -> None:
-            self.nodes[idx]["selected_strategy"] = selected_strategy
-            successors = self.nodes[idx].get("successors")
-            for successor in successors:
-                dispatch(idx=successor, selected_strategy=selected_strategy)
-
-        def decision_node(idx: int, selected_strategy: bool) -> None:
-            self.nodes[idx]["selected_strategy"] = selected_strategy
-            successors = self.nodes[idx].get("successors")
-            optimal_successor = self.nodes[idx].get("optimal_successor")
-            for successor in successors:
-                if successor == optimal_successor:
-                    dispatch(idx=successor, selected_strategy=selected_strategy)
-                else:
-                    dispatch(idx=successor, selected_strategy=False)
-
-        def dispatch(idx: int, selected_strategy: bool) -> None:
-            type_: str = self.nodes[idx].get("type")
-            if type_ == "TERMINAL":
-                terminal_node(idx=idx, selected_strategy=selected_strategy)
-            if type_ == "DECISION":
-                decision_node(idx=idx, selected_strategy=selected_strategy)
-            if type_ == "CHANCE":
-                chance_node(idx=idx, selected_strategy=selected_strategy)
-
-        dispatch(idx=0, selected_strategy=True)
 
     def _compute_risk_profiles(self):
         #
@@ -747,18 +1140,6 @@ class DecisionTree:
                 decision(idx=idx)
 
         dispatch(idx=0)
-
-    def evaluate(self):
-        """This function is used to evaluate the nodes of the decision tree
-        using the information in the variables.
-        """
-
-        self._build_call_kwargs()
-        self._compute_expval_in_terminals_nodes()
-        self._compute_expval_in_intermediate_nodes()
-        self._compute_path_probabilities()
-        self._compute_selected_strategy()
-        self._compute_risk_profiles()
 
     def plot(self, max_deep: int = None, policy_suggestion: bool = False):
         """Plots the tree.

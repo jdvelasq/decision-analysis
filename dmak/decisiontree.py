@@ -254,16 +254,14 @@ class DecisionTree:
         def outcomes_column() -> list:
             column: list = []
             for node in self._nodes:
-                type_: str = node["type"]
-                outcomes = []
-                if type_ == "DECISION":
-                    name = node["name"]
-                    branches = self.variables[name]["branches"]
-                    outcomes = [outcome for outcome, _ in branches]
-                if type_ == "CHANCE":
-                    name = node["name"]
-                    branches = self.variables[name]["branches"]
-                    outcomes = [outcome for _, outcome, _ in branches]
+                successors = node.get("successors")
+                if successors is not None:
+                    outcomes = [
+                        self._nodes[successor].get("tag_value")
+                        for successor in successors
+                    ]
+                else:
+                    outcomes = []
                 column.append(outcomes)
 
             maxwidth: int = max(
@@ -286,11 +284,22 @@ class DecisionTree:
             column: list = []
             for node in self._nodes:
                 type_: str = node["type"]
-                probabilities = []
                 if type_ == "CHANCE":
-                    name = node["name"]
-                    branches = self.variables[name]["branches"]
-                    probabilities = [probability for probability, _, _ in branches]
+                    successors = node.get("successors")
+                    probabilities = [
+                        self._nodes[successor].get("tag_prob")
+                        for successor in successors
+                    ]
+                else:
+                    probabilities = []
+
+                #
+
+                # probabilities = []
+                # if type_ == "CHANCE":
+                #     name = node["name"]
+                #     branches = self.variables[name]["branches"]
+                #     probabilities = [probability for probability, _, _ in branches]
                 column.append(probabilities)
 
             maxwidth: int = max(
@@ -305,7 +314,7 @@ class DecisionTree:
             maxwidth: int = max([len(txtline) for txtline in column])
             formatstr: str = "{:<" + str(maxwidth) + "s}"
             column = [
-                formatstr.format("OUTCOMES"),
+                formatstr.format("PROBABILIES"),
                 formatstr.format(""),
             ] + column
             return column
@@ -323,6 +332,49 @@ class DecisionTree:
         ]
 
         return "\n".join(lines)
+
+    # -------------------------------------------------------------------------
+    #
+    #  D E P E N D E N T    P R O B A B I L I T I E S
+    #
+    #
+
+    def set_dependent_probabilities(
+        self, variable: str, depends_on: Any, probabilities: dict
+    ) -> None:
+        """Set probability values in a chance node dependent on previous nodes"""
+
+        def dispatch(idx: int, args: dict) -> None:
+
+            args = args.copy()
+
+            if "tag_name" in self._nodes[idx].keys():
+                tag_name = self._nodes[idx]["tag_name"]
+                tag_value = self._nodes[idx]["tag_value"]
+                args = {**args, **{tag_name: tag_value}}
+
+            name = self._nodes[idx].get("name")
+            if name == variable:
+
+                if isinstance(depends_on, list):
+                    key = (args[term] for term in depends_on)
+                else:
+                    key = args[depends_on]
+
+                probs = probabilities[key]
+
+                for i_successor, successor in enumerate(self._nodes[idx]["successors"]):
+
+                    self._nodes[successor]["tag_prob"] = probs[i_successor]
+
+                    # print("!!! ", name, probs[i_branch])
+                    # print(successor)
+
+            if "successors" in self._nodes[idx].keys():
+                for successor in self._nodes[idx]["successors"]:
+                    dispatch(idx=successor, args=args)
+
+        dispatch(idx=0, args={})
 
     # -------------------------------------------------------------------------
     #
@@ -918,15 +970,6 @@ class DecisionTree:
     # __init__()
     #
     # =========================================================================
-
-    # def risk_profile(self, idx: int = 0, cumulative: bool = False) -> tuple:
-    #     """Returns the values and probabilities of a risk profile in the node `idx`."""
-    #     keys = self._nodes[idx]["RiskProfile"].keys()
-    #     values = sorted(keys)
-    #     probabilities = [self._nodes[idx]["RiskProfile"][k] for k in keys]
-    #     if cumulative is True:
-    #         probabilities = np.cumsum(probabilities).tolist()
-    #     return values, probabilities
 
     def export_text(
         self,

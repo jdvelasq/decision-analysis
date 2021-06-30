@@ -61,8 +61,8 @@ def supertree_bid():
     return nodes
 
 
-def supertree_bid_213():
-    """SuperTree basic bid example."""
+def supertree_bid_2134():
+    """SuperTree basic bid example nodes 2-1-3-4."""
     nodes = Nodes()
 
     #
@@ -88,6 +88,45 @@ def supertree_bid_213():
     nodes.chance(
         name="cost",
         branches=[(0.25, 200, "profit"), (0.50, 400, "profit"), (0.25, 600, "profit")],
+    )
+
+    #
+    # Profit
+    #
+    def profit(bid, cost, compbid):
+        return (bid - cost) * (1 if bid < compbid else 0)
+
+    nodes.terminal(name="profit", user_fn=profit)
+
+    return nodes
+
+
+def supertree_bid_2314():
+    """SuperTree basic bid example nodes 2-3-1-4."""
+    nodes = Nodes()
+
+    #
+    # Competitor proposal
+    #
+    nodes.chance(
+        name="compbid",
+        branches=[(0.35, 400, "cost"), (0.50, 600, "cost"), (0.15, 800, "cost")],
+    )
+
+    #
+    # Production costs
+    #
+    nodes.chance(
+        name="cost",
+        branches=[(0.25, 200, "bid"), (0.50, 400, "bid"), (0.25, 600, "bid")],
+    )
+    #
+    # Bid proposal
+    #
+    nodes.decision(
+        name="bid",
+        branches=[(500, "profit"), (700, "profit")],
+        max_=True,
     )
 
     #

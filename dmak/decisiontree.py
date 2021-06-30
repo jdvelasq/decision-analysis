@@ -771,8 +771,29 @@ class DecisionTree:
             plt.gca().set_xlabel("Expected values")
             plt.gca().set_ylabel("Probability")
 
+        def plot_histogram_cumulative():
+
+            risk_profile = self._nodes[idx].get("RiskProfile").copy()
+            values = sorted(risk_profile.keys())
+            probs = [risk_profile[value] for value in values]
+
+            cumprobs = [0] + np.cumsum(probs).tolist()
+            values = values + [values[-1]]
+
+            plt.gca().step(values, cumprobs, "k")
+
+            plt.gca().spines["bottom"].set_visible(False)
+            plt.gca().spines["left"].set_visible(False)
+            plt.gca().spines["right"].set_visible(False)
+            plt.gca().spines["top"].set_visible(False)
+
+            plt.gca().set_xlabel("Expected values")
+            plt.gca().set_ylabel("Cumulative probability")
+
         if cumulative is False and single is True:
             plot_histogram_single()
+        if cumulative is True and single is True:
+            plot_histogram_cumulative()
 
     #
     #

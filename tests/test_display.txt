@@ -1,0 +1,57 @@
+>>> from dmak.data import supertree_bid_213
+>>> nodes = supertree_bid_213()
+>>> nodes
+0  C compbid   .350  400.00 bid       
+               .500  600.00 bid       
+               .150  800.00 bid       
+1  D bid             500.00 cost      
+                     700.00 cost      
+2  C cost      .250  200.00 profit    
+               .500  400.00 profit    
+               .250  600.00 profit    
+3  T profit    
+
+>>> from dmak.decisiontree import DecisionTree
+>>> tree = DecisionTree(
+...     variables=nodes,
+...     initial_variable="compbid"
+... )
+>>> tree
+STRUCTURE    NAMES    OUTCOMES     OUTCOMES        
+<BLANKLINE>
+0C1 10 19    compbid  400 600 800  .350 .500 .150  
+1D2 6        bid      500 700                      
+2C3 4 5      cost     200 400 600  .250 .500 .250  
+3T           profit                                
+4T           profit                                
+5T           profit                                
+6C7 8 9      cost     200 400 600  .250 .500 .250  
+7T           profit                                
+8T           profit                                
+9T           profit                                
+10D11 15     bid      500 700                      
+11C12 13 14  cost     200 400 600  .250 .500 .250  
+12T          profit                                
+13T          profit                                
+14T          profit                                
+15C16 17 18  cost     200 400 600  .250 .500 .250  
+16T          profit                                
+17T          profit                                
+18T          profit                                
+19D20 24     bid      500 700                      
+20C21 22 23  cost     200 400 600  .250 .500 .250  
+21T          profit                                
+22T          profit                                
+23T          profit                                
+24C25 26 27  cost     200 400 600  .250 .500 .250  
+25T          profit                                
+26T          profit                                
+27T          profit                                
+
+
+
+>>> tree.evaluate()
+>>> tree.rollback()
+95.0
+
+>>> tree.display()

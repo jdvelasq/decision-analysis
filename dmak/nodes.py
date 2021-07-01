@@ -74,24 +74,37 @@ class Nodes:
         >>> nodes.chance(
         ...     name="ChanceNode",
         ...     branches=[
-        ...         (.20, 100, "next-node"),
+        ...         (.30, 100, "next-node"),
         ...         ('branch-1', .30, 200, "next-node"),
-        ...         ('a very very long name', .50, 300, "next-node"),
+        ...         ('a very very long name', .30, 300, "next-node"),
         ...     ],
         ... )
         >>> nodes # doctest: +NORMALIZE_WHITESPACE
-        0  C branch-0  branch-0             .200  100.00 next-node
-                       branch-1             .300  200.00 next-node
-                       a very very [...]    .500  300.00 next-node
+        0  C branch-0  branch-0             .333  100.00 next-node
+                       branch-1             .333  200.00 next-node
+                       a very very [...]    .333  300.00 next-node
 
 
         """
+        #
+        # Checks branch name in branches.
+        #
         for i_branch, branch in enumerate(branches):
             if len(branch) == 4:
                 continue
             name: str = "branch-{}".format(i_branch)
             prob, value, next_node = branch
             branches[i_branch] = (name, prob, value, next_node)
+
+        #
+        # Normalize probability
+        #
+        probabilities = [prob for _, prob, _, _ in branches]
+        if sum(probabilities) != 1.0:
+            probabilities = [prob / sum(probabilities) for prob in probabilities]
+            for i_branch, (branch, prob) in enumerate(zip(branches, probabilities)):
+                branch_name, _, value, next_node = branch
+                branches[i_branch] = (branch_name, prob, value, next_node)
 
         self.data[name] = {
             "type": "CHANCE",
@@ -143,8 +156,7 @@ class Nodes:
         ...    ],
         ...    max_=True,
         ... )
-
-        #>>> nodes # doctest: +NORMALIZE_WHITESPACE
+        # >>> nodes # doctest: +NORMALIZE_WHITESPACE
 
         """
 

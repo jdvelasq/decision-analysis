@@ -31,32 +31,22 @@ from graphviz import Digraph
 from .nodes import Nodes
 
 
-def _exp_utility_fn(param: float):
+def _exp_utility_fn(risk_tolerance: float):
     def util_fn(value: float) -> float:
-        return 1.0 - np.exp(-value / param)
+        return 1.0 - np.exp(-value / risk_tolerance)
 
     def inv_fn(value: float) -> float:
-        return -1.0 * param * np.log(1 - value)
+        return -1.0 * risk_tolerance * np.log(1 - np.minimum(0.9999, value))
 
     return util_fn, inv_fn
 
 
-def _log_utility_fn(param: float):
+def _log_utility_fn(risk_tolerance: float):
     def util_fn(value: float) -> float:
-        return np.log(value + param)
+        return np.log(value + risk_tolerance)
 
     def inv_fn(value: float):
-        return np.exp(value) - param
-
-    return util_fn, inv_fn
-
-
-def _sqrt_utility_fn(param: float):
-    def util_fn(value: float) -> float:
-        return np.sqrt(value + param)
-
-    def inv_fn(value: float):
-        return np.power(value, 2) - param
+        return np.exp(value) - risk_tolerance
 
     return util_fn, inv_fn
 
@@ -87,7 +77,6 @@ class DecisionTree:
 
         * `log`: Logarithmic utility function `U(x) = log(x + param)`.
 
-        * `sqrt`: Squared-root utility function `U(x) = + sqrt(x + param)`.
 
     :param param:
         Value of the parameter `param` in the utility function.
@@ -105,26 +94,22 @@ class DecisionTree:
         variables: Nodes,
         initial_variable: str,
         utility: str = None,
-        param: float = 0,
+        risk_tolerance: float = 0,
+        display: str = "eu",
     ) -> None:
 
         self._nodes = None
         self._variables = variables.copy()
         self._initial_variable = initial_variable
-        self._use_utility_fn = True
+        self._display = display
 
-        if utility is None:
-            util_fn = _dummy_fn
-            inv_fn = _dummy_fn
-            self._use_utility_fn = False
-        if utility == "exp":
-            util_fn, inv_fn = _exp_utility_fn(param)
-        if utility == "log":
-            util_fn, inv_fn = _log_utility_fn(param)
-        if utility == "sqrt":
-            util_fn, inv_fn = _sqrt_utility_fn(param)
-        self._util_fn = util_fn
-        self._inv_fn = inv_fn
+        #
+        # Risk analysis
+        #
+        self._use_utility_fn = False
+        self._util_fn = None
+        self._inv_fn = None
+        self._set_utitity_fn(utility, risk_tolerance)
 
         #
         # Prepares the empty structure of the tree
@@ -138,6 +123,25 @@ class DecisionTree:
     #
     # Auxiliary functions
     #
+    def set_display(self, option: str) -> None:
+        if option not in ["ev", "eu", "ce"]:
+            raise ValueError(
+                'Value {} not is a valid option ("ev", "eu", "ce")'.format(option)
+            )
+        self._display = option
+
+    def _set_utitity_fn(self, utility, risk_tolerance) -> None:
+
+        if utility is not None:
+            self._use_utility_fn = True
+            self._util_fn, self._inv_fn = {
+                "exp": _exp_utility_fn(risk_tolerance),
+                "log": _log_utility_fn(risk_tolerance),
+            }[utility]
+        else:
+            self._util_fn = _dummy_fn
+            self._inv_fn = _dummy_fn
+            self._use_utility_fn = False
 
     def _build_skeleton(self) -> None:
         #
@@ -296,14 +300,6 @@ class DecisionTree:
                     ]
                 else:
                     probabilities = []
-
-                #
-
-                # probabilities = []
-                # if type_ == "CHANCE":
-                #     name = node["name"]
-                #     branches = self.variables[name]["branches"]
-                #     probabilities = [probability for probability, _, _ in branches]
                 column.append(probabilities)
 
             maxwidth: int = max(
@@ -311,7 +307,12 @@ class DecisionTree:
             )
             formatstr: str = "{:<" + str(maxwidth) + "s}"
             column = [
-                [formatstr.format("{:.3f}".format(prob))[1:] for prob in txtline]
+                [
+                    formatstr.format("{:.3f}".format(prob))[1:]
+                    if prob < 1.0
+                    else "1.00"
+                    for prob in txtline
+                ]
                 for txtline in column
             ]
             column: list = [" ".join(txtline) for txtline in column]
@@ -408,7 +409,6 @@ class DecisionTree:
                 outcome = outcomes[key]
 
                 for i_successor, successor in enumerate(self._nodes[idx]["successors"]):
-
                     self._nodes[successor]["tag_value"] = outcome[i_successor]
 
             if "successors" in self._nodes[idx].keys():
@@ -439,10 +439,9 @@ class DecisionTree:
                 if user_fn is None:
                     user_fn = cumulative
                 expval = user_fn(**user_args)
-                node["ExpVal"] = expval
                 #
-                exputil = self._util_fn(expval)
-                node["ExpUtl"] = exputil
+                node["ExpVal"] = expval
+                node["ExpUtl"] = self._util_fn(expval)
                 node["CE"] = expval
 
         self._is_evaluated = True
@@ -506,13 +505,13 @@ class DecisionTree:
                     successor if optimal_successor is None else optimal_successor
                 )
 
-                if forced is None and max_ is True and cequiv > expected_ceq:
+                if forced is None and max_ is True and exputl > expected_utl:
                     expected_val = expval
                     expected_utl = exputl
                     expected_ceq = cequiv
                     optimal_successor = successor
 
-                if forced is None and max_ is False and cequiv < expected_ceq:
+                if forced is None and max_ is False and exputl < expected_utl:
                     expected_val = expval
                     expected_utl = exputl
                     expected_ceq = cequiv
@@ -636,14 +635,22 @@ class DecisionTree:
                 tag_prob = self._nodes[idx].get("tag_prob")
                 tag_value = self._nodes[idx].get("tag_value")
                 expval = self._nodes[idx].get("ExpVal")
+                exputl = self._nodes[idx].get("ExpUtl")
+                cequiv = self._nodes[idx].get("CE")
 
                 text = " "
                 if tag_prob is not None:
                     text += "{:.3f} ".format(tag_prob)[1:]
                 if tag_value is not None:
                     text += "{:8.2f} ".format(tag_value)
-                if expval is not None:
-                    text += "{:8.2f} ".format(expval)
+                if self._use_utility_fn is False or self._display == "ev":
+                    if expval is not None:
+                        text += "{:8.2f} ".format(expval)
+                else:
+                    if exputl is not None and self._display == "eu":
+                        text += "{:8.2f} ".format(exputl)
+                    if cequiv is not None and self._display == "ce":
+                        text += "{:8.2f} ".format(cequiv)
 
                 return text
 
@@ -945,6 +952,11 @@ class DecisionTree:
         if cumulative is True and single is False:
             plot_step_multiple(idx)
 
+    # -------------------------------------------------------------------------
+    #
+    #  P R O B A B I L I S T I  C     S E N S I T I V I T Y
+    #
+    #
     def probabilistic_sensitivity(self, varname: str) -> None:
         """Display a probabilistic sensitivity plot for a chance node.
 
@@ -1065,6 +1077,132 @@ class DecisionTree:
         self._build_call_kwargs()
         self.evaluate()
         self.rollback()
+
+    # -------------------------------------------------------------------------
+    #
+    #  R I S K    A T T I T U D E
+    #
+    #
+    def risk_attitude_sensitivity(
+        self, utilitiy_fn: str, risk_tolerance: float
+    ) -> None:
+        """Plots a risk tolrecance plot."""
+
+        def _risk_attitude_decision():
+
+            results = {}
+            successors = self._nodes[0].get("successors")
+            tag_values = [
+                self._nodes[successor].get("tag_value") for successor in successors
+            ]
+            for tag_value in tag_values:
+                results[tag_value] = []
+
+            risk_aversions = np.linspace(
+                start=0, stop=1.0 / risk_tolerance, num=11
+            ).tolist()
+
+            for risk_aversion in risk_aversions:
+
+                if risk_aversion == np.float64(0):
+                    self._set_utitity_fn(None, 0)
+                else:
+                    self._set_utitity_fn(utilitiy_fn, 1.0 / risk_aversion)
+
+                self.evaluate()
+                self.rollback()
+
+                ceqs = [self._nodes[successor].get("CE") for successor in successors]
+                for ceq, tag_value in zip(ceqs, tag_values):
+                    results[tag_value].append(ceq)
+
+            # for tag_value in tag_values:
+            #    print("branch = ", tag_value, results[tag_value])
+            linefmts = ["-k", "--k", ".-k", "-g", "--g", ".-g", "-r", "--r", ".-r"]
+            for linefmt, tag_value in zip(linefmts, tag_values):
+                plt.gca().plot(
+                    risk_aversions,
+                    results[tag_value],
+                    linefmt,
+                    label=str(tag_value),
+                )
+
+            labels = [
+                "Infinity"
+                if risk_aversion == np.float(0)
+                else str(int(round(1 / risk_aversion, 0)))
+                for risk_aversion in risk_aversions
+            ]
+            # plt.xticks(risk_aversions, labels, rotation="vertical")
+            plt.xticks(risk_aversions, labels)
+
+            plt.gca().spines["bottom"].set_visible(False)
+            plt.gca().spines["left"].set_visible(False)
+            plt.gca().spines["right"].set_visible(False)
+            plt.gca().spines["top"].set_visible(False)
+            plt.gca().set_ylabel("Certainty equivalent")
+            plt.gca().set_xlabel("Risk tolerance")
+            plt.gca().legend()
+            plt.grid()
+
+        def _risk_attitude_chance():
+
+            results = {}
+            successors = self._nodes[0].get("successors")
+            tag_values = [
+                self._nodes[successor].get("tag_value") for successor in successors
+            ]
+            for tag_value in tag_values:
+                results[tag_value] = []
+
+            risk_tolerances = np.linspace(
+                start=risk_tolerance, stop=1000, num=50
+            ).tolist()
+
+            for rtol in risk_tolerances:
+
+                self._set_utitity_fn(utilitiy_fn, rtol)
+                self.evaluate()
+                self.rollback()
+                expvals = [
+                    self._nodes[successor].get("ExpVal") for successor in successors
+                ]
+                for expval, tag_value in zip(expvals, tag_values):
+                    results[tag_value].append(expval)
+
+            for tag_value in tag_values:
+                plt.gca().plot(
+                    risk_tolerances, results[tag_value], label=str(tag_value)
+                )
+
+            plt.gca().spines["bottom"].set_visible(False)
+            plt.gca().spines["left"].set_visible(False)
+            plt.gca().spines["right"].set_visible(False)
+            plt.gca().spines["top"].set_visible(False)
+            plt.gca().set_ylabel("Expected values")
+            plt.gca().set_xlabel("Risk tolerance")
+            plt.gca().invert_xaxis()
+            plt.gca().legend()
+            plt.grid()
+
+        orig_util_fn = self._util_fn
+        orig_inv_fn = self._inv_fn
+        orig_use_utitlity_fn = self._use_utility_fn
+
+        type_ = self._nodes[0].get("type")
+        if type_ == "DECISION":
+            _risk_attitude_decision()
+        if type_ == "CHANCE":
+            _risk_attitude_chance()
+
+        self._util_fn = orig_util_fn
+        self._inv_fn = orig_inv_fn
+        self._use_utility_fn = orig_use_utitlity_fn
+        self.rollback()
+
+    #
+    #
+    #
 
     #
     #

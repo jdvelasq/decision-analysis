@@ -2,7 +2,7 @@
 Node types
 -------------------------------------------------------------------------------
 
-This module is used to create and characterize the nodes of the tree. The 
+This module is used to create and characterize the nodes of the tree. The
 package implements three types of nodes:
 
 * Terminal nodes.
@@ -14,8 +14,11 @@ package implements three types of nodes:
 
 """
 
-from typing import Any, List
 import copy
+from textwrap import shorten
+from typing import Any, List
+
+NAMEMAXLEN = 20
 
 
 class Nodes:
@@ -48,6 +51,8 @@ class Nodes:
         :param branches:
             A list of tuples, where each tuple contains the following information:
 
+            * Name of the branch.
+
             * Probability.
 
             * Associated value to the branch.
@@ -70,14 +75,23 @@ class Nodes:
         ...     name="ChanceNode",
         ...     branches=[
         ...         (.20, 100, "next-node"),
-        ...         (.30, 200, "next-node"),
-        ...         (.50, 300, "next-node"),
+        ...         ('branch-1', .30, 200, "next-node"),
+        ...         ('a very very long name', .50, 300, "next-node"),
         ...     ],
         ... )
-        >>> nodes.summary() # doctest: +NORMALIZE_WHITESPACE
+        >>> nodes # doctest: +NORMALIZE_WHITESPACE
+        0  C branch-0  branch-0             .200  100.00 next-node
+                       branch-1             .300  200.00 next-node
+                       a very very [...]    .500  300.00 next-node
 
 
         """
+        for i_branch, branch in enumerate(branches):
+            if len(branch) == 4:
+                continue
+            name: str = "branch-{}".format(i_branch)
+            prob, value, next_node = branch
+            branches[i_branch] = (name, prob, value, next_node)
 
         self.data[name] = {
             "type": "CHANCE",
@@ -97,9 +111,10 @@ class Nodes:
         :param name:
             Name assigned to the node.
 
-
         :param branches:
             A list of tuples, where each tuple contains the following information:
+
+            * Name of the branch.
 
             * Associated value to the branch.
 
@@ -108,10 +123,9 @@ class Nodes:
         :param max_:
             When it is `True`, selects the branch with the maximum expected value.
 
-
         :param forced_branch:
-            When used, this parameter uses the only the indicated branch in the
-            computations. It is equivalent to know with certainty what state of
+            When used, this parameter forces the seleccion of the indicated branch
+            in the computations. It is equivalent to know with certainty what state of
             ther world will occurrs. It is used to analyze the impact of the
             occurrence of a certain event on the decision.
 
@@ -124,25 +138,22 @@ class Nodes:
         ...     name='DecisionNode',
         ...     branches=[
         ...         (100,  'next-node'),
-        ...         (200,  'next-node'),
-        ...         (300,  'next-node'),
-        ...         (400,  'next-node'),
+        ...         ('branch-1', 200,  'next-node'),
+        ...         ('a long long very long name', 400,  'next-node'),
         ...    ],
         ...    max_=True,
         ... )
-        >>> nodes.summary() # doctest: +NORMALIZE_WHITESPACE
-        Node 0
-            Type: DECISION - Maximum Payoff
-            Name: DecisionNode
-            Branches:
-                                 Value  Next Node
-                               100.000  next-node
-                               200.000  next-node
-                               300.000  next-node
-                               400.000  next-node
-        <BLANKLINE>
+
+        #>>> nodes # doctest: +NORMALIZE_WHITESPACE
 
         """
+
+        for i_branch, branch in enumerate(branches):
+            if len(branch) == 3:
+                continue
+            name: str = "branch-{}".format(i_branch)
+            value, next_node = branch
+            branches[i_branch] = (name, value, next_node)
 
         self.data[name] = {
             "type": "DECISION",
@@ -153,7 +164,6 @@ class Nodes:
 
     def terminal(self, name: str, user_fn: Any = None) -> None:
         """Adds a decision node to the bag.
-
 
         :param name:
             Name assigned to the node.
@@ -172,12 +182,9 @@ class Nodes:
         >>> def user_fn(x):
         ...     return x
         >>> nodes.terminal(name='terminal_node', user_fn=user_fn)
-        >>> nodes.summary() # doctest: +NORMALIZE_WHITESPACE
-        Node 0
-            Type: TERMINAL
-            Name: terminal_node
-            User fn: (User fn)
-        <BLANKLINE>
+
+        # >>> nodes # doctest: +NORMALIZE_WHITESPACE
+
 
         """
 
@@ -196,8 +203,10 @@ class Nodes:
         def repr_chance(text: list, idx: int, name: str) -> list:
             text = text[:]
             for branch in self.data[name]["branches"]:
-                prob, outcome, successor = branch
-                branch_text = "{:.3f}".format(prob)[1:] if prob < 1.0 else "1.00"
+                name_, prob, outcome, successor = branch
+                fmt = "{:<" + str(NAMEMAXLEN) + "s}"
+                branch_text = fmt.format(shorten(name_, width=NAMEMAXLEN)) + " "
+                branch_text += "{:.3f}".format(prob)[1:] if prob < 1.0 else "1.00"
                 branch_text += "  {:6.2f} {:<10s}".format(outcome, successor)
                 if branch == self.data[name]["branches"][0]:
                     branch_text = "{:<2d} C {:<10s}".format(idx, name) + branch_text
@@ -229,78 +238,78 @@ class Nodes:
                 text = repr_decision(text, idx, name)
         return "\n".join(text)
 
-    def summary(self):
-        def repr_decision(name, node):
+    # def summary(self):
+    #     def repr_decision(name, node):
 
-            text = []
-            text.append("    Type: " + node.get("type"))
-            text[-1] += (
-                " - Maximum Payoff" if node.get("max") is True else " - Minimum Payoff"
-            )
-            text.append("    Name: " + name)
-            text.append("    Branches:")
-            text.append("                         Value  Next Node")
-            for (outcome, next_node) in node.get("branches"):
-                text.append(
-                    "                  {:12.3f}  {:s}".format(outcome, next_node)
-                )
-            text.append("")
-            return text
+    #         text = []
+    #         text.append("    Type: " + node.get("type"))
+    #         text[-1] += (
+    #             " - Maximum Payoff" if node.get("max") is True else " - Minimum Payoff"
+    #         )
+    #         text.append("    Name: " + name)
+    #         text.append("    Branches:")
+    #         text.append("                         Value  Next Node")
+    #         for (outcome, next_node) in node.get("branches"):
+    #             text.append(
+    #                 "                  {:12.3f}  {:s}".format(outcome, next_node)
+    #             )
+    #         text.append("")
+    #         return text
 
-        def repr_chance(name, node):
-            text = []
-            text.append("    Type: " + node.get("type"))
-            text.append("    Name: " + name)
-            text.append("    Branches:")
-            text.append("          Chance         Value  Next Node")
-            for (prob, outcome, next_node) in node.get("branches"):
-                text.append(
-                    "           {:6.2f}  {:12.3f}  {:s}".format(
-                        prob, outcome, next_node
-                    )
-                )
-            text.append("")
-            return text
+    #     def repr_chance(name, node):
+    #         text = []
+    #         text.append("    Type: " + node.get("type"))
+    #         text.append("    Name: " + name)
+    #         text.append("    Branches:")
+    #         text.append("          Chance         Value  Next Node")
+    #         for (prob, outcome, next_node) in node.get("branches"):
+    #             text.append(
+    #                 "           {:6.2f}  {:12.3f}  {:s}".format(
+    #                     prob, outcome, next_node
+    #                 )
+    #             )
+    #         text.append("")
+    #         return text
 
-        def repr_terminal(name, node):
-            text = []
-            text.append("    Type: " + node.get("type"))
-            text.append("    Name: " + name)
-            if node.get("user_fn") is None:
-                text.append("    User fn: (cumulative)")
-            else:
-                text.append("    User fn: (User fn)")
-            text.append("")
-            return text
+    #     def repr_terminal(name, node):
+    #         text = []
+    #         text.append("    Type: " + node.get("type"))
+    #         text.append("    Name: " + name)
+    #         if node.get("user_fn") is None:
+    #             text.append("    User fn: (cumulative)")
+    #         else:
+    #             text.append("    User fn: (User fn)")
+    #         text.append("")
+    #         return text
 
-        text = []
-        for i_node, (name, node) in enumerate(self.data.items()):
-            text.append("Node {}".format(i_node))
-            if node.get("type") == "DECISION":
-                text += repr_decision(name=name, node=node)
-            if node.get("type") == "CHANCE":
-                text += repr_chance(name=name, node=node)
-            if node.get("type") == "TERMINAL":
-                text += repr_terminal(name=name, node=node)
+    #     text = []
+    #     for i_node, (name, node) in enumerate(self.data.items()):
+    #         text.append("Node {}".format(i_node))
+    #         if node.get("type") == "DECISION":
+    #             text += repr_decision(name=name, node=node)
+    #         if node.get("type") == "CHANCE":
+    #             text += repr_chance(name=name, node=node)
+    #         if node.get("type") == "TERMINAL":
+    #             text += repr_terminal(name=name, node=node)
 
-        return print("\n".join(text))
+    #     return print("\n".join(text))
 
-    def get_top_bottom_branches(self, name):
-        """Gets the position of the branches with top and bottom values."""
-        branches = self.data[name].get("branches")
-        type_ = self.data[name].get("type")
-        if type_ == "DECISION":
-            values = [branch[0] for branch in branches]
-        if type_ == "CHANCE":
-            values = [branch[1] for branch in branches]
-        top_branch = values.index(max(values))
-        bottom_branch = values.index(min(values))
-        return top_branch, bottom_branch
+    # def get_top_bottom_branches(self, name):
+    #     """Gets the position of the branches with top and bottom values."""
+    #     branches = self.data[name].get("branches")
+    #     type_ = self.data[name].get("type")
+    #     if type_ == "DECISION":
+    #         values = [branch[0] for branch in branches]
+    #     if type_ == "CHANCE":
+    #         values = [branch[1] for branch in branches]
+    #     top_branch = values.index(max(values))
+    #     bottom_branch = values.index(min(values))
+    #     return top_branch, bottom_branch
 
-    def set_probabitlities_to_zero(self, name):
-        """Set to zero the probabilities of the all branchs of variable."""
-        for i_branch, branch in enumerate(self.data[name]["branches"]):
-            self.data[name]["branches"][i_branch] = (0.0, branch[1], branch[2])
+    # def set_probabitlities_to_zero(self, name):
+    #     """Set to zero the probabilities of the all branchs of variable."""
+    #     for i_branch, branch in enumerate(self.data[name]["branches"]):
+    #         self.data[name]["branches"][i_branch] = (0.0, branch[1], branch[2])
 
 
 if __name__ == "__main__":

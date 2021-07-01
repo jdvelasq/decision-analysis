@@ -16,7 +16,9 @@ def stree_guide():
         )
 
     nodes = Nodes()
-    nodes.decision(name="bid", branches=[(500, "compbid"), (700, "compbid")], max_=True)
+    nodes.decision(
+        name="bid", branches=[(500, "compbid"), (700, "compbid")], maximize=True
+    )
     nodes.chance(
         name="compbid",
         branches=[(0.35, 400, "cost"), (0.50, 600, "cost"), (0.15, 800, "cost")],

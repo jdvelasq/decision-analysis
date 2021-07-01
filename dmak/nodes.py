@@ -154,7 +154,7 @@ class Nodes:
         ...         ('branch-1', 200,  'next-node'),
         ...         ('a long long very long name', 400,  'next-node'),
         ...    ],
-        ...    max_=True,
+        ...    maximize=True,
         ... )
         >>> nodes # doctest: +NORMALIZE_WHITESPACE
         0  D DecisionNode... 100                   100.00 next-node
@@ -194,9 +194,9 @@ class Nodes:
         user-defined function to compute its expected value.
 
         >>> nodes = Nodes()
-        >>> def user_fn(x):
+        >>> def payoff_fn(x):
         ...     return x
-        >>> nodes.terminal(name='terminal_node', user_fn=user_fn)
+        >>> nodes.terminal(name='terminal_node', payoff_fn=payoff_fn)
         >>> nodes # doctest: +NORMALIZE_WHITESPACE
         0  T terminal_node
 

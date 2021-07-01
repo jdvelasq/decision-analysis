@@ -177,7 +177,7 @@ class Nodes:
             "forced_branch": forced_branch,
         }
 
-    def terminal(self, name: str, user_fn: Any = None) -> None:
+    def terminal(self, name: str, payoff_fn: Any = None) -> None:
         """Adds a decision node to the bag.
 
         :param name:
@@ -204,7 +204,7 @@ class Nodes:
         """
         self.data[name] = {
             "type": "TERMINAL",
-            "user_fn": user_fn,
+            "payoff_fn": payoff_fn,
             "forced_branch": None,
         }
 

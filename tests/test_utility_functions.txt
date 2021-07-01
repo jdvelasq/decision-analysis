@@ -1,0 +1,16 @@
+
+
+
+
+>>> from dmak.examples import supertree_bid
+>>> from dmak.decisiontree import DecisionTree
+>>> nodes = supertree_bid()
+>>> tree = DecisionTree(
+...     variables=nodes,
+...     initial_variable="bid",
+...     utility='exp',
+...     risk_tolerance=75,
+... )
+>>> tree.evaluate()
+>>> tree.rollback()
+

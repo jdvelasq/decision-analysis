@@ -80,9 +80,9 @@ class Nodes:
         ...     ],
         ... )
         >>> nodes # doctest: +NORMALIZE_WHITESPACE
-        0  C branch-0  branch-0             .333  100.00 next-node
-                       branch-1             .333  200.00 next-node
-                       a very very [...]    .333  300.00 next-node
+        0  C ChanceNode      100                  .333 100.00 next-node
+                             branch-1             .333 200.00 next-node
+                             a very very long...  .333 300.00 next-node
 
 
         """
@@ -92,9 +92,9 @@ class Nodes:
         for i_branch, branch in enumerate(branches):
             if len(branch) == 4:
                 continue
-            name: str = "branch-{}".format(i_branch)
             prob, value, next_node = branch
-            branches[i_branch] = (name, prob, value, next_node)
+            name_: str = str(value)
+            branches[i_branch] = (name_, prob, value, next_node)
 
         #
         # Normalize probability
@@ -148,7 +148,7 @@ class Nodes:
 
         >>> nodes = Nodes()
         >>> nodes.decision(
-        ...     name='DecisionNode',
+        ...     name='DecisionNode-------------',
         ...     branches=[
         ...         (100,  'next-node'),
         ...         ('branch-1', 200,  'next-node'),
@@ -156,16 +156,19 @@ class Nodes:
         ...    ],
         ...    max_=True,
         ... )
-        # >>> nodes # doctest: +NORMALIZE_WHITESPACE
+        >>> nodes # doctest: +NORMALIZE_WHITESPACE
+        0  D DecisionNode... 100                   100.00 next-node
+                             branch-1              200.00 next-node
+                             a long long very...   400.00 next-node
+
 
         """
-
         for i_branch, branch in enumerate(branches):
             if len(branch) == 3:
                 continue
-            name: str = "branch-{}".format(i_branch)
             value, next_node = branch
-            branches[i_branch] = (name, value, next_node)
+            name_: str = str(value)
+            branches[i_branch] = (name_, value, next_node)
 
         self.data[name] = {
             "type": "DECISION",
@@ -194,12 +197,11 @@ class Nodes:
         >>> def user_fn(x):
         ...     return x
         >>> nodes.terminal(name='terminal_node', user_fn=user_fn)
-
-        # >>> nodes # doctest: +NORMALIZE_WHITESPACE
+        >>> nodes # doctest: +NORMALIZE_WHITESPACE
+        0  T terminal_node
 
 
         """
-
         self.data[name] = {
             "type": "TERMINAL",
             "user_fn": user_fn,
@@ -209,33 +211,49 @@ class Nodes:
     def __repr__(self):
         def repr_terminal(text: list[str], idx: int, name: str) -> list[str]:
             text = text[:]
-            text.append("{:<2d} T {:<10s}".format(idx, name))
+            if len(name) > 15:
+                varname = name[:12] + "..."
+            else:
+                varname = name
+            text.append("{:<2d} T {:<15s}".format(idx, varname))
             return text
 
         def repr_chance(text: list, idx: int, name: str) -> list:
             text = text[:]
             for branch in self.data[name]["branches"]:
                 name_, prob, outcome, successor = branch
+                name_ = shorten(name_, width=NAMEMAXLEN, placeholder="...")
                 fmt = "{:<" + str(NAMEMAXLEN) + "s}"
-                branch_text = fmt.format(shorten(name_, width=NAMEMAXLEN)) + " "
+                branch_text = fmt.format(name_) + " "
                 branch_text += "{:.3f}".format(prob)[1:] if prob < 1.0 else "1.00"
-                branch_text += "  {:6.2f} {:<10s}".format(outcome, successor)
+                branch_text += " {:6.2f} {:<s}".format(outcome, successor)
                 if branch == self.data[name]["branches"][0]:
-                    branch_text = "{:<2d} C {:<10s}".format(idx, name) + branch_text
+                    if len(name) > 15:
+                        varname = name[:12] + "..."
+                    else:
+                        varname = name
+                    branch_text = "{:<2d} C {:<15s} ".format(idx, varname) + branch_text
                 else:
-                    branch_text = " " * 15 + branch_text
+                    branch_text = " " * 21 + branch_text
                 text.append(branch_text)
             return text
 
         def repr_decision(text: list, idx: int, name: str) -> list:
             text = text[:]
             for branch in self.data[name]["branches"]:
-                outcome, successor = branch
-                branch_text = "      {:6.2f} {:<10s}".format(outcome, successor)
+                name_, outcome, successor = branch
+                name_ = shorten(name_, width=NAMEMAXLEN, placeholder="...")
+                fmt = "{:<" + str(NAMEMAXLEN) + "s}"
+                branch_text = fmt.format(name_) + " "
+                branch_text += " {:6.2f} {:<s}".format(outcome, successor)
                 if branch == self.data[name]["branches"][0]:
-                    branch_text = "{:<2d} D {:<10s}".format(idx, name) + branch_text
+                    if len(name) > 15:
+                        varname = name[:12] + "..."
+                    else:
+                        varname = name
+                    branch_text = "{:<2d} D {:<15s} ".format(idx, varname) + branch_text
                 else:
-                    branch_text = " " * 15 + branch_text
+                    branch_text = " " * 21 + branch_text
                 text.append(branch_text)
             return text
 

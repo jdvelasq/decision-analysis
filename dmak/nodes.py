@@ -286,6 +286,23 @@ class Nodes:
 
         return print("\n".join(text))
 
+    def get_top_bottom_branches(self, name):
+        """Gets the position of the branches with top and bottom values."""
+        branches = self.data[name].get("branches")
+        type_ = self.data[name].get("type")
+        if type_ == "DECISION":
+            values = [branch[0] for branch in branches]
+        if type_ == "CHANCE":
+            values = [branch[1] for branch in branches]
+        top_branch = values.index(max(values))
+        bottom_branch = values.index(min(values))
+        return top_branch, bottom_branch
+
+    def set_probabitlities_to_zero(self, name):
+        """Set to zero the probabilities of the all branchs of variable."""
+        for i_branch, branch in enumerate(self.data[name]["branches"]):
+            self.data[name]["branches"][i_branch] = (0.0, branch[1], branch[2])
+
 
 if __name__ == "__main__":
 

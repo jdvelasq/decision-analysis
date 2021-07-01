@@ -28,6 +28,8 @@ import numpy as np
 import pandas as pd
 from graphviz import Digraph
 
+from .nodes import Nodes
+
 
 def _exp_utility_fn(param: float):
     def util_fn(value: float) -> float:
@@ -100,7 +102,7 @@ class DecisionTree:
     #
     def __init__(
         self,
-        variables: list,
+        variables: Nodes,
         initial_variable: str,
         utility: str = None,
         param: float = 0,
@@ -108,7 +110,7 @@ class DecisionTree:
 
         self._nodes = None
         self._variables = variables.copy()
-        self.initial_variable = initial_variable
+        self._initial_variable = initial_variable
         self._use_utility_fn = True
 
         if utility is None:
@@ -162,7 +164,7 @@ class DecisionTree:
 
         #
         self._nodes: list = []
-        dispatch(name=self.initial_variable)
+        dispatch(name=self._initial_variable)
 
     def _set_tag_attributes(self) -> None:
         #
@@ -943,55 +945,131 @@ class DecisionTree:
         if cumulative is True and single is False:
             plot_step_multiple(idx)
 
+    def probabilistic_sensitivity(self, varname: str) -> None:
+        """Display a probabilistic sensitivity plot for a chance node.
+
+        :param varname:
+            Name of the probabilistic variable.
+
+        """
+
+        def probabilistic_sensitivity_chance() -> None:
+
+            top_branch, bottom_branch = self._variables.get_top_bottom_branches(varname)
+            self._variables.set_probabitlities_to_zero(varname)
+
+            results = []
+            probabilities = np.linspace(start=0, stop=1, num=21).tolist()
+            for top_probability in probabilities:
+
+                branch = self._variables[varname]["branches"][top_branch]
+                self._variables[varname]["branches"][top_branch] = (
+                    1 - top_probability,
+                    branch[1],
+                    branch[2],
+                )
+
+                branch = self._variables[varname]["branches"][bottom_branch]
+                self._variables[varname]["branches"][bottom_branch] = (
+                    top_probability,
+                    branch[1],
+                    branch[2],
+                )
+
+                self._build_skeleton()
+                self._set_tag_attributes()
+                self._build_call_kwargs()
+                self.evaluate()
+                self.rollback()
+                results.append(self._nodes[0].get("ExpVal"))
+
+            plt.gca().plot(probabilities, results, "-k")
+            plt.gca().spines["bottom"].set_visible(False)
+            plt.gca().spines["left"].set_visible(False)
+            plt.gca().spines["right"].set_visible(False)
+            plt.gca().spines["top"].set_visible(False)
+            plt.gca().set_ylabel("Expected values")
+            plt.gca().set_xlabel("Probability")
+
+        def probabilistic_sensitivity_decision() -> None:
+
+            top_branch, bottom_branch = self._variables.get_top_bottom_branches(varname)
+            self._variables.set_probabitlities_to_zero(varname)
+
+            results = {}
+            successors = self._nodes[0].get("successors")
+            tag_values = [
+                self._nodes[successor].get("tag_value") for successor in successors
+            ]
+            for tag_value in tag_values:
+                results[tag_value] = []
+
+            probabilities = np.linspace(start=0, stop=1, num=21).tolist()
+            for probability in probabilities:
+
+                branch = self._variables[varname]["branches"][bottom_branch]
+                self._variables[varname]["branches"][bottom_branch] = (
+                    probability,
+                    branch[1],
+                    branch[2],
+                )
+
+                branch = self._variables[varname]["branches"][top_branch]
+                self._variables[varname]["branches"][top_branch] = (
+                    1.0 - probability,
+                    branch[1],
+                    branch[2],
+                )
+
+                self._build_skeleton()
+                self._set_tag_attributes()
+                self._build_call_kwargs()
+                self.evaluate()
+                self.rollback()
+                expvals = [
+                    self._nodes[successor].get("ExpVal") for successor in successors
+                ]
+                for expval, tag_value in zip(expvals, tag_values):
+                    results[tag_value].append(expval)
+
+            for tag_value in tag_values:
+                plt.gca().plot(probabilities, results[tag_value], label=str(tag_value))
+
+            plt.gca().spines["bottom"].set_visible(False)
+            plt.gca().spines["left"].set_visible(False)
+            plt.gca().spines["right"].set_visible(False)
+            plt.gca().spines["top"].set_visible(False)
+            plt.gca().set_ylabel("Expected values")
+            plt.gca().set_xlabel("Probability")
+            plt.gca().legend()
+
+        #
+        #
+        #
+        type_ = self._variables[varname]["type"]
+        if type_ != "CHANCE":
+            raise ValueError('Variable {} is {} != "CHANCE"'.format(varname, type_))
+
+        orig_variables = self._variables.copy()
+        type_root = self._nodes[0].get("type")
+        if type_root == "CHANCE":
+            probabilistic_sensitivity_chance()
+        if type_root == "DECISION":
+            probabilistic_sensitivity_decision()
+
+        self._variables = orig_variables
+        self._build_skeleton()
+        self._set_tag_attributes()
+        self._build_call_kwargs()
+        self.evaluate()
+        self.rollback()
+
     #
     #
     #   R E F A C T O R I N G!
     #
     #
     #
-    #
-    def _compute_probability_distribution_XXX(self):
-        #
-        def terminal(idx: int) -> None:
-            value = self._nodes[idx].get("ExpVal")
-            prob = self._nodes[idx].get("PathProb")
-            self._nodes[idx]["RiskProfile"] = {value: prob}
-
-        def chance(idx: int) -> None:
-            successors = self._nodes[idx].get("successors")
-            for successor in successors:
-                dispatch(idx=successor)
-            self._nodes[idx]["RiskProfile"] = {}
-            for successor in successors:
-                for key, value in self._nodes[successor]["RiskProfile"].items():
-                    if key in self._nodes[idx]["RiskProfile"].keys():
-                        self._nodes[idx]["RiskProfile"][key] += value
-                    else:
-                        self._nodes[idx]["RiskProfile"][key] = value
-
-        def decision(idx: int) -> None:
-            successors = self._nodes[idx].get("successors")
-            for successor in successors:
-                dispatch(idx=successor)
-            optimal_successor = self._nodes[idx].get("optimal_successor")
-            self._nodes[idx]["RiskProfile"] = self._nodes[optimal_successor][
-                "RiskProfile"
-            ]
-
-        def dispatch(idx: int) -> None:
-            #
-            # if self.nodes[idx].get("selected_strategy") is False:
-            #     return
-            #
-            type_ = self._nodes[idx].get("type")
-            if type_ == "TERMINAL":
-                terminal(idx=idx)
-            if type_ == "CHANCE":
-                chance(idx=idx)
-            if type_ == "DECISION":
-                decision(idx=idx)
-
-        dispatch(idx=0)
 
     #
     # Pendiente

@@ -197,9 +197,8 @@ class Nodes:
             text = text[:]
             for branch in self.data[name]["branches"]:
                 prob, outcome, successor = branch
-                branch_text = "{:.3f}".format(prob)[1:] + "  {:6.2f} {:<10s}".format(
-                    outcome, successor
-                )
+                branch_text = "{:.3f}".format(prob)[1:] if prob < 1.0 else "1.00"
+                branch_text += "  {:6.2f} {:<10s}".format(outcome, successor)
                 if branch == self.data[name]["branches"][0]:
                     branch_text = "{:<2d} C {:<10s}".format(idx, name) + branch_text
                 else:

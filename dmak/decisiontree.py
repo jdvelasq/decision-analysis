@@ -990,6 +990,7 @@ class DecisionTree:
             plt.gca().spines["top"].set_visible(False)
             plt.gca().set_ylabel("Expected values")
             plt.gca().set_xlabel("Probability")
+            plt.grid()
 
         def probabilistic_sensitivity_decision() -> None:
 
@@ -1042,6 +1043,7 @@ class DecisionTree:
             plt.gca().set_ylabel("Expected values")
             plt.gca().set_xlabel("Probability")
             plt.gca().legend()
+            plt.grid()
 
         #
         #

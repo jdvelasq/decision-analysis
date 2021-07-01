@@ -116,7 +116,7 @@ class Nodes:
         self,
         name: str,
         branches: List[tuple],
-        max_: bool = False,
+        maximize: bool = False,
         forced_branch: int = None,
     ) -> None:
         """Adds a decision node to the bag.
@@ -173,7 +173,7 @@ class Nodes:
         self.data[name] = {
             "type": "DECISION",
             "branches": branches,
-            "max": max_,
+            "maximize": maximize,
             "forced_branch": forced_branch,
         }
 

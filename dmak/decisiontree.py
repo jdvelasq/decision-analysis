@@ -381,6 +381,18 @@ class DecisionTree:
 
         dispatch(idx=0, args={})
 
+    # -------------------------------------------------------------------------
+    #
+    #  V I E W    N O D E S
+    #
+    #
+    def nodes(self) -> None:
+        """Prints the internal structure of the tree as a list of nodes."""
+        text = {}
+        for i_node, node in enumerate(self._nodes):
+            text[i_node] = node
+        print(json.dumps(text, indent=4))
+
     ##
     ##
     ##
@@ -792,18 +804,6 @@ class DecisionTree:
         )
 
         print("\n".join(text))
-
-    # -------------------------------------------------------------------------
-    #
-    #  V I E W    N O D E S
-    #
-    #
-    def nodes(self) -> None:
-        """Prints the internal structure of the tree as a list of nodes."""
-        text = {}
-        for i_node, node in enumerate(self._nodes):
-            text[i_node] = node
-        print(json.dumps(text, indent=4))
 
     # -------------------------------------------------------------------------
     #

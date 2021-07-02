@@ -102,6 +102,7 @@ class DecisionTree:
         ## Prepares the empty structure of the tree
         self._build_skeleton()
         self._set_tag_attributes()
+        self._set_payoff_fn()
 
         ## run flags
         self._is_evaluated = False
@@ -174,6 +175,14 @@ class DecisionTree:
                     self._nodes[successor]["tag_name"] = name
                     self._nodes[successor]["tag_prob"] = prob
                     self._nodes[successor]["tag_value"] = value
+
+    def _set_payoff_fn(self):
+
+        for node in self._nodes:
+            if node.get("type") == "TERMINAL":
+                name = node.get("name")
+                payoff_fn = self._variables[name].get("payoff_fn")
+                node["payoff_fn"] = payoff_fn
 
     # -------------------------------------------------------------------------
     #
@@ -393,6 +402,245 @@ class DecisionTree:
             text[i_node] = node
         print(json.dumps(text, indent=4))
 
+    # -------------------------------------------------------------------------
+    #
+    #
+    #  D I S P L A Y
+    #
+    #
+    def display(
+        self,
+        idx: int = 0,
+        max_deep: int = None,
+        policy_suggestion: bool = False,
+        view: str = "ev",
+    ) -> None:
+        """Exports the tree as text diagram.
+
+        :param idx:
+            Id number of the root of the tree to be exported. When it is zero, the
+            entire tree is exported.
+
+        :param max_deep:
+            Controls the maximum deep of the nodes in the tree exported as text.
+
+        :param policy_suggestion:
+            When `True` exports only the subtree showing the nodes and branches
+            relevants to the optimal decision (optimal strategy).
+
+
+        """
+
+        def display_node(idx, is_last_node, is_optimal_choice, deep, max_deep):
+            #
+            def prepare_text():
+
+                tag_branch = self._nodes[idx].get("tag_branch")
+                tag_prob = self._nodes[idx].get("tag_prob")
+                tag_value = self._nodes[idx].get("tag_value")
+                expval = self._nodes[idx].get("EV")
+                exputl = self._nodes[idx].get("EU")
+                cequiv = self._nodes[idx].get("CE")
+
+                text = " "
+
+                if tag_branch is not None and tag_branch != str(tag_value):
+                    if len(tag_branch) > 10:
+                        tag_branch = tag_branch[:7] + "..."
+                    text += "{:<10s}".format(tag_branch)
+                if tag_prob is not None:
+                    text += "{:.3f} ".format(tag_prob)[1:]
+                if tag_value is not None:
+                    text += "{:8.2f} ".format(tag_value)
+                if view == "eu" and exputl is not None:
+                    text += "{:8.2f} ".format(exputl)
+                if view == "ce" and cequiv is not None:
+                    text += "{:8.2f} ".format(cequiv)
+                if view == "ev" and expval is not None:
+                    text += "{:8.2f} ".format(expval)
+
+                return text
+
+            # ---------------------------------------------------------------------------
+            type_ = self._nodes[idx]["type"]
+            tag_name = self._nodes[idx].get("tag_name")
+
+            # ---------------------------------------------------------------------------
+            # vertical bar in the last node of terminals
+            if type_ == "TERMINAL":
+                vbar = "\\" if is_last_node is True else "|"
+            else:
+                vbar = "|"
+            branch_text = vbar + prepare_text()
+
+            # ---------------------------------------------------------------------------
+            # mark optimal choice
+            if is_optimal_choice is True:
+                branch_text = ">" + branch_text[1:]
+
+            # ---------------------------------------------------------------------------
+            # line between --------[?] and childrens
+            if type_ == "TERMINAL":
+                text = []
+            else:
+                if tag_name is not None:
+                    text = ["| {}".format(tag_name)]
+                else:
+                    text = ["|"]
+
+            # ---------------------------------------------------------------------------
+            # values on the branch
+            text.append(branch_text)
+
+            # ---------------------------------------------------------------------------
+            # Node -----------[?]
+            letter = "D" if type_ == "DECISION" else "C" if type_ == "CHANCE" else "T"
+            len_branch_text = max(7, len(branch_text))
+            if type_ != "TERMINAL":
+                if is_last_node is True:
+                    branch = "\\" + "-" * (len_branch_text - 4) + "[{}]".format(letter)
+                else:
+                    branch = "+" + "-" * (len_branch_text - 4) + "[{}]".format(letter)
+                text.append(branch)
+
+            # ---------------------------------------------------------------------------
+            # successors
+            successors = self._nodes[idx].get("successors")
+
+            # ---------------------------------------------------------------------------
+            # max deep
+            deep += 1
+
+            if successors is not None and (
+                max_deep is None or (max_deep is not None and deep <= max_deep)
+            ):
+                for successor in successors:
+
+                    # -------------------------------------------------------------------
+                    # Mark optimal strategy
+                    optimal_strategy = self._nodes[successor].get("optimal_strategy")
+                    is_optimal_choice = type_ == "DECISION" and optimal_strategy is True
+
+                    # -------------------------------------------------------------------
+                    # policy suggestion
+                    if optimal_strategy is False and policy_suggestion is True:
+                        continue
+
+                    # -------------------------------------------------------------------
+                    # vbar following the line of preious node
+                    if policy_suggestion is False:
+                        is_last_child_node = successor == successors[-1]
+                    else:
+                        if type_ == "DECISION":
+                            is_last_child_node = True
+                        else:
+                            is_last_child_node = successor == successors[-1]
+
+                    text_ = display_node(
+                        successor, is_last_child_node, is_optimal_choice, deep, max_deep
+                    )
+
+                    vbar = " " if is_last_node else "|"
+
+                    # ---------------------------------------------------------------------------
+                    # indents the childrens
+                    text_ = [
+                        vbar + " " * (len_branch_text - 3) + line for line in text_
+                    ]
+
+                    # ---------------------------------------------------------------------------
+                    # Adds a vertical bar as first element of a terminal node sequence
+                    successor_type = self._nodes[successor]["type"]
+                    if successor_type == "TERMINAL" and successor == successors[0]:
+                        successor_tag_name = self._nodes[successor].get("tag_name")
+                        if successor_tag_name is not None:
+                            text.extend(
+                                [
+                                    vbar
+                                    + " " * (len_branch_text - 3)
+                                    + "| {}".format(successor_tag_name)
+                                ]
+                            )
+                        else:
+                            text.extend([vbar + " " * (len_branch_text - 3) + "|"])
+
+                    text.extend(text_)
+
+            return text
+
+        if self._with_rollback is False:
+            policy_suggestion = False
+
+        text = display_node(
+            idx=idx,
+            is_last_node=True,
+            is_optimal_choice=False,
+            deep=0,
+            max_deep=max_deep,
+        )
+
+        print("\n".join(text))
+
+    # -------------------------------------------------------------------------
+    #
+    #  E V A L U A T I O N
+    #
+    #
+    def _generate_paths(self) -> None:
+        #
+        # Builts kwargs for user function in terminal nodes
+        #
+        def dispatch(idx: int, args: dict, probs: dict) -> None:
+
+            args = args.copy()
+
+            if "tag_name" in self._nodes[idx].keys():
+                name = self._nodes[idx]["tag_name"]
+
+            if "tag_value" in self._nodes[idx].keys():
+                value = self._nodes[idx]["tag_value"]
+                args = {**args, **{name: value}}
+
+            if "tag_prob" in self._nodes[idx].keys():
+                prob = self._nodes[idx]["tag_prob"]
+                probs = {**probs, **{name: prob}}
+
+            type_ = self._nodes[idx].get("type")
+
+            if type_ == "TERMINAL":
+                self._nodes[idx]["payoff_fn_args"] = args
+                self._nodes[idx]["payoff_fn_probs"] = probs
+                return
+
+            if "successors" in self._nodes[idx].keys():
+                for successor in self._nodes[idx]["successors"]:
+                    dispatch(idx=successor, args=args, probs=probs)
+
+        dispatch(idx=0, args={}, probs={})
+
+    def _compute_payoff_fn(self):
+        #
+        # Compute payoff_fn in terminal nodes
+        #
+
+        ##  def cumulative(values, probs):
+        ##    return sum(v for _, v in kwargs.items())
+
+        for node in self._nodes:
+
+            if node.get("type") == "TERMINAL":
+                payoff_fn_args = node.get("payoff_fn_args")
+                payoff_fn_probs = node.get("payoff_fn_probs")
+                payoff_fn = node.get("payoff_fn")
+                node["EV"] = payoff_fn(payoff_fn_args, payoff_fn_probs)
+
+    def evaluate(self) -> None:
+        """Calculates the values at the end of the tree (terminal nodes)."""
+
+        self._generate_paths()
+        self._compute_payoff_fn()
+        self._is_evaluated = True
+
     ##
     ##
     ##
@@ -423,59 +671,6 @@ class DecisionTree:
             self._util_fn = _dummy_fn
             self._inv_fn = _dummy_fn
             self._use_utility_fn = False
-
-    def _build_call_kwargs(self) -> None:
-        #
-        # Builts kwargs for user function in terminal nodes
-        #
-        def set_fn_args(idx: int, args: dict) -> None:
-
-            args = args.copy()
-
-            if "tag_name" in self._nodes[idx].keys():
-                name = self._nodes[idx]["tag_name"]
-                value = self._nodes[idx]["tag_value"]
-                args = {**args, **{name: value}}
-
-            type_ = self._nodes[idx].get("type")
-
-            if type_ == "TERMINAL":
-                self._nodes[idx]["user_args"] = args
-            else:
-                if "successors" in self._nodes[idx].keys():
-                    for successor in self._nodes[idx]["successors"]:
-                        set_fn_args(idx=successor, args=args)
-
-        set_fn_args(idx=0, args={})
-
-    # -------------------------------------------------------------------------
-    #
-    #  E V A L U A T I O N
-    #
-    #
-    def evaluate(self) -> None:
-        """Calculates the values at the end of the tree (terminal nodes)."""
-
-        def cumulative(**kwargs):
-            return sum(v for _, v in kwargs.items())
-
-        for node in self._nodes:
-
-            user_args = node.get("user_args")
-
-            if user_args:
-                #
-                name = node.get("name")
-                user_fn = self._variables[name].get("user_fn")
-                if user_fn is None:
-                    user_fn = cumulative
-                expval = user_fn(**user_args)
-                #
-                node["ExpVal"] = expval
-                node["ExpUtl"] = self._util_fn(expval)
-                node["CE"] = expval
-
-        self._is_evaluated = True
 
     # -------------------------------------------------------------------------
     #
@@ -630,180 +825,6 @@ class DecisionTree:
                 chance_node(idx=idx, optimal_strategy=optimal_strategy)
 
         dispatch(idx=0, optimal_strategy=True)
-
-    # -------------------------------------------------------------------------
-    #
-    #
-    #  D I S P L A Y
-    #
-    #
-    def display(
-        self,
-        idx: int = 0,
-        max_deep: int = None,
-        policy_suggestion: bool = False,
-    ) -> None:
-        """Exports the tree as text diagram.
-
-        :param idx:
-            Id number of the root of the tree to be exported. When it is zero, the
-            entire tree is exported.
-
-        :param max_deep:
-            Controls the maximum deep of the nodes in the tree exported as text.
-
-        :param policy_suggestion:
-            When `True` exports only the subtree showing the nodes and branches
-            relevants to the optimal decision (optimal strategy).
-
-
-        """
-
-        def display_node(idx, is_last_node, is_optimal_choice, deep, max_deep):
-            #
-            def prepare_text():
-
-                tag_prob = self._nodes[idx].get("tag_prob")
-                tag_value = self._nodes[idx].get("tag_value")
-                expval = self._nodes[idx].get("ExpVal")
-                exputl = self._nodes[idx].get("ExpUtl")
-                cequiv = self._nodes[idx].get("CE")
-
-                text = " "
-                if tag_prob is not None:
-                    text += "{:.3f} ".format(tag_prob)[1:]
-                if tag_value is not None:
-                    text += "{:8.2f} ".format(tag_value)
-                if self._use_utility_fn is False or self._display == "ev":
-                    if expval is not None:
-                        text += "{:8.2f} ".format(expval)
-                else:
-                    if exputl is not None and self._display == "eu":
-                        text += "{:8.2f} ".format(exputl)
-                    if cequiv is not None and self._display == "ce":
-                        text += "{:8.2f} ".format(cequiv)
-
-                return text
-
-            # ---------------------------------------------------------------------------
-            type_ = self._nodes[idx]["type"]
-            tag_name = self._nodes[idx].get("tag_name")
-
-            # ---------------------------------------------------------------------------
-            # vertical bar in the last node of terminals
-            if type_ == "TERMINAL":
-                vbar = "\\" if is_last_node is True else "|"
-            else:
-                vbar = "|"
-            branch_text = vbar + prepare_text()
-
-            # ---------------------------------------------------------------------------
-            # mark optimal choice
-            if is_optimal_choice is True:
-                branch_text = ">" + branch_text[1:]
-
-            # ---------------------------------------------------------------------------
-            # line between --------[?] and childrens
-            if type_ == "TERMINAL":
-                text = []
-            else:
-                if tag_name is not None:
-                    text = ["| {}".format(tag_name)]
-                else:
-                    text = ["|"]
-
-            # ---------------------------------------------------------------------------
-            # values on the branch
-            text.append(branch_text)
-
-            # ---------------------------------------------------------------------------
-            # Node -----------[?]
-            letter = "D" if type_ == "DECISION" else "C" if type_ == "CHANCE" else "T"
-            len_branch_text = max(7, len(branch_text))
-            if type_ != "TERMINAL":
-                if is_last_node is True:
-                    branch = "\\" + "-" * (len_branch_text - 4) + "[{}]".format(letter)
-                else:
-                    branch = "+" + "-" * (len_branch_text - 4) + "[{}]".format(letter)
-                text.append(branch)
-
-            # ---------------------------------------------------------------------------
-            # successors
-            successors = self._nodes[idx].get("successors")
-
-            # ---------------------------------------------------------------------------
-            # max deep
-            deep += 1
-
-            if successors is not None and (
-                max_deep is None or (max_deep is not None and deep <= max_deep)
-            ):
-                for successor in successors:
-
-                    # -------------------------------------------------------------------
-                    # Mark optimal strategy
-                    optimal_strategy = self._nodes[successor].get("optimal_strategy")
-                    is_optimal_choice = type_ == "DECISION" and optimal_strategy is True
-
-                    # -------------------------------------------------------------------
-                    # policy suggestion
-                    if optimal_strategy is False and policy_suggestion is True:
-                        continue
-
-                    # -------------------------------------------------------------------
-                    # vbar following the line of preious node
-                    if policy_suggestion is False:
-                        is_last_child_node = successor == successors[-1]
-                    else:
-                        if type_ == "DECISION":
-                            is_last_child_node = True
-                        else:
-                            is_last_child_node = successor == successors[-1]
-
-                    text_ = display_node(
-                        successor, is_last_child_node, is_optimal_choice, deep, max_deep
-                    )
-
-                    vbar = " " if is_last_node else "|"
-
-                    # ---------------------------------------------------------------------------
-                    # indents the childrens
-                    text_ = [
-                        vbar + " " * (len_branch_text - 3) + line for line in text_
-                    ]
-
-                    # ---------------------------------------------------------------------------
-                    # Adds a vertical bar as first element of a terminal node sequence
-                    successor_type = self._nodes[successor]["type"]
-                    if successor_type == "TERMINAL" and successor == successors[0]:
-                        successor_tag_name = self._nodes[successor].get("tag_name")
-                        if successor_tag_name is not None:
-                            text.extend(
-                                [
-                                    vbar
-                                    + " " * (len_branch_text - 3)
-                                    + "| {}".format(successor_tag_name)
-                                ]
-                            )
-                        else:
-                            text.extend([vbar + " " * (len_branch_text - 3) + "|"])
-
-                    text.extend(text_)
-
-            return text
-
-        if self._with_rollback is False:
-            policy_suggestion = False
-
-        text = display_node(
-            idx=idx,
-            is_last_node=True,
-            is_optimal_choice=False,
-            deep=0,
-            max_deep=max_deep,
-        )
-
-        print("\n".join(text))
 
     # -------------------------------------------------------------------------
     #

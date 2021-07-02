@@ -288,6 +288,9 @@ class DecisionTree:
             )
         ]
 
+        maxlen = max([len(txt) for txt in lines])
+        lines[1] = "-" * maxlen
+
         return "\n".join(lines)
 
     ##

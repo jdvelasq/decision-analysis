@@ -632,7 +632,7 @@ class DecisionTree:
                 payoff_fn_args = node.get("payoff_fn_args")
                 payoff_fn_probs = node.get("payoff_fn_probs")
                 payoff_fn = node.get("payoff_fn")
-                node["EV"] = payoff_fn(payoff_fn_args, payoff_fn_probs)
+                node["EV"] = payoff_fn(values=payoff_fn_args, probs=payoff_fn_probs)
 
     def evaluate(self) -> None:
         """Calculates the values at the end of the tree (terminal nodes)."""

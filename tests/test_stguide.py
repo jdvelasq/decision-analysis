@@ -260,3 +260,76 @@ def test_display_no_evaluated(capsys):
     captured_text = [text.rstrip() for text in captured_text]
     matcher = LineMatcher(expected_text.splitlines()[1:])
     matcher.fnmatch_lines(captured_text, consecutive=True)
+
+
+def test_evaluate(capsys):
+    """Example creatioin from Fig. 5.4"""
+
+    expected_text = dedent(
+        """
+        |
+        |
+        \\---[D]
+             | bid
+             |   500.00
+             +-------[C]
+             |        | compbid
+             |        | .350   400.00
+             |        +------------[C]
+             |        |             | cost
+             |        |             | .250   200.00     0.00
+             |        |             | .500   400.00     0.00
+             |        |             \\ .250   600.00     0.00
+             |        | compbid
+             |        | .500   600.00
+             |        +------------[C]
+             |        |             | cost
+             |        |             | .250   200.00   300.00
+             |        |             | .500   400.00   100.00
+             |        |             \\ .250   600.00  -100.00
+             |        | compbid
+             |        | .150   800.00
+             |        \\------------[C]
+             |                      | cost
+             |                      | .250   200.00   300.00
+             |                      | .500   400.00   100.00
+             |                      \\ .250   600.00  -100.00
+             | bid
+             |   700.00
+             \\-------[C]
+                      | compbid
+                      | .350   400.00
+                      +------------[C]
+                      |             | cost
+                      |             | .250   200.00     0.00
+                      |             | .500   400.00     0.00
+                      |             \\ .250   600.00     0.00
+                      | compbid
+                      | .500   600.00
+                      +------------[C]
+                      |             | cost
+                      |             | .250   200.00     0.00
+                      |             | .500   400.00     0.00
+                      |             \\ .250   600.00     0.00
+                      | compbid
+                      | .150   800.00
+                      \\------------[C]
+                                    | cost
+                                    | .250   200.00   500.00
+                                    | .500   400.00   300.00
+                                    \\ .250   600.00   100.00
+        """
+    )
+
+    nodes = stguide_bid()
+    tree = DecisionTree(variables=nodes, initial_variable="bid")
+    tree.evaluate()
+    tree.display()
+
+    #
+    # Test
+    #
+    captured_text = capsys.readouterr().out.splitlines()
+    captured_text = [text.rstrip() for text in captured_text]
+    matcher = LineMatcher(expected_text.splitlines()[1:])
+    matcher.fnmatch_lines(captured_text, consecutive=True)

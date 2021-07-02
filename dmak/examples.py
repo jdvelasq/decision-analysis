@@ -10,9 +10,10 @@ from .nodes import Nodes
 def stguide_bid():
     """Supertree userguide bid example (2 branches)"""
 
-    def payoff_fn(**values):
-        return (values["bid"][0] - values["cost"][0]) * (
-            1 if values["bid"][0] < values["compbid"][0] else 0
+    def payoff_fn(**kwargs):
+        values = kwargs["values"]
+        return (values["bid"] - values["cost"]) * (
+            1 if values["bid"] < values["compbid"] else 0
         )
 
     nodes = Nodes()

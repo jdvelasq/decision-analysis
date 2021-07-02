@@ -93,56 +93,26 @@ class DecisionTree:
         self,
         variables: Nodes,
         initial_variable: str,
-        utility: str = None,
-        risk_tolerance: float = 0,
-        display: str = "eu",
     ) -> None:
 
         self._nodes = None
         self._variables = variables.copy()
         self._initial_variable = initial_variable
-        self._display = display
 
-        #
-        # Risk analysis
-        #
-        self._use_utility_fn = False
-        self._util_fn = None
-        self._inv_fn = None
-        self._set_utitity_fn(utility, risk_tolerance)
-
-        #
-        # Prepares the empty structure of the tree
-        #
+        ## Prepares the empty structure of the tree
         self._build_skeleton()
         self._set_tag_attributes()
-        self._build_call_kwargs()
+
+        ## run flags
         self._is_evaluated = False
         self._with_rollback = False
 
+    # -------------------------------------------------------------------------
     #
-    # Auxiliary functions
     #
-    def set_display(self, option: str) -> None:
-        if option not in ["ev", "eu", "ce"]:
-            raise ValueError(
-                'Value {} not is a valid option ("ev", "eu", "ce")'.format(option)
-            )
-        self._display = option
-
-    def _set_utitity_fn(self, utility, risk_tolerance) -> None:
-
-        if utility is not None:
-            self._use_utility_fn = True
-            self._util_fn, self._inv_fn = {
-                "exp": _exp_utility_fn(risk_tolerance),
-                "log": _log_utility_fn(risk_tolerance),
-            }[utility]
-        else:
-            self._util_fn = _dummy_fn
-            self._inv_fn = _dummy_fn
-            self._use_utility_fn = False
-
+    #  T R E E    C R E A T I O N
+    #
+    #
     def _build_skeleton(self) -> None:
         #
         # Builds a structure where nodes are:
@@ -156,8 +126,8 @@ class DecisionTree:
             type_: str = self._variables[name]["type"]
             forced: int = self._variables[name]["forced_branch"]
             self._nodes.append({"name": name, "type": type_, "forced": forced})
-            if "max" in self._variables[name].keys():
-                self._nodes[idx]["max"] = self._variables[name]["max"]
+            if "maximize" in self._variables[name].keys():
+                self._nodes[idx]["maximize"] = self._variables[name]["maximize"]
             if "branches" in self._variables[name].keys():
                 successors: list = []
                 for branch in self._variables[name].get("branches"):
@@ -186,42 +156,24 @@ class DecisionTree:
             branches: list = self._variables[name].get("branches")
 
             if type_ == "DECISION":
-                values = [x for x, _ in branches]
-                for successor, value in zip(successors, values):
+                bnames = [x for x, _, _ in branches]
+                values = [x for _, x, _ in branches]
+                for successor, bname, value in zip(successors, bnames, values):
+                    self._nodes[successor]["tag_branch"] = bname
                     self._nodes[successor]["tag_name"] = name
                     self._nodes[successor]["tag_value"] = value
 
             if type_ == "CHANCE":
-                values = [x for _, x, _ in branches]
-                probs = [x for x, _, _ in branches]
-                for successor, value, prob in zip(successors, values, probs):
+                bnames = [x for x, _, _, _ in branches]
+                values = [x for _, _, x, _ in branches]
+                probs = [x for _, x, _, _ in branches]
+                for successor, bname, value, prob in zip(
+                    successors, bnames, values, probs
+                ):
+                    self._nodes[successor]["tag_branch"] = bname
                     self._nodes[successor]["tag_name"] = name
-                    self._nodes[successor]["tag_value"] = value
                     self._nodes[successor]["tag_prob"] = prob
-
-    def _build_call_kwargs(self) -> None:
-        #
-        # Builts kwargs for user function in terminal nodes
-        #
-        def set_fn_args(idx: int, args: dict) -> None:
-
-            args = args.copy()
-
-            if "tag_name" in self._nodes[idx].keys():
-                name = self._nodes[idx]["tag_name"]
-                value = self._nodes[idx]["tag_value"]
-                args = {**args, **{name: value}}
-
-            type_ = self._nodes[idx].get("type")
-
-            if type_ == "TERMINAL":
-                self._nodes[idx]["user_args"] = args
-            else:
-                if "successors" in self._nodes[idx].keys():
-                    for successor in self._nodes[idx]["successors"]:
-                        set_fn_args(idx=successor, args=args)
-
-        set_fn_args(idx=0, args={})
+                    self._nodes[successor]["tag_value"] = value
 
     # -------------------------------------------------------------------------
     #
@@ -337,6 +289,61 @@ class DecisionTree:
         ]
 
         return "\n".join(lines)
+
+    ##
+    ##
+    ##
+    ##   R E F A C T O R I N G !
+    ##
+    ##
+    ##
+
+    #
+    # Auxiliary functions
+    #
+    def set_display(self, option: str) -> None:
+        if option not in ["ev", "eu", "ce"]:
+            raise ValueError(
+                'Value {} not is a valid option ("ev", "eu", "ce")'.format(option)
+            )
+        self._display = option
+
+    def _set_utitity_fn(self, utility, risk_tolerance) -> None:
+
+        if utility is not None:
+            self._use_utility_fn = True
+            self._util_fn, self._inv_fn = {
+                "exp": _exp_utility_fn(risk_tolerance),
+                "log": _log_utility_fn(risk_tolerance),
+            }[utility]
+        else:
+            self._util_fn = _dummy_fn
+            self._inv_fn = _dummy_fn
+            self._use_utility_fn = False
+
+    def _build_call_kwargs(self) -> None:
+        #
+        # Builts kwargs for user function in terminal nodes
+        #
+        def set_fn_args(idx: int, args: dict) -> None:
+
+            args = args.copy()
+
+            if "tag_name" in self._nodes[idx].keys():
+                name = self._nodes[idx]["tag_name"]
+                value = self._nodes[idx]["tag_value"]
+                args = {**args, **{name: value}}
+
+            type_ = self._nodes[idx].get("type")
+
+            if type_ == "TERMINAL":
+                self._nodes[idx]["user_args"] = args
+            else:
+                if "successors" in self._nodes[idx].keys():
+                    for successor in self._nodes[idx]["successors"]:
+                        set_fn_args(idx=successor, args=args)
+
+        set_fn_args(idx=0, args={})
 
     # -------------------------------------------------------------------------
     #
@@ -1200,13 +1207,6 @@ class DecisionTree:
         self._use_utility_fn = orig_use_utitlity_fn
         self.rollback()
 
-    #
-    #
-    #
-
-    #
-    #
-    #   R E F A C T O R I N G!
     #
     #
     #

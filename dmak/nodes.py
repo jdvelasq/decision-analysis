@@ -13,7 +13,7 @@ package implements three types of nodes:
 
 
 """
-
+from typing import List
 import copy
 from textwrap import shorten
 from typing import Any, List
@@ -209,7 +209,7 @@ class Nodes:
         }
 
     def __repr__(self):
-        def repr_terminal(text: list[str], idx: int, name: str) -> list[str]:
+        def repr_terminal(text: List[str], idx: int, name: str) -> List[str]:
             text = text[:]
             if len(name) > 15:
                 varname = name[:12] + "..."

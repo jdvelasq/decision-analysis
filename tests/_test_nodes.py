@@ -62,7 +62,7 @@ def test_adds_decision_node():
     max_ = True
 
     nodes = Nodes()
-    nodes.decision(name=name, branches=branches, max_=max_)
+    nodes.decision(name=name, branches=branches, maximize=max_)
 
     assert nodes[name].get("type") == "DECISION"
     assert nodes[name].get("branches") == branches

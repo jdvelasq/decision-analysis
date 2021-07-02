@@ -7,7 +7,7 @@ Decision tree examples
 from .nodes import Nodes
 
 
-def stree_guide():
+def stguide_bid():
     """Supertree userguide bid example (2 branches)"""
 
     def payoff_fn(**values):

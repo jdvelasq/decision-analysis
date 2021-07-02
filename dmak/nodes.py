@@ -13,7 +13,7 @@ package implements three types of nodes:
 
 
 """
-from typing import List
+
 import copy
 from textwrap import shorten
 from typing import Any, List
@@ -64,25 +64,6 @@ class Nodes:
             computations. It is equivalent to know with certainty what state of
             ther world will occurrs. It is used to analyze the impact of the
             occurrence of a certain event on the decision.
-
-        **Example**
-
-        The following code a chance node with three branches; the first value
-        of each branch is the probability.
-
-        >>> nodes = Nodes()
-        >>> nodes.chance(
-        ...     name="ChanceNode",
-        ...     branches=[
-        ...         (.30, 100, "next-node"),
-        ...         ('branch-1', .30, 200, "next-node"),
-        ...         ('a very very long name', .30, 300, "next-node"),
-        ...     ],
-        ... )
-        >>> nodes # doctest: +NORMALIZE_WHITESPACE
-        0  C ChanceNode      100                  .333 100.00 next-node
-                             branch-1             .333 200.00 next-node
-                             a very very long...  .333 300.00 next-node
 
 
         """
@@ -187,19 +168,6 @@ class Nodes:
             It is a valid python function used for computing the value
             of the terminal node in the tree. The names of the created
             nodes must be used as the parameters of the function.
-
-        **Example**
-
-        The following code creates a terminal node that uses a
-        user-defined function to compute its expected value.
-
-        >>> nodes = Nodes()
-        >>> def payoff_fn(x):
-        ...     return x
-        >>> nodes.terminal(name='terminal_node', payoff_fn=payoff_fn)
-        >>> nodes # doctest: +NORMALIZE_WHITESPACE
-        0  T terminal_node
-
 
         """
         self.data[name] = {

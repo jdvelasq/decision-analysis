@@ -1259,31 +1259,13 @@ class DecisionTree:
         if plot is False:
             return result
 
-    ##
-    ##
-    ##
-    ##   R E F A C T O R I N G !
-    ##
-    ##
-    ##
-
-    #
-    # Auxiliary functions
-    #
-    def set_display(self, option: str) -> None:
-        if option not in ["ev", "eu", "ce"]:
-            raise ValueError(
-                'Value {} not is a valid option ("ev", "eu", "ce")'.format(option)
-            )
-        self._display = option
-
     # -------------------------------------------------------------------------
     #
-    #  R I S K    A T T I T U D E
+    #  R I S K    S E N S I T I V I T Y
     #
     #
-    def risk_attitude_sensitivity(
-        self, utilitiy_fn: str, risk_tolerance: float
+    def risk_sensitivity(
+        self, utility_fn: str, risk_tolerance: float, plot: bool = False
     ) -> None:
         """Plots a risk tolrecance plot."""
 
@@ -1304,41 +1286,59 @@ class DecisionTree:
             for risk_aversion in risk_aversions:
 
                 if risk_aversion == np.float64(0):
-                    self._set_utitity_fn(None, 0)
+                    self.evaluate()
+                    self.rollback()
+                    ceqs = [
+                        self._nodes[successor].get("EV") for successor in successors
+                    ]
                 else:
-                    self._set_utitity_fn(utilitiy_fn, 1.0 / risk_aversion)
+                    self.evaluate()
+                    self.rollback(
+                        utility_fn=utility_fn, risk_tolerance=1.0 / risk_aversion
+                    )
+                    ceqs = [
+                        self._nodes[successor].get("CE") for successor in successors
+                    ]
 
-                self.evaluate()
-                self.rollback()
-
-                ceqs = [self._nodes[successor].get("CE") for successor in successors]
                 for ceq, tag_value in zip(ceqs, tag_values):
                     results[tag_value].append(ceq)
 
-            linefmts = ["-k", "--k", ".-k", "-g", "--g", ".-g", "-r", "--r", ".-r"]
-            for linefmt, tag_value in zip(linefmts, tag_values):
-                plt.gca().plot(
-                    risk_aversions,
-                    results[tag_value],
-                    linefmt,
-                    label=str(tag_value),
-                )
+            if plot is True:
 
-            labels = [
+                linefmts = ["-k", "--k", ".-k", "-g", "--g", ".-g", "-r", "--r", ".-r"]
+                for linefmt, tag_value in zip(linefmts, tag_values):
+                    plt.gca().plot(
+                        risk_aversions,
+                        results[tag_value],
+                        linefmt,
+                        label=str(tag_value),
+                    )
+
+                labels = [
+                    "Infinity"
+                    if risk_aversion == np.float(0)
+                    else str(int(round(1 / risk_aversion, 0)))
+                    for risk_aversion in risk_aversions
+                ]
+                plt.xticks(risk_aversions, labels)
+                plt.gca().spines["bottom"].set_visible(False)
+                plt.gca().spines["left"].set_visible(False)
+                plt.gca().spines["right"].set_visible(False)
+                plt.gca().spines["top"].set_visible(False)
+                plt.gca().set_ylabel("Certainty equivalent")
+                plt.gca().set_xlabel("Risk tolerance")
+                plt.gca().legend()
+                plt.grid()
+
+                return None
+
+            results["Risk Tolerance"] = [
                 "Infinity"
                 if risk_aversion == np.float(0)
-                else str(int(round(1 / risk_aversion, 0)))
+                else int(round(1 / risk_aversion, 0))
                 for risk_aversion in risk_aversions
             ]
-            plt.xticks(risk_aversions, labels)
-            plt.gca().spines["bottom"].set_visible(False)
-            plt.gca().spines["left"].set_visible(False)
-            plt.gca().spines["right"].set_visible(False)
-            plt.gca().spines["top"].set_visible(False)
-            plt.gca().set_ylabel("Certainty equivalent")
-            plt.gca().set_xlabel("Risk tolerance")
-            plt.gca().legend()
-            plt.grid()
+            return pd.DataFrame(results)
 
         def _risk_attitude_chance():
 
@@ -1350,50 +1350,89 @@ class DecisionTree:
             for tag_value in tag_values:
                 results[tag_value] = []
 
-            risk_tolerances = np.linspace(
-                start=risk_tolerance, stop=1000, num=50
+            risk_aversions = np.linspace(
+                start=0, stop=1.0 / risk_tolerance, num=11
             ).tolist()
 
-            for rtol in risk_tolerances:
+            for risk_aversion in risk_aversions:
 
-                self._set_utitity_fn(utilitiy_fn, rtol)
-                self.evaluate()
-                self.rollback()
-                expvals = [
-                    self._nodes[successor].get("ExpVal") for successor in successors
+                if risk_aversion == np.float64(0):
+                    self.evaluate()
+                    self.rollback()
+                    ceqs = [
+                        self._nodes[successor].get("EV") for successor in successors
+                    ]
+                else:
+                    self.evaluate()
+                    self.rollback(
+                        utility_fn=utility_fn, risk_tolerance=1.0 / risk_aversion
+                    )
+                    ceqs = [
+                        self._nodes[successor].get("CE") for successor in successors
+                    ]
+
+                for ceq, tag_value in zip(ceqs, tag_values):
+                    results[tag_value].append(ceq)
+
+            if plot is True:
+                for tag_value in tag_values:
+                    plt.gca().plot(
+                        risk_aversions, results[tag_value], label=str(tag_value)
+                    )
+
+                labels = [
+                    "Infinity"
+                    if risk_aversion == np.float(0)
+                    else str(int(round(1 / risk_aversion, 0)))
+                    for risk_aversion in risk_aversions
                 ]
-                for expval, tag_value in zip(expvals, tag_values):
-                    results[tag_value].append(expval)
+                plt.xticks(risk_aversions, labels)
+                plt.gca().spines["bottom"].set_visible(False)
+                plt.gca().spines["left"].set_visible(False)
+                plt.gca().spines["right"].set_visible(False)
+                plt.gca().spines["top"].set_visible(False)
+                plt.gca().set_ylabel("Expected values")
+                plt.gca().set_xlabel("Risk tolerance")
+                plt.gca().invert_xaxis()
+                plt.gca().legend()
+                plt.grid()
+                return None
 
-            for tag_value in tag_values:
-                plt.gca().plot(
-                    risk_tolerances, results[tag_value], label=str(tag_value)
-                )
-
-            plt.gca().spines["bottom"].set_visible(False)
-            plt.gca().spines["left"].set_visible(False)
-            plt.gca().spines["right"].set_visible(False)
-            plt.gca().spines["top"].set_visible(False)
-            plt.gca().set_ylabel("Expected values")
-            plt.gca().set_xlabel("Risk tolerance")
-            plt.gca().invert_xaxis()
-            plt.gca().legend()
-            plt.grid()
-
-        orig_util_fn = self._util_fn
-        orig_inv_fn = self._inv_fn
-        orig_use_utitlity_fn = self._use_utility_fn
+            results["Risk Tolerance"] = [
+                "Infinity"
+                if risk_aversion == np.float(0)
+                else int(round(1 / risk_aversion, 0))
+                for risk_aversion in risk_aversions
+            ]
+            return pd.DataFrame(results)
 
         type_ = self._nodes[0].get("type")
         if type_ == "DECISION":
-            _risk_attitude_decision()
+            result = _risk_attitude_decision()
         if type_ == "CHANCE":
-            _risk_attitude_chance()
+            result = _risk_attitude_chance()
 
-        self._util_fn = orig_util_fn
-        self._inv_fn = orig_inv_fn
-        self._use_utility_fn = orig_use_utitlity_fn
         self.rollback()
+        if plot is False:
+            return result
+
+    ##
+    ##
+    ##
+    ##   R E F A C T O R I N G !
+    ##
+    ##
+    ##
+
+    #
+    # Auxiliary functions
+    #
+    def set_display(self, option: str) -> None:
+        if option not in ["ev", "eu", "ce"]:
+            raise ValueError(
+                'Value {} not is a valid option ("ev", "eu", "ce")'.format(option)
+            )
+        self._display = option
 
     #
     #

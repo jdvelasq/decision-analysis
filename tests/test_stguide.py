@@ -306,7 +306,7 @@ def test_fig_5_8a(capsys):
     tree = DecisionTree(variables=nodes, initial_variable="bid")
     tree.evaluate()
     tree.rollback()
-    tree.risk_profile_table(idx=0, cumulative=False, single=True)
+    tree.risk_profile(idx=0, cumulative=False, single=True)
 
     #
     # Test
@@ -334,7 +334,7 @@ def test_fig_5_8b(capsys):
     tree = DecisionTree(variables=nodes, initial_variable="bid")
     tree.evaluate()
     tree.rollback()
-    tree.risk_profile_table(idx=0, cumulative=True, single=True)
+    tree.risk_profile(idx=0, cumulative=True, single=True)
 
     #
     # Test
@@ -366,7 +366,7 @@ def test_fig_5_8c(capsys):
     tree = DecisionTree(variables=nodes, initial_variable="bid")
     tree.evaluate()
     tree.rollback()
-    tree.risk_profile_table(idx=0, cumulative=False, single=False)
+    tree.risk_profile(idx=0, cumulative=False, single=False)
 
     #
     # Test
@@ -398,7 +398,7 @@ def test_fig_5_10(capsys):
     tree = DecisionTree(variables=nodes, initial_variable="bid")
     tree.evaluate()
     tree.rollback()
-    tree.risk_profile_table(idx=0, cumulative=True, single=False)
+    tree.risk_profile(idx=0, cumulative=True, single=False)
 
     #
     # Test
@@ -553,7 +553,7 @@ def test_fig_7_15(capsys):
     tree = DecisionTree(variables=nodes, initial_variable="bid")
     tree.evaluate()
     tree.rollback()
-    tree.risk_profile_table(idx=23, cumulative=True, single=True)
+    tree.risk_profile(idx=23, cumulative=True, single=True)
 
     #
     # Test

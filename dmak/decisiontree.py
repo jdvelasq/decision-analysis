@@ -32,6 +32,7 @@ from .nodes import Nodes
 
 # -------------------------------------------------------------------------
 #
+#
 #  U T I L I T Y    F U N C T I O N    E V A L U A T I O N
 #
 #
@@ -400,6 +401,7 @@ class DecisionTree:
 
     # -------------------------------------------------------------------------
     #
+    #
     #  V I E W    N O D E S
     #
     #
@@ -603,6 +605,7 @@ class DecisionTree:
 
     # -------------------------------------------------------------------------
     #
+    #
     #  E V A L U A T I O N
     #
     #
@@ -659,6 +662,7 @@ class DecisionTree:
         self._is_evaluated = True
 
     # -------------------------------------------------------------------------
+    #
     #
     #  R O L L B A C K
     #
@@ -916,10 +920,13 @@ class DecisionTree:
 
     # -------------------------------------------------------------------------
     #
+    #
     #  R I S K    P R O F I L E
     #
     #
-    def risk_profile_table(self, idx: int, cumulative: bool, single: bool) -> None:
+    def risk_profile(
+        self, idx: int, cumulative: bool, single: bool, plot: bool = False
+    ) -> None:
         """Plots a probability distribution of the tree results computed in a designed node.
 
         :param idx:
@@ -931,72 +938,130 @@ class DecisionTree:
 
         """
 
-        def stem_single(idx: int):
+        def stem_single(idx: int, linefmt: str = "-k", color: str = "black"):
+
             risk_profile = self._nodes[idx].get("RiskProfile").copy()
             values = sorted(risk_profile.keys())
             probs = [risk_profile[value] for value in values]
+
             expval = self._nodes[idx].get("EV")
             tag_value = self._nodes[idx].get("tag_value")
             if tag_value is not None:
                 label = "{};EV={}".format(tag_value, expval)
             else:
                 label = "EV={}".format(expval)
-            labels = [label] * len(probs)
-            return pd.DataFrame(
-                {"Label": labels, "Value": values, "Probability": probs}
-            )
 
-        def step_single(idx: int):
+            if plot is False:
+                labels = [label] * len(probs)
+                return pd.DataFrame(
+                    {"Label": labels, "Value": values, "Probability": probs}
+                )
+            else:
+                markerline, _, _ = plt.gca().stem(
+                    values, probs, linefmt=linefmt, basefmt="gray", label=label
+                )
+
+                markerline.set_markerfacecolor(color)
+                markerline.set_markeredgecolor(color)
+
+                plt.gca().spines["bottom"].set_visible(False)
+                plt.gca().spines["left"].set_visible(False)
+                plt.gca().spines["right"].set_visible(False)
+                plt.gca().spines["top"].set_visible(False)
+
+                plt.gca().set_xlabel("Expected values")
+                plt.gca().set_ylabel("Probability")
+                plt.gca().legend()
+
+            return None
+
+        def step_single(idx: int, linefmt: str = "-k"):
+
             risk_profile = self._nodes[idx].get("RiskProfile").copy()
             values = sorted(risk_profile.keys())
             probs = [risk_profile[value] for value in values]
             cumprobs = np.cumsum(probs).tolist()
+
             expval = self._nodes[idx].get("EV")
             tag_value = self._nodes[idx].get("tag_value")
             if tag_value is not None:
                 label = "{};EV={}".format(tag_value, expval)
             else:
                 label = "EV={}".format(expval)
-            labels = [label] * len(probs)
-            return pd.DataFrame(
-                {"Label": labels, "Value": values, "Cumulative Probability": cumprobs}
-            )
+
+            if plot is False:
+                labels = [label] * len(probs)
+                return pd.DataFrame(
+                    {
+                        "Label": labels,
+                        "Value": values,
+                        "Cumulative Probability": cumprobs,
+                    }
+                )
+            else:
+                cumprobs = [0] + cumprobs
+                values = values + [values[-1]]
+
+                plt.gca().step(values, cumprobs, linefmt, label=label)
+
+                plt.gca().spines["bottom"].set_visible(False)
+                plt.gca().spines["left"].set_visible(False)
+                plt.gca().spines["right"].set_visible(False)
+                plt.gca().spines["top"].set_visible(False)
+
+                plt.gca().set_xlabel("Expected values")
+                plt.gca().set_ylabel("Cumulative probability")
+                plt.gca().legend()
+
+            return None
 
         def stem_multiple(idx: int):
             successors = self._nodes[idx].get("successors")
-            return pd.concat([stem_single(successor) for successor in successors])
+            if plot is True:
+                for i_successor, successor in enumerate(successors):
+                    stem_single(successor, linefmts[i_successor], colors[i_successor])
+            else:
+                return pd.concat([stem_single(successor) for successor in successors])
+            return None
 
         def step_multiple(idx: int):
             successors = self._nodes[idx].get("successors")
-            return pd.concat([step_single(successor) for successor in successors])
+            if plot is True:
+                for i_successor, successor in enumerate(successors):
+                    step_single(successor, linefmts[i_successor])
+            else:
+                return pd.concat([step_single(successor) for successor in successors])
+            return None
 
-        self._compute_risk_profiles(idx=idx)
+        linefmts = [
+            "-k",
+            "-b",
+            "-r",
+            "-g",
+            "--k",
+            "--b",
+            "--r",
+            "--g",
+            "-.k",
+            "-.b",
+            "-.r",
+            "-.g",
+        ]
+        colors = ["black", "blue", "red", "green"] * 3
+
+        self._compute_risk_profiles(idx)
+
         if cumulative is False and single is True:
-            return stem_single(idx)
+            result = stem_single(idx)
         if cumulative is True and single is True:
-            return step_single(idx)
+            result = step_single(idx)
         if cumulative is False and single is False:
-            return stem_multiple(idx)
+            result = stem_multiple(idx)
+        if cumulative is True and single is False:
+            result = step_multiple(idx)
+        if plot is False:
+            return result
 
-        return step_multiple(idx)
-
-    def risk_profile_plot(self, idx: int, cumulative: bool, single: bool) -> None:
-        """Plots a probability distribution of the tree results computed in a designed node.
-
-        :param idx:
-
-        :param cumulative:
-
-        :param single:
-
-
-        """
-        self._compute_risk_profiles(idx=idx)
-        self._plot_risk_profile(idx=idx, cumulative=cumulative, single=single)
-
-    #
-    # Auxiliary functions
-    #
     def _compute_risk_profiles(self, idx: int) -> None:
         #
         def terminal(idx: int) -> None:
@@ -1043,122 +1108,6 @@ class DecisionTree:
 
         dispatch(idx=idx)
 
-    #
-    # Plots
-    #
-    def _plot_risk_profile(self, idx: int, cumulative: bool, single: bool) -> None:
-        #
-        def plot_stem_single(idx: int, linefmt: str = "-k", color: str = "black"):
-
-            risk_profile = self._nodes[idx].get("RiskProfile").copy()
-            values = sorted(risk_profile.keys())
-            probs = [risk_profile[value] for value in values]
-
-            expval = self._nodes[idx].get("ExpVal")
-            tag_value = self._nodes[idx].get("tag_value")
-            if tag_value is not None:
-                label = "{};EV={}".format(tag_value, expval)
-            else:
-                label = "EV={}".format(expval)
-
-            markerline, _, _ = plt.gca().stem(
-                values, probs, linefmt=linefmt, basefmt="gray", label=label
-            )
-
-            markerline.set_markerfacecolor(color)
-            markerline.set_markeredgecolor(color)
-
-            plt.gca().spines["bottom"].set_visible(False)
-            plt.gca().spines["left"].set_visible(False)
-            plt.gca().spines["right"].set_visible(False)
-            plt.gca().spines["top"].set_visible(False)
-
-            plt.gca().set_xlabel("Expected values")
-            plt.gca().set_ylabel("Probability")
-            plt.gca().legend()
-
-        def plot_step_single(idx: int, linefmt: str = "-k") -> None:
-
-            risk_profile = self._nodes[idx].get("RiskProfile").copy()
-            values = sorted(risk_profile.keys())
-            probs = [risk_profile[value] for value in values]
-
-            cumprobs = [0] + np.cumsum(probs).tolist()
-            values = values + [values[-1]]
-
-            expval = self._nodes[idx].get("ExpVal")
-            tag_value = self._nodes[idx].get("tag_value")
-            if tag_value is not None:
-                label = "{};EV={}".format(tag_value, expval)
-            else:
-                label = "EV={}".format(expval)
-
-            plt.gca().step(values, cumprobs, linefmt, label=label)
-
-            plt.gca().spines["bottom"].set_visible(False)
-            plt.gca().spines["left"].set_visible(False)
-            plt.gca().spines["right"].set_visible(False)
-            plt.gca().spines["top"].set_visible(False)
-
-            plt.gca().set_xlabel("Expected values")
-            plt.gca().set_ylabel("Cumulative probability")
-            plt.gca().legend()
-
-        def plot_stem_multiple(idx: int) -> None:
-
-            successors = self._nodes[idx].get("successors")
-            for i_successor, successor in enumerate(successors):
-                plot_stem_single(successor, linefmts[i_successor], colors[i_successor])
-
-        def plot_step_multiple(idx: int) -> None:
-
-            successors = self._nodes[idx].get("successors")
-            for i_successor, successor in enumerate(successors):
-                plot_step_single(successor, linefmts[i_successor])
-
-        linefmts = [
-            "-k",
-            "-b",
-            "-r",
-            "-g",
-            "--k",
-            "--b",
-            "--r",
-            "--g",
-            "-.k",
-            "-.b",
-            "-.r",
-            "-.g",
-        ]
-        colors = ["black", "blue", "red", "green"] * 3
-
-        if cumulative is False and single is True:
-            plot_stem_single(idx)
-        if cumulative is True and single is True:
-            plot_step_single(idx)
-        if cumulative is False and single is False:
-            plot_stem_multiple(idx)
-        if cumulative is True and single is False:
-            plot_step_multiple(idx)
-
-    ##
-    ##
-    ##
-    ##   R E F A C T O R I N G !
-    ##
-    ##
-    ##
-
-    #
-    # Auxiliary functions
-    #
-    def set_display(self, option: str) -> None:
-        if option not in ["ev", "eu", "ce"]:
-            raise ValueError(
-                'Value {} not is a valid option ("ev", "eu", "ce")'.format(option)
-            )
-        self._display = option
-
     # -------------------------------------------------------------------------
     #
     #  P R O B A B I L I S T I  C     S E N S I T I V I T Y
@@ -1197,7 +1146,7 @@ class DecisionTree:
 
                 self._build_skeleton()
                 self._set_tag_attributes()
-                self._build_call_kwargs()
+                self._set_payoff_fn()
                 self.evaluate()
                 self.rollback()
                 results.append(self._nodes[0].get("ExpVal"))
@@ -1243,7 +1192,7 @@ class DecisionTree:
 
                 self._build_skeleton()
                 self._set_tag_attributes()
-                self._build_call_kwargs()
+                self._set_payoff_fn()
                 self.evaluate()
                 self.rollback()
                 expvals = [
@@ -1281,9 +1230,27 @@ class DecisionTree:
         self._variables = orig_variables
         self._build_skeleton()
         self._set_tag_attributes()
-        self._build_call_kwargs()
+        self._set_payoff_fn()
         self.evaluate()
         self.rollback()
+
+    ##
+    ##
+    ##
+    ##   R E F A C T O R I N G !
+    ##
+    ##
+    ##
+
+    #
+    # Auxiliary functions
+    #
+    def set_display(self, option: str) -> None:
+        if option not in ["ev", "eu", "ce"]:
+            raise ValueError(
+                'Value {} not is a valid option ("ev", "eu", "ce")'.format(option)
+            )
+        self._display = option
 
     # -------------------------------------------------------------------------
     #
@@ -1323,8 +1290,6 @@ class DecisionTree:
                 for ceq, tag_value in zip(ceqs, tag_values):
                     results[tag_value].append(ceq)
 
-            # for tag_value in tag_values:
-            #    print("branch = ", tag_value, results[tag_value])
             linefmts = ["-k", "--k", ".-k", "-g", "--g", ".-g", "-r", "--r", ".-r"]
             for linefmt, tag_value in zip(linefmts, tag_values):
                 plt.gca().plot(
@@ -1340,9 +1305,7 @@ class DecisionTree:
                 else str(int(round(1 / risk_aversion, 0)))
                 for risk_aversion in risk_aversions
             ]
-            # plt.xticks(risk_aversions, labels, rotation="vertical")
             plt.xticks(risk_aversions, labels)
-
             plt.gca().spines["bottom"].set_visible(False)
             plt.gca().spines["left"].set_visible(False)
             plt.gca().spines["right"].set_visible(False)

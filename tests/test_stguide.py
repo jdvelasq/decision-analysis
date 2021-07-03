@@ -472,8 +472,8 @@ def test_fig_7_2(capsys):
     matcher.fnmatch_lines(captured_text, consecutive=True)
 
 
-def test_dependent_outcomes(capsys):
-    """Example Fig. 7.2"""
+def test_fig_7_6(capsys):
+    """Dependent outcomes"""
 
     expected_text = dedent(
         """

@@ -6,9 +6,8 @@ Test suite for the SuperTree user guide simple bid example.
 from textwrap import dedent
 
 from _pytest.pytester import LineMatcher
-
 from dmak.decisiontree import DecisionTree
-from dmak.examples import stguide_bid
+from dmak.examples import stguide
 
 
 def test_fig_5_1(capsys):
@@ -72,7 +71,7 @@ def test_fig_5_1(capsys):
         """
     )
 
-    nodes = stguide_bid()
+    nodes = stguide()
     tree = DecisionTree(variables=nodes, initial_variable="bid")
     tree.display()
 
@@ -122,7 +121,7 @@ def test_fit_5_4(capsys):
         """
     )
 
-    nodes = stguide_bid()
+    nodes = stguide()
     tree = DecisionTree(variables=nodes, initial_variable="bid")
     print(tree)
 
@@ -195,7 +194,7 @@ def test_fig_5_6a(capsys):
         """
     )
 
-    nodes = stguide_bid()
+    nodes = stguide()
     tree = DecisionTree(variables=nodes, initial_variable="bid")
     tree.evaluate()
     tree.display()
@@ -274,7 +273,7 @@ def test_fig_5_6b(capsys):
         """
     )
 
-    nodes = stguide_bid()
+    nodes = stguide()
     tree = DecisionTree(variables=nodes, initial_variable="bid")
     tree.evaluate()
     tree.rollback()
@@ -302,7 +301,7 @@ def test_fig_5_8a(capsys):
         """
     )
 
-    nodes = stguide_bid()
+    nodes = stguide()
     tree = DecisionTree(variables=nodes, initial_variable="bid")
     tree.evaluate()
     tree.rollback()
@@ -330,7 +329,7 @@ def test_fig_5_8b(capsys):
         """
     )
 
-    nodes = stguide_bid()
+    nodes = stguide()
     tree = DecisionTree(variables=nodes, initial_variable="bid")
     tree.evaluate()
     tree.rollback()
@@ -362,7 +361,7 @@ def test_fig_5_8c(capsys):
         """
     )
 
-    nodes = stguide_bid()
+    nodes = stguide()
     tree = DecisionTree(variables=nodes, initial_variable="bid")
     tree.evaluate()
     tree.rollback()
@@ -394,7 +393,7 @@ def test_fig_5_10(capsys):
         """
     )
 
-    nodes = stguide_bid()
+    nodes = stguide()
     tree = DecisionTree(variables=nodes, initial_variable="bid")
     tree.evaluate()
     tree.rollback()
@@ -446,7 +445,7 @@ def test_fig_7_2(capsys):
         """
     )
 
-    nodes = stguide_bid()
+    nodes = stguide()
     tree = DecisionTree(variables=nodes, initial_variable="bid")
 
     ## Probabilities for COST depends on COMPBID
@@ -509,7 +508,7 @@ def test_fig_7_6(capsys):
         """
     )
 
-    nodes = stguide_bid()
+    nodes = stguide()
     tree = DecisionTree(variables=nodes, initial_variable="bid")
 
     ## Probabilities for COST depends on COMPBID, BID
@@ -549,7 +548,7 @@ def test_fig_7_15(capsys):
         """
     )
 
-    nodes = stguide_bid()
+    nodes = stguide()
     tree = DecisionTree(variables=nodes, initial_variable="bid")
     tree.evaluate()
     tree.rollback()
@@ -615,7 +614,7 @@ def test_fig_7_17(capsys):
         """
     )
 
-    nodes = stguide_bid()
+    nodes = stguide()
     tree = DecisionTree(variables=nodes, initial_variable="bid")
     tree.evaluate()
     tree.rollback()
@@ -650,7 +649,7 @@ def test_fig_7_19(capsys):
         """
     )
 
-    nodes = stguide_bid()
+    nodes = stguide()
     tree = DecisionTree(variables=nodes, initial_variable="bid")
     tree.evaluate()
     tree.rollback()

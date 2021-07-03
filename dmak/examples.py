@@ -7,7 +7,7 @@ Decision tree examples
 from .nodes import Nodes
 
 
-def stguide_bid():
+def stguide():
     """Supertree userguide bid example (2 branches)"""
 
     def payoff_fn(**kwargs):
@@ -29,6 +29,51 @@ def stguide_bid():
         branches=[(0.25, 200, "profit"), (0.50, 400, "profit"), (0.25, 600, "profit")],
     )
     nodes.terminal(name="profit", payoff_fn=payoff_fn)
+
+    return nodes
+
+
+def stbook():
+    """Bid example from "Decision Analysis for the professional."""
+
+    def payoff_fn(**kwargs):
+        values = kwargs["values"]
+        return (values["bid"] - values["cost"]) * (
+            1 if values["bid"] < values["compbid"] else 0
+        )
+
+    def nobid_fn(**kwargs):
+        return 0
+
+    nodes = Nodes()
+    nodes.decision(
+        name="bid",
+        branches=[
+            (300, "compbid"),
+            (500, "compbid"),
+            (700, "compbid"),
+            ("no-bid", 0, "nobid"),
+        ],
+        maximize=True,
+    )
+    nodes.chance(
+        name="compbid",
+        branches=[
+            (35.0, 400, "cost"),
+            (50.0, 600, "cost"),
+            (15.0, 800, "cost"),
+        ],
+    )
+    nodes.chance(
+        name="cost",
+        branches=[
+            (25.0, 200, "profit"),
+            (50.0, 400, "profit"),
+            (25.0, 600, "profit"),
+        ],
+    )
+    nodes.terminal(name="profit", payoff_fn=payoff_fn)
+    nodes.terminal(name="nobid", payoff_fn=nobid_fn)
 
     return nodes
 
@@ -211,53 +256,4 @@ def stguide_bid():
 #         branches=[(0.25, 200, "profit"), (0.50, 400, "profit"), (0.25, 600, "profit")],
 #     )
 #     nodes.terminal(name="profit", user_fn=profit)
-#     return nodes
-
-
-# def bid():
-#     """Bid example from "Decision Analysis for the professional."""
-
-#     def profit(BID, COST, COMPBID):
-#         return (BID - COST) * (1 if BID < COMPBID else 0)
-
-#     def nobid(**kwargs):
-#         return 0
-
-#     nodes = Nodes()
-#     nodes.decision(
-#         name="BID",
-#         branches=[
-#             (200, "COMPBID"),
-#             (500, "COMPBID"),
-#             (700, "COMPBID"),
-#             (0, "NOBID"),
-#         ],
-#         max_=True,
-#     )
-#     nodes.chance(
-#         name="COMPBID",
-#         branches=[
-#             (35.0, 400, "COST"),
-#             (50.0, 600, "COST"),
-#             (15.0, 800, "COST"),
-#         ],
-#     )
-#     nodes.chance(
-#         name="COST",
-#         branches=[
-#             (25.0, 200, "PROFIT"),
-#             (50.0, 400, "PROFIT"),
-#             (25.0, 600, "PROFIT"),
-#         ],
-#     )
-#     nodes.terminal(
-#         name="PROFIT",
-#         user_fn=profit,
-#     )
-
-#     nodes.terminal(
-#         name="NOBID",
-#         user_fn=nobid,
-#     )
-
 #     return nodes

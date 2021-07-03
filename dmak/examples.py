@@ -78,6 +78,61 @@ def stbook():
     return nodes
 
 
+def oilexample():
+    """PrecisionTree Oil Example"""
+
+    def payoff_fn(**kwargs):
+        values = kwargs["values"]
+        return (values["bid"] - values["cost"]) * (
+            1 if values["bid"] < values["compbid"] else 0
+        )
+
+    def nodrill_fn(**kwargs):
+        return 0
+
+    nodes = Nodes()
+    nodes.decision(
+        name="test_decision",
+        branches=[
+            ("test", -55, "test_results"),
+            ("dont-test", 0, "drill_decision"),
+        ],
+        maximize=True,
+    )
+
+    nodes.chance(
+        name="test_results",
+        branches=[
+            ("ind_dry", 0.38, 0, "drill_decision"),
+            ("ind_small", 0.39, 0, "drill_decision"),
+            ("ind_large", 0.23, 0, "drill_decision"),
+        ],
+    )
+
+    nodes.decision(
+        name="drill_decision",
+        branches=[
+            ("drill", -600, "oil_found"),
+            ("dont-drill", 0, "no_drill"),
+        ],
+        maximize=True,
+    )
+
+    nodes.chance(
+        name="oil_found",
+        branches=[
+            ("dry", 0.38, 0, "profit"),
+            ("small", 0.39, 1500, "profit"),
+            ("large", 0.23, 3400, "profit"),
+        ],
+    )
+
+    nodes.terminal(name="no_drill", payoff_fn=nodrill_fn)
+    nodes.terminal(name="profit", payoff_fn=payoff_fn)
+
+    return nodes
+
+
 # def supertree_bid():
 #     """SuperTree basic bid example."""
 #

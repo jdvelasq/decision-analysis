@@ -377,8 +377,8 @@ def test_fig_5_8c(capsys):
     matcher.fnmatch_lines(captured_text, consecutive=True)
 
 
-def test_fig_5_8d(capsys):
-    """Fig. 5.8 (d) --- Plot distribution"""
+def test_fig_5_10(capsys):
+    """Fig. 5.10 --- Cumulative plot distribution"""
 
     expected_text = dedent(
         r"""
@@ -409,8 +409,8 @@ def test_fig_5_8d(capsys):
     matcher.fnmatch_lines(captured_text, consecutive=True)
 
 
-def test_dependent_probabilities(capsys):
-    """Example Fig. 7.2"""
+def test_fig_7_2(capsys):
+    """Dependent probabilities"""
 
     expected_text = dedent(
         """

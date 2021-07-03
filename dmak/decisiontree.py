@@ -1113,7 +1113,7 @@ class DecisionTree:
     #  P R O B A B I L I S T I  C     S E N S I T I V I T Y
     #
     #
-    def probabilistic_sensitivity(self, varname: str) -> None:
+    def probabilistic_sensitivity(self, varname: str, plot: bool = False) -> Any:
         """Display a probabilistic sensitivity plot for a chance node.
 
         :param varname:
@@ -1121,7 +1121,7 @@ class DecisionTree:
 
         """
 
-        def probabilistic_sensitivity_chance() -> None:
+        def probabilistic_sensitivity_chance() -> Any:
 
             top_branch, bottom_branch = self._variables.get_top_bottom_branches(varname)
             self._variables.set_probabitlities_to_zero(varname)
@@ -1132,16 +1132,18 @@ class DecisionTree:
 
                 branch = self._variables[varname]["branches"][top_branch]
                 self._variables[varname]["branches"][top_branch] = (
+                    branch[0],
                     1 - top_probability,
-                    branch[1],
                     branch[2],
+                    branch[3],
                 )
 
                 branch = self._variables[varname]["branches"][bottom_branch]
                 self._variables[varname]["branches"][bottom_branch] = (
+                    branch[0],
                     top_probability,
-                    branch[1],
                     branch[2],
+                    branch[3],
                 )
 
                 self._build_skeleton()
@@ -1149,16 +1151,20 @@ class DecisionTree:
                 self._set_payoff_fn()
                 self.evaluate()
                 self.rollback()
-                results.append(self._nodes[0].get("ExpVal"))
+                results.append(self._nodes[0].get("EV"))
 
-            plt.gca().plot(probabilities, results, "-k")
-            plt.gca().spines["bottom"].set_visible(False)
-            plt.gca().spines["left"].set_visible(False)
-            plt.gca().spines["right"].set_visible(False)
-            plt.gca().spines["top"].set_visible(False)
-            plt.gca().set_ylabel("Expected values")
-            plt.gca().set_xlabel("Probability")
-            plt.grid()
+            if plot is True:
+                plt.gca().plot(probabilities, results, "-k")
+                plt.gca().spines["bottom"].set_visible(False)
+                plt.gca().spines["left"].set_visible(False)
+                plt.gca().spines["right"].set_visible(False)
+                plt.gca().spines["top"].set_visible(False)
+                plt.gca().set_ylabel("Expected values")
+                plt.gca().set_xlabel("Probability")
+                plt.grid()
+                return None
+
+            return pd.DataFrame({"Probability": probabilities, "Values": results})
 
         def probabilistic_sensitivity_decision() -> None:
 
@@ -1178,16 +1184,18 @@ class DecisionTree:
 
                 branch = self._variables[varname]["branches"][bottom_branch]
                 self._variables[varname]["branches"][bottom_branch] = (
+                    branch[0],
                     probability,
-                    branch[1],
                     branch[2],
+                    branch[3],
                 )
 
                 branch = self._variables[varname]["branches"][top_branch]
                 self._variables[varname]["branches"][top_branch] = (
+                    branch[0],
                     1.0 - probability,
-                    branch[1],
                     branch[2],
+                    branch[3],
                 )
 
                 self._build_skeleton()
@@ -1195,23 +1203,37 @@ class DecisionTree:
                 self._set_payoff_fn()
                 self.evaluate()
                 self.rollback()
-                expvals = [
-                    self._nodes[successor].get("ExpVal") for successor in successors
-                ]
+                expvals = [self._nodes[successor].get("EV") for successor in successors]
                 for expval, tag_value in zip(expvals, tag_values):
                     results[tag_value].append(expval)
 
-            for tag_value in tag_values:
-                plt.gca().plot(probabilities, results[tag_value], label=str(tag_value))
+            if plot is True:
+                for tag_value in tag_values:
+                    plt.gca().plot(
+                        probabilities, results[tag_value], label=str(tag_value)
+                    )
+                plt.gca().spines["bottom"].set_visible(False)
+                plt.gca().spines["left"].set_visible(False)
+                plt.gca().spines["right"].set_visible(False)
+                plt.gca().spines["top"].set_visible(False)
+                plt.gca().set_ylabel("Expected values")
+                plt.gca().set_xlabel("Probability")
+                plt.gca().legend()
+                plt.grid()
+                return None
 
-            plt.gca().spines["bottom"].set_visible(False)
-            plt.gca().spines["left"].set_visible(False)
-            plt.gca().spines["right"].set_visible(False)
-            plt.gca().spines["top"].set_visible(False)
-            plt.gca().set_ylabel("Expected values")
-            plt.gca().set_xlabel("Probability")
-            plt.gca().legend()
-            plt.grid()
+            return pd.concat(
+                [
+                    pd.DataFrame(
+                        {
+                            "Branch": [str(tag_value)] * len(probabilities),
+                            "Probability": probabilities,
+                            "Value": results[tag_value],
+                        }
+                    )
+                    for tag_value in tag_values
+                ]
+            )
 
         #
         #
@@ -1223,9 +1245,9 @@ class DecisionTree:
         orig_variables = self._variables.copy()
         type_root = self._nodes[0].get("type")
         if type_root == "CHANCE":
-            probabilistic_sensitivity_chance()
+            result = probabilistic_sensitivity_chance()
         if type_root == "DECISION":
-            probabilistic_sensitivity_decision()
+            result = probabilistic_sensitivity_decision()
 
         self._variables = orig_variables
         self._build_skeleton()
@@ -1233,6 +1255,9 @@ class DecisionTree:
         self._set_payoff_fn()
         self.evaluate()
         self.rollback()
+
+        if plot is False:
+            return result
 
     ##
     ##

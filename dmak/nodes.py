@@ -40,9 +40,7 @@ class Nodes:
         result.data = copy.deepcopy(self.data)
         return result
 
-    def chance(
-        self, name: str, branches: List[tuple], forced_branch: int = None
-    ) -> None:
+    def chance(self, name: str, branches: List[tuple]) -> None:
         """Adds a chance node to the bag.
 
         :param name:
@@ -90,7 +88,6 @@ class Nodes:
         self.data[name] = {
             "type": "CHANCE",
             "branches": branches,
-            "forced_branch": forced_branch,
         }
 
     def decision(
@@ -98,7 +95,6 @@ class Nodes:
         name: str,
         branches: List[tuple],
         maximize: bool = False,
-        forced_branch: int = None,
     ) -> None:
         """Adds a decision node to the bag.
 
@@ -155,7 +151,6 @@ class Nodes:
             "type": "DECISION",
             "branches": branches,
             "maximize": maximize,
-            "forced_branch": forced_branch,
         }
 
     def terminal(self, name: str, payoff_fn: Any = None) -> None:

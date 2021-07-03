@@ -11,7 +11,81 @@ from dmak.decisiontree import DecisionTree
 from dmak.examples import stguide_bid
 
 
-def test_tree_creation(capsys):
+def test_fig_5_1(capsys):
+    """Example creation from Fig. 5.1"""
+
+    expected_text = dedent(
+        r"""
+        |
+        |
+        \---[D]
+             | bid
+             |   500.00
+             +------[C]
+             |       | compbid
+             |       | .350   400.00
+             |       +-----------[C]
+             |       |            | cost
+             |       |            | .250   200.00
+             |       |            | .500   400.00
+             |       |            \ .250   600.00
+             |       | compbid
+             |       | .500   600.00
+             |       +-----------[C]
+             |       |            | cost
+             |       |            | .250   200.00
+             |       |            | .500   400.00
+             |       |            \ .250   600.00
+             |       | compbid
+             |       | .150   800.00
+             |       \-----------[C]
+             |                    | cost
+             |                    | .250   200.00
+             |                    | .500   400.00
+             |                    \ .250   600.00
+             | bid
+             |   700.00
+             \------[C]
+                     | compbid
+                     | .350   400.00
+                     +-----------[C]
+                     |            | cost
+                     |            | .250   200.00
+                     |            | .500   400.00
+                     |            \ .250   600.00
+                     | compbid
+                     | .500   600.00
+                     +-----------[C]
+                     |            | cost
+                     |            | .250   200.00
+                     |            | .500   400.00
+                     |            \ .250   600.00
+                     | compbid
+                     | .150   800.00
+                     \-----------[C]
+                                  | cost
+                                  | .250   200.00
+                                  | .500   400.00
+                                  \ .250   600.00
+
+
+        """
+    )
+
+    nodes = stguide_bid()
+    tree = DecisionTree(variables=nodes, initial_variable="bid")
+    tree.display()
+
+    #
+    # Test
+    #
+    captured_text = capsys.readouterr().out.splitlines()
+    captured_text = [text.rstrip() for text in captured_text]
+    matcher = LineMatcher(expected_text.splitlines()[1:])
+    matcher.fnmatch_lines(captured_text, consecutive=True)
+
+
+def test_fit_5_4(capsys):
     """Example creatioin from Fig. 5.4"""
 
     expected_text = dedent(
@@ -57,6 +131,279 @@ def test_tree_creation(capsys):
     #
     captured_text = capsys.readouterr().out.splitlines()
     captured_text = captured_text[1:]
+    captured_text = [text.rstrip() for text in captured_text]
+    matcher = LineMatcher(expected_text.splitlines()[1:])
+    matcher.fnmatch_lines(captured_text, consecutive=True)
+
+
+def test_fig_5_6a(capsys):
+    """Fig. 5.6 (a) --- Evaluation of terminal nodes"""
+
+    expected_text = dedent(
+        r"""
+        |
+        |
+        \---[D]
+             | bid
+             |   500.00
+             +------[C]
+             |       | compbid
+             |       | .350   400.00
+             |       +-----------[C]
+             |       |            | cost
+             |       |            | .250   200.00 :     0.00
+             |       |            | .500   400.00 :     0.00
+             |       |            \ .250   600.00 :     0.00
+             |       | compbid
+             |       | .500   600.00
+             |       +-----------[C]
+             |       |            | cost
+             |       |            | .250   200.00 :   300.00
+             |       |            | .500   400.00 :   100.00
+             |       |            \ .250   600.00 :  -100.00
+             |       | compbid
+             |       | .150   800.00
+             |       \-----------[C]
+             |                    | cost
+             |                    | .250   200.00 :   300.00
+             |                    | .500   400.00 :   100.00
+             |                    \ .250   600.00 :  -100.00
+             | bid
+             |   700.00
+             \------[C]
+                     | compbid
+                     | .350   400.00
+                     +-----------[C]
+                     |            | cost
+                     |            | .250   200.00 :     0.00
+                     |            | .500   400.00 :     0.00
+                     |            \ .250   600.00 :     0.00
+                     | compbid
+                     | .500   600.00
+                     +-----------[C]
+                     |            | cost
+                     |            | .250   200.00 :     0.00
+                     |            | .500   400.00 :     0.00
+                     |            \ .250   600.00 :     0.00
+                     | compbid
+                     | .150   800.00
+                     \-----------[C]
+                                  | cost
+                                  | .250   200.00 :   500.00
+                                  | .500   400.00 :   300.00
+                                  \ .250   600.00 :   100.00
+        """
+    )
+
+    nodes = stguide_bid()
+    tree = DecisionTree(variables=nodes, initial_variable="bid")
+    tree.evaluate()
+    tree.display()
+
+    #
+    # Test
+    #
+    captured_text = capsys.readouterr().out.splitlines()
+    captured_text = [text.rstrip() for text in captured_text]
+    matcher = LineMatcher(expected_text.splitlines()[1:])
+    matcher.fnmatch_lines(captured_text, consecutive=True)
+
+
+def test_fig_5_6b(capsys):
+    """Fig. 5.6 (b) --- Expected Values"""
+
+    expected_text = dedent(
+        r"""
+        |
+        |    65.00
+        \------[D]
+                | bid
+                >   500.00    65.00
+                +---------------[C]
+                |                | compbid
+                |                | .350   400.00     0.00
+                |                +--------------------[C]
+                |                |                     | cost
+                |                |                     | .250   200.00 :     0.00 .087
+                |                |                     | .500   400.00 :     0.00 .175
+                |                |                     \ .250   600.00 :     0.00 .087
+                |                | compbid
+                |                | .500   600.00   100.00
+                |                +--------------------[C]
+                |                |                     | cost
+                |                |                     | .250   200.00 :   300.00 .125
+                |                |                     | .500   400.00 :   100.00 .250
+                |                |                     \ .250   600.00 :  -100.00 .125
+                |                | compbid
+                |                | .150   800.00   100.00
+                |                \--------------------[C]
+                |                                      | cost
+                |                                      | .250   200.00 :   300.00 .037
+                |                                      | .500   400.00 :   100.00 .075
+                |                                      \ .250   600.00 :  -100.00 .037
+                | bid
+                |   700.00    45.00
+                \---------------[C]
+                                 | compbid
+                                 | .350   400.00     0.00
+                                 +--------------------[C]
+                                 |                     | cost
+                                 |                     | .250   200.00 :     0.00 .000
+                                 |                     | .500   400.00 :     0.00 .000
+                                 |                     \ .250   600.00 :     0.00 .000
+                                 | compbid
+                                 | .500   600.00     0.00
+                                 +--------------------[C]
+                                 |                     | cost
+                                 |                     | .250   200.00 :     0.00 .000
+                                 |                     | .500   400.00 :     0.00 .000
+                                 |                     \ .250   600.00 :     0.00 .000
+                                 | compbid
+                                 | .150   800.00   300.00
+                                 \--------------------[C]
+                                                       | cost
+                                                       | .250   200.00 :   500.00 .000
+                                                       | .500   400.00 :   300.00 .000
+                                                       \ .250   600.00 :   100.00 .000
+
+
+
+
+
+
+        """
+    )
+
+    nodes = stguide_bid()
+    tree = DecisionTree(variables=nodes, initial_variable="bid")
+    tree.evaluate()
+    tree.rollback()
+    tree.display()
+
+    #
+    # Test
+    #
+    captured_text = capsys.readouterr().out.splitlines()
+    captured_text = [text.rstrip() for text in captured_text]
+    matcher = LineMatcher(expected_text.splitlines()[1:])
+    matcher.fnmatch_lines(captured_text, consecutive=True)
+
+
+def test_fig_5_8a(capsys):
+    """Fig. 5.8 (a) --- Plot distribution"""
+
+    expected_text = dedent(
+        r"""
+             Label  Value  Probability
+        0  EV=65.0   -100       0.1625
+        1  EV=65.0      0       0.3500
+        2  EV=65.0    100       0.3250
+        3  EV=65.0    300       0.1625
+        """
+    )
+
+    nodes = stguide_bid()
+    tree = DecisionTree(variables=nodes, initial_variable="bid")
+    tree.evaluate()
+    tree.rollback()
+    tree.risk_profile_table(idx=0, cumulative=False, single=True)
+
+    #
+    # Test
+    #
+    captured_text = capsys.readouterr().out.splitlines()
+    captured_text = [text.rstrip() for text in captured_text]
+    matcher = LineMatcher(expected_text.splitlines()[1:])
+    matcher.fnmatch_lines(captured_text, consecutive=True)
+
+
+def test_fig_5_8b(capsys):
+    """Fig. 5.8 (b) --- Plot distribution"""
+
+    expected_text = dedent(
+        r"""
+             Label  Value  Cumulative Probability
+        0  EV=65.0   -100                  0.1625
+        1  EV=65.0      0                  0.5125
+        2  EV=65.0    100                  0.8375
+        3  EV=65.0    300                  1.0000
+        """
+    )
+
+    nodes = stguide_bid()
+    tree = DecisionTree(variables=nodes, initial_variable="bid")
+    tree.evaluate()
+    tree.rollback()
+    tree.risk_profile_table(idx=0, cumulative=True, single=True)
+
+    #
+    # Test
+    #
+    captured_text = capsys.readouterr().out.splitlines()
+    captured_text = [text.rstrip() for text in captured_text]
+    matcher = LineMatcher(expected_text.splitlines()[1:])
+    matcher.fnmatch_lines(captured_text, consecutive=True)
+
+
+def test_fig_5_8c(capsys):
+    """Fig. 5.8 (c) --- Plot distribution"""
+
+    expected_text = dedent(
+        r"""
+                 Label  Value  Probability
+        0  500;EV=65.0   -100       0.1625
+        1  500;EV=65.0      0       0.3500
+        2  500;EV=65.0    100       0.3250
+        3  500;EV=65.0    300       0.1625
+        0  700;EV=45.0      0       0.8500
+        1  700;EV=45.0    100       0.0375
+        2  700;EV=45.0    300       0.0750
+        3  700;EV=45.0    500       0.0375
+        """
+    )
+
+    nodes = stguide_bid()
+    tree = DecisionTree(variables=nodes, initial_variable="bid")
+    tree.evaluate()
+    tree.rollback()
+    tree.risk_profile_table(idx=0, cumulative=False, single=False)
+
+    #
+    # Test
+    #
+    captured_text = capsys.readouterr().out.splitlines()
+    captured_text = [text.rstrip() for text in captured_text]
+    matcher = LineMatcher(expected_text.splitlines()[1:])
+    matcher.fnmatch_lines(captured_text, consecutive=True)
+
+
+def test_fig_5_8d(capsys):
+    """Fig. 5.8 (d) --- Plot distribution"""
+
+    expected_text = dedent(
+        r"""
+                 Label  Value  Cumulative Probability
+        0  500;EV=65.0   -100                  0.1625
+        1  500;EV=65.0      0                  0.5125
+        2  500;EV=65.0    100                  0.8375
+        3  500;EV=65.0    300                  1.0000
+        0  700;EV=45.0      0                  0.8500
+        1  700;EV=45.0    100                  0.8875
+        2  700;EV=45.0    300                  0.9625
+        3  700;EV=45.0    500                  1.0000
+        """
+    )
+
+    nodes = stguide_bid()
+    tree = DecisionTree(variables=nodes, initial_variable="bid")
+    tree.evaluate()
+    tree.rollback()
+    tree.risk_profile_table(idx=0, cumulative=True, single=False)
+
+    #
+    # Test
+    #
+    captured_text = capsys.readouterr().out.splitlines()
     captured_text = [text.rstrip() for text in captured_text]
     matcher = LineMatcher(expected_text.splitlines()[1:])
     matcher.fnmatch_lines(captured_text, consecutive=True)
@@ -185,151 +532,6 @@ def test_dependent_outcomes(capsys):
     #
     captured_text = capsys.readouterr().out.splitlines()
     captured_text = captured_text[1:]
-    captured_text = [text.rstrip() for text in captured_text]
-    matcher = LineMatcher(expected_text.splitlines()[1:])
-    matcher.fnmatch_lines(captured_text, consecutive=True)
-
-
-def test_display_no_evaluated(capsys):
-    """Example creatioin from Fig. 5.4"""
-
-    expected_text = dedent(
-        """
-        |
-        |
-        \\---[D]
-             | bid
-             |   500.00
-             +-------[C]
-             |        | compbid
-             |        | .350   400.00
-             |        +------------[C]
-             |        |             | cost
-             |        |             | .250   200.00
-             |        |             | .500   400.00
-             |        |             \\ .250   600.00
-             |        | compbid
-             |        | .500   600.00
-             |        +------------[C]
-             |        |             | cost
-             |        |             | .250   200.00
-             |        |             | .500   400.00
-             |        |             \\ .250   600.00
-             |        | compbid
-             |        | .150   800.00
-             |        \\------------[C]
-             |                      | cost
-             |                      | .250   200.00
-             |                      | .500   400.00
-             |                      \\ .250   600.00
-             | bid
-             |   700.00
-             \\-------[C]
-                      | compbid
-                      | .350   400.00
-                      +------------[C]
-                      |             | cost
-                      |             | .250   200.00
-                      |             | .500   400.00
-                      |             \\ .250   600.00
-                      | compbid
-                      | .500   600.00
-                      +------------[C]
-                      |             | cost
-                      |             | .250   200.00
-                      |             | .500   400.00
-                      |             \\ .250   600.00
-                      | compbid
-                      | .150   800.00
-                      \\------------[C]
-                                    | cost
-                                    | .250   200.00
-                                    | .500   400.00
-                                    \\ .250   600.00
-        """
-    )
-
-    nodes = stguide_bid()
-    tree = DecisionTree(variables=nodes, initial_variable="bid")
-    tree.display()
-
-    #
-    # Test
-    #
-    captured_text = capsys.readouterr().out.splitlines()
-    captured_text = [text.rstrip() for text in captured_text]
-    matcher = LineMatcher(expected_text.splitlines()[1:])
-    matcher.fnmatch_lines(captured_text, consecutive=True)
-
-
-def test_evaluate(capsys):
-    """Example creatioin from Fig. 5.4"""
-
-    expected_text = dedent(
-        """
-        |
-        |
-        \\---[D]
-             | bid
-             |   500.00
-             +-------[C]
-             |        | compbid
-             |        | .350   400.00
-             |        +------------[C]
-             |        |             | cost
-             |        |             | .250   200.00     0.00
-             |        |             | .500   400.00     0.00
-             |        |             \\ .250   600.00     0.00
-             |        | compbid
-             |        | .500   600.00
-             |        +------------[C]
-             |        |             | cost
-             |        |             | .250   200.00   300.00
-             |        |             | .500   400.00   100.00
-             |        |             \\ .250   600.00  -100.00
-             |        | compbid
-             |        | .150   800.00
-             |        \\------------[C]
-             |                      | cost
-             |                      | .250   200.00   300.00
-             |                      | .500   400.00   100.00
-             |                      \\ .250   600.00  -100.00
-             | bid
-             |   700.00
-             \\-------[C]
-                      | compbid
-                      | .350   400.00
-                      +------------[C]
-                      |             | cost
-                      |             | .250   200.00     0.00
-                      |             | .500   400.00     0.00
-                      |             \\ .250   600.00     0.00
-                      | compbid
-                      | .500   600.00
-                      +------------[C]
-                      |             | cost
-                      |             | .250   200.00     0.00
-                      |             | .500   400.00     0.00
-                      |             \\ .250   600.00     0.00
-                      | compbid
-                      | .150   800.00
-                      \\------------[C]
-                                    | cost
-                                    | .250   200.00   500.00
-                                    | .500   400.00   300.00
-                                    \\ .250   600.00   100.00
-        """
-    )
-
-    nodes = stguide_bid()
-    tree = DecisionTree(variables=nodes, initial_variable="bid")
-    tree.evaluate()
-    tree.display()
-
-    #
-    # Test
-    #
-    captured_text = capsys.readouterr().out.splitlines()
     captured_text = [text.rstrip() for text in captured_text]
     matcher = LineMatcher(expected_text.splitlines()[1:])
     matcher.fnmatch_lines(captured_text, consecutive=True)

@@ -535,3 +535,30 @@ def test_fig_7_6(capsys):
     captured_text = [text.rstrip() for text in captured_text]
     matcher = LineMatcher(expected_text.splitlines()[1:])
     matcher.fnmatch_lines(captured_text, consecutive=True)
+
+
+def test_fig_7_15(capsys):
+    """Fig. 7.15 --- Plot distribution"""
+
+    expected_text = dedent(
+        r"""
+                  Label  Value  Cumulative Probability
+        0  800;EV=300.0    100                    0.25
+        1  800;EV=300.0    300                    0.75
+        2  800;EV=300.0    500                    1.00
+        """
+    )
+
+    nodes = stguide_bid()
+    tree = DecisionTree(variables=nodes, initial_variable="bid")
+    tree.evaluate()
+    tree.rollback()
+    tree.risk_profile_table(idx=23, cumulative=True, single=True)
+
+    #
+    # Test
+    #
+    captured_text = capsys.readouterr().out.splitlines()
+    captured_text = [text.rstrip() for text in captured_text]
+    matcher = LineMatcher(expected_text.splitlines()[1:])
+    matcher.fnmatch_lines(captured_text, consecutive=True)

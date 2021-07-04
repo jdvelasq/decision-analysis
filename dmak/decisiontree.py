@@ -278,9 +278,9 @@ class DecisionTree:
             formatstr: str = "{:<" + str(maxwidth) + "s}"
             column = [
                 [
-                    formatstr.format("{:.3f}".format(prob))[1:]
+                    formatstr.format("{:.4f}".format(prob))[1:]
                     if prob < 1.0
-                    else "1.00"
+                    else "1.000"
                     for prob in txtline
                 ]
                 for txtline in column
@@ -308,8 +308,28 @@ class DecisionTree:
 
         maxlen = max([len(txt) for txt in lines])
         lines[1] = "-" * maxlen
-
+        lines = [line.strip() for line in lines]
         return "\n".join(lines)
+
+    # -------------------------------------------------------------------------
+    #
+    #
+    #  S E T    P R O P E R T I E S
+    #
+    #
+    def set_value(self, idx: int, value: float) -> None:
+        if "tag_value" not in self._nodes[idx].keys():
+            raise ValueError(
+                'Tree node #{} does not have a value associated"'.format(idx)
+            )
+        self._nodes[idx]["tag_value"] = value
+
+    def set_probability(self, idx: int, probability: float) -> None:
+        if "tag_prob" not in self._nodes[idx].keys():
+            raise ValueError(
+                'Tree node #{} does not have a probability associated"'.format(idx)
+            )
+        self._nodes[idx]["tag_prob"] = probability
 
     # -------------------------------------------------------------------------
     #
@@ -461,7 +481,7 @@ class DecisionTree:
                         tag_branch = tag_branch[:7] + "..."
                     text += " {:<10s}".format(tag_branch)
                 if tag_prob is not None:
-                    text += " " + "{:.3f}".format(tag_prob)[1:]
+                    text += " " + "{:.4f}".format(tag_prob)[1:]
                 if tag_value is not None:
                     text += " {:8.2f}".format(tag_value)
 
@@ -477,9 +497,9 @@ class DecisionTree:
                     text += " {:8.2f}".format(expval)
                 if pathprob is not None:
                     if pathprob == np.float64(1.0):
-                        text += " " + "1.00"
+                        text += " " + "1.000"
                     else:
-                        text += " " + "{:.3f}".format(pathprob)[1:]
+                        text += " " + "{:.4f}".format(pathprob)[1:]
 
                 return text
 
@@ -520,9 +540,17 @@ class DecisionTree:
             len_branch_text = max(7, len(branch_text))
             if type_ != "TERMINAL":
                 if is_last_node is True:
-                    branch = "\\" + "-" * (len_branch_text - 4) + "[{}]".format(letter)
+                    branch = (
+                        "\\"
+                        + "-" * (len_branch_text - 4)
+                        + "[{}] #{}".format(letter, idx)
+                    )
                 else:
-                    branch = "+" + "-" * (len_branch_text - 4) + "[{}]".format(letter)
+                    branch = (
+                        "+"
+                        + "-" * (len_branch_text - 4)
+                        + "[{}] #{}".format(letter, idx)
+                    )
                 text.append(branch)
 
             # ---------------------------------------------------------------------------

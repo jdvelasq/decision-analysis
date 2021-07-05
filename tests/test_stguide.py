@@ -6,8 +6,9 @@ Test suite for the SuperTree user guide simple bid example.
 from textwrap import dedent
 
 from _pytest.pytester import LineMatcher
-from dmak.decisiontree import DecisionTree
-from dmak.examples import stguide
+
+# from smart_choice.decisiontree import DecisionTree
+from smart_choice.examples import stguide
 
 
 def test_fig_5_1(capsys):
@@ -123,6 +124,36 @@ def test_fit_5_4(capsys):
     nodes = stguide()
     tree = DecisionTree(variables=nodes, initial_variable="bid")
     print(tree)
+
+    #
+    # Test
+    #
+    captured_text = capsys.readouterr().out.splitlines()
+    captured_text = captured_text[1:]
+    captured_text = [text.rstrip() for text in captured_text]
+    matcher = LineMatcher(expected_text.splitlines()[1:])
+    matcher.fnmatch_lines(captured_text, consecutive=True)
+
+
+def test_fit_5_4a(capsys):
+    """Table of variables"""
+
+    expected_text = dedent(
+        """
+        0  D bid                   500             compbid
+                                   700             compbid
+        1  C compbid         .3500 400             cost
+                             .5000 600             cost
+                             .1500 800             cost
+        2  C cost            .2500 200             profit
+                             .5000 400             profit
+                             .2500 600             profit
+        3  T profit
+        """
+    )
+
+    nodes = stguide()
+    print(nodes)
 
     #
     # Test

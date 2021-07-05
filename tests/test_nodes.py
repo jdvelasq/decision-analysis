@@ -7,7 +7,7 @@ Test suite for variables
 from textwrap import dedent
 
 from _pytest.pytester import LineMatcher
-from dmak.nodes import Nodes
+from smart_choice.nodes import Nodes
 
 
 def test_terminal_node_output(capsys):

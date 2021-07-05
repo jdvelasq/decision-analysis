@@ -3,7 +3,7 @@ Decision Tree Model
 ===============================================================================
 
 The **DecisionTree** is the object used to represent the decision tree model.
-This module is responsible for all functionality of the package. A typical 
+This module is responsible for all functionality of the package. A typical
 sequence of use is the following:
 
 * Create the nodes used to feed the tree (Module `nodes`).
@@ -628,6 +628,8 @@ class DecisionTree:
             deep=0,
             max_deep=max_deep,
         )
+
+        text = [line.rstrip() for line in text]
 
         print("\n".join(text))
 

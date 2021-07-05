@@ -7,7 +7,7 @@ from textwrap import dedent
 
 from _pytest.pytester import LineMatcher
 
-# from smart_choice.decisiontree import DecisionTree
+from smart_choice.decisiontree import DecisionTree
 from smart_choice.examples import stguide
 
 

@@ -5,8 +5,8 @@ Test suite for the SuperTree book 'Decision Analysis for the Professional'.
 from textwrap import dedent
 
 from _pytest.pytester import LineMatcher
-from dmak.decisiontree import DecisionTree
-from dmak.examples import stbook
+from smart_choice.decisiontree import DecisionTree
+from smart_choice.examples import stbook
 
 
 def test_fig_3_7_pag54(capsys):

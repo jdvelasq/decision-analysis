@@ -4,7 +4,7 @@ Decision tree examples
 
 """
 
-# from .decisiontree import DecisionTree
+from .decisiontree import DecisionTree
 from .nodes import Nodes
 
 
@@ -43,9 +43,6 @@ def stbook():
             1 if values["bid"] < values["compbid"] else 0
         )
 
-    def nobid_fn(**kwargs):
-        return 0
-
     nodes = Nodes()
     nodes.decision(
         name="bid",
@@ -74,7 +71,6 @@ def stbook():
         ],
     )
     nodes.terminal(name="profit", payoff_fn=payoff_fn)
-    nodes.terminal(name="nobid", payoff_fn=nobid_fn)
 
     return nodes
 

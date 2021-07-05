@@ -6,7 +6,7 @@ from textwrap import dedent
 
 from _pytest.pytester import LineMatcher
 
-from dmak.examples import oil_tree_example
+from smart_choice.examples import oil_tree_example
 
 
 def test_pag43(capsys):

@@ -73,9 +73,9 @@ def test_decision_node_output(capsys):
 
     expected_text = dedent(
         """
-        0  D DecisionNode    branch-1              100.00 next-node
-                             branch-2              200.00 next-node
-                             branch-3              300.00 next-node
+        0  D DecisionNode    branch-1                  100.00 next-node
+                             branch-2                  200.00 next-node
+                             branch-3                  300.00 next-node
         """
     )
 

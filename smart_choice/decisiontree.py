@@ -30,6 +30,8 @@ from graphviz import Digraph
 
 from .nodes import Nodes
 
+NAMEMAXLEN = 20
+
 # -------------------------------------------------------------------------
 #
 #
@@ -476,10 +478,16 @@ class DecisionTree:
 
                 text = ""
 
-                if tag_branch is not None and tag_branch != str(tag_value):
-                    if len(tag_branch) > 10:
-                        tag_branch = tag_branch[:7] + "..."
-                    text += " {:<10s}".format(tag_branch)
+                # if tag_branch is not None and tag_branch != str(tag_value):
+                #     if len(tag_branch) > 10:
+                #         tag_branch = tag_branch[:7] + "..."
+                #     text += " {:<10s}".format(tag_branch)
+                if tag_branch is not None:
+                    if len(tag_branch) > NAMEMAXLEN:
+                        tag_branch = tag_branch[: NAMEMAXLEN - 3] + "..."
+                    fmt = " {:<" + str(NAMEMAXLEN) + "s}"
+                    text += fmt.format(tag_branch)
+                # text += " {:<10s}".format(tag_branch)
                 if tag_prob is not None:
                     text += " " + "{:.4f}".format(tag_prob)[1:]
                 if tag_value is not None:
@@ -526,7 +534,8 @@ class DecisionTree:
                 text = []
             else:
                 if tag_name is not None:
-                    text = ["| {}".format(tag_name)]
+                    # text = ["| {}".format(tag_name)]
+                    text = ["|"]
                 else:
                     text = ["|"]
 
@@ -604,13 +613,14 @@ class DecisionTree:
                     if successor_type == "TERMINAL" and successor == successors[0]:
                         successor_tag_name = self._nodes[successor].get("tag_name")
                         if successor_tag_name is not None:
-                            text.extend(
-                                [
-                                    vbar
-                                    + " " * (len_branch_text - 3)
-                                    + "| {}".format(successor_tag_name)
-                                ]
-                            )
+                            # text.extend(
+                            #     [
+                            #         vbar
+                            #         + " " * (len_branch_text - 3)
+                            #         + "| {}".format(successor_tag_name)
+                            #     ]
+                            # )
+                            text.extend([vbar + " " * (len_branch_text - 3) + "|"])
                         else:
                             text.extend([vbar + " " * (len_branch_text - 3) + "|"])
 

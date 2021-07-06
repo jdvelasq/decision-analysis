@@ -73,17 +73,17 @@ def stbook():
     nodes.chance(
         name="compbid",
         branches=[
-            ("low", 35.0, 400, "cost"),
-            ("medium", 50.0, 600, "cost"),
-            ("high", 15.0, 800, "cost"),
+            ("low", 0.35, 400, "cost"),
+            ("medium", 0.50, 600, "cost"),
+            ("high", 0.15, 800, "cost"),
         ],
     )
     nodes.chance(
         name="cost",
         branches=[
-            ("low", 25.0, 200, "profit"),
-            ("medium", 50.0, 400, "profit"),
-            ("high", 25.0, 600, "profit"),
+            ("low", 0.25, 200, "profit"),
+            ("medium", 0.50, 400, "profit"),
+            ("high", 0.25, 600, "profit"),
         ],
     )
     nodes.terminal(name="profit", payoff_fn=payoff_fn)

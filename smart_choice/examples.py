@@ -114,6 +114,51 @@ def stbook():
     return nodes
 
 
+def stbook_1():
+    """Bid example from "Decision Analysis for the professional."""
+
+    def payoff_fn(**kwargs):
+        values = kwargs["values"]
+        return (values["bid"] - values["cost"]) * (
+            1 if values["bid"] < values["compbid"] else 0
+        )
+
+    def nobid_fn(**kwargs):
+        return 0
+
+    nodes = Nodes()
+    nodes.decision(
+        name="bid",
+        branches=[
+            ("low", 300, "cost"),
+            ("medium", 500, "cost"),
+            ("high", 700, "cost"),
+            ("no-bid", 0, "nobid"),
+        ],
+        maximize=True,
+    )
+    nodes.chance(
+        name="cost",
+        branches=[
+            ("low", 0.25, 200, "compbid"),
+            ("medium", 0.50, 400, "compbid"),
+            ("high", 0.25, 600, "compbid"),
+        ],
+    )
+    nodes.chance(
+        name="compbid",
+        branches=[
+            ("low", 0.35, 400, "profit"),
+            ("medium", 0.50, 600, "profit"),
+            ("high", 0.15, 800, "profit"),
+        ],
+    )
+    nodes.terminal(name="profit", payoff_fn=payoff_fn)
+    nodes.terminal(name="nobid", payoff_fn=nobid_fn)
+
+    return nodes
+
+
 def oil_tree_example():
     """PrecisionTree Oil Example"""
 

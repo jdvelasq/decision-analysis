@@ -382,48 +382,47 @@ class DecisionTree:
     #  D E P E N D E N T    P R O B A B I L I T I E S
     #
     #
-    def set_dependent_probabilities(
-        self, variable: str, depends_on: Any, probabilities: dict
-    ) -> None:
-        """Set probability values in a chance node dependent on previous nodes.
+    # def set_dependent_probabilities(
+    #     self, variable: str, depends_on: Any, probabilities: dict
+    # ) -> None:
+    #     """Set probability values in a chance node dependent on previous nodes.
 
-        :param variable:
+    #     :param variable:
 
-        :param depends_on:
+    #     :param depends_on:
 
-        :param probabilities:
+    #     :param probabilities:
 
+    #     """
 
-        """
+    #     def dispatch(idx: int, args: dict) -> None:
 
-        def dispatch(idx: int, args: dict) -> None:
+    #         args = args.copy()
 
-            args = args.copy()
+    #         if "tag_name" in self._nodes[idx].keys():
+    #             tag_name = self._nodes[idx]["tag_name"]
+    #             tag_branch = self._nodes[idx]["tag_branch"]
+    #             args = {**args, **{tag_name: tag_branch}}
 
-            if "tag_name" in self._nodes[idx].keys():
-                tag_name = self._nodes[idx]["tag_name"]
-                tag_branch = self._nodes[idx]["tag_branch"]
-                args = {**args, **{tag_name: tag_branch}}
+    #         name = self._nodes[idx].get("name")
+    #         if name == variable:
 
-            name = self._nodes[idx].get("name")
-            if name == variable:
+    #             if isinstance(depends_on, list):
+    #                 key = tuple(args[term] for term in depends_on)
+    #             else:
+    #                 key = args[depends_on]
 
-                if isinstance(depends_on, list):
-                    key = tuple(args[term] for term in depends_on)
-                else:
-                    key = args[depends_on]
+    #             probs = probabilities[key]
 
-                probs = probabilities[key]
+    #             for i_successor, successor in enumerate(self._nodes[idx]["successors"]):
 
-                for i_successor, successor in enumerate(self._nodes[idx]["successors"]):
+    #                 self._nodes[successor]["tag_prob"] = probs[i_successor]
 
-                    self._nodes[successor]["tag_prob"] = probs[i_successor]
+    #         if "successors" in self._nodes[idx].keys():
+    #             for successor in self._nodes[idx]["successors"]:
+    #                 dispatch(idx=successor, args=args)
 
-            if "successors" in self._nodes[idx].keys():
-                for successor in self._nodes[idx]["successors"]:
-                    dispatch(idx=successor, args=args)
-
-        dispatch(idx=0, args={})
+    #     dispatch(idx=0, args={})
 
     # -------------------------------------------------------------------------
     #
@@ -431,38 +430,38 @@ class DecisionTree:
     #  D E P E N D E N T    O U T C O M E S
     #
     #
-    def set_dependent_outcomes(
-        self, variable: str, depends_on: Any, outcomes: dict
-    ) -> None:
-        """Set outcomes in a node dependent on previous nodes"""
+    # def set_dependent_outcomes(
+    #     self, variable: str, depends_on: Any, outcomes: dict
+    # ) -> None:
+    #     """Set outcomes in a node dependent on previous nodes"""
 
-        def dispatch(idx: int, args: dict) -> None:
+    #     def dispatch(idx: int, args: dict) -> None:
 
-            args = args.copy()
+    #         args = args.copy()
 
-            if "tag_name" in self._nodes[idx].keys():
-                tag_name = self._nodes[idx]["tag_name"]
-                tag_branch = self._nodes[idx]["tag_branch"]
-                args = {**args, **{tag_name: tag_branch}}
+    #         if "tag_name" in self._nodes[idx].keys():
+    #             tag_name = self._nodes[idx]["tag_name"]
+    #             tag_branch = self._nodes[idx]["tag_branch"]
+    #             args = {**args, **{tag_name: tag_branch}}
 
-            name = self._nodes[idx].get("name")
-            if name == variable:
+    #         name = self._nodes[idx].get("name")
+    #         if name == variable:
 
-                if isinstance(depends_on, (list, tuple)):
-                    key = tuple(args[term] for term in depends_on)
-                else:
-                    key = args[depends_on]
+    #             if isinstance(depends_on, (list, tuple)):
+    #                 key = tuple(args[term] for term in depends_on)
+    #             else:
+    #                 key = args[depends_on]
 
-                outcome = outcomes[key]
+    #             outcome = outcomes[key]
 
-                for i_successor, successor in enumerate(self._nodes[idx]["successors"]):
-                    self._nodes[successor]["tag_value"] = outcome[i_successor]
+    #             for i_successor, successor in enumerate(self._nodes[idx]["successors"]):
+    #                 self._nodes[successor]["tag_value"] = outcome[i_successor]
 
-            if "successors" in self._nodes[idx].keys():
-                for successor in self._nodes[idx]["successors"]:
-                    dispatch(idx=successor, args=args)
+    #         if "successors" in self._nodes[idx].keys():
+    #             for successor in self._nodes[idx]["successors"]:
+    #                 dispatch(idx=successor, args=args)
 
-        dispatch(idx=0, args={})
+    #     dispatch(idx=0, args={})
 
     # -------------------------------------------------------------------------
     #

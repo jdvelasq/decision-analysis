@@ -2,11 +2,9 @@
 Test suite for the SuperTree book 'Decision Analysis for the Professional'.
 
 """
-from textwrap import dedent
-
 from _pytest.pytester import LineMatcher
 from smart_choice.decisiontree import DecisionTree
-from smart_choice.examples import stbook
+from smart_choice.examples import stbook, stbook_1
 
 
 def _get_matcher(filename):
@@ -64,27 +62,13 @@ def test_fig_3_8_pag55(capsys):
 def test_fig_4_5_pag81(capsys):
     """Dependent outcomes"""
 
-    nodes = stbook()
+    nodes = stbook_1()
     tree = DecisionTree(variables=nodes, initial_variable="bid")
 
-    # changes the order of original nodes in the tree
-    bid_ = {"compbid": "cost"}
-    compbid_ = {"cost": "profit"}
-    cost_ = {"profit": "compbid"}
-
-    tree.change_successor(name="bid", new_successors=bid_)
-    tree.change_successor(name="compbid", new_successors=compbid_)
-    tree.change_successor(name="cost", new_successors=cost_)
-    tree.rebuild()
-
-    tree.set_dependent_outcomes(
-        variable="compbid",
-        depends_on="cost",
-        outcomes={
-            "low": [200, 400, 600],
-            "medium": [400, 600, 800],
-            "high": [600, 800, 1000],
-        },
+    tree.set_values(nodes=[3, 4, 5, 16, 17, 18, 29, 30, 31], values=[200, 400, 600] * 3)
+    tree.set_values(nodes=[7, 8, 9, 20, 21, 22, 33, 34, 35], values=[400, 600, 800] * 3)
+    tree.set_values(
+        nodes=[11, 12, 13, 24, 25, 26, 37, 38, 39], values=[600, 800, 1000] * 3
     )
 
     tree.evaluate()
@@ -92,6 +76,19 @@ def test_fig_4_5_pag81(capsys):
     tree.display()
 
     _run_test("./tests/stbook_fig_4_5_pag81.txt", capsys)
+
+
+def test_fig_5_11_pag112(capsys):
+    """Dependent outcomes"""
+
+    nodes = stbook()
+    tree = DecisionTree(variables=nodes, initial_variable="bid")
+
+    tree.evaluate()
+    tree.rollback(utility_fn="exp", risk_tolerance=1000)
+    tree.display(view="eu")
+
+    _run_test("./tests/stbook_fig_5_11_pag112.txt", capsys)
 
 
 def test_fig_5_13_pag114(capsys):

@@ -112,9 +112,7 @@ class DecisionTree:
         self._initial_variable = initial_variable
 
         ## Prepares the empty structure of the tree
-        self._build_skeleton()
-        self._set_tag_attributes()
-        self._set_payoff_fn()
+        self.rebuild()
 
         ## run flags
         self._is_evaluated = False
@@ -126,6 +124,11 @@ class DecisionTree:
     #  T R E E    C R E A T I O N
     #
     #
+    def rebuild(self):
+        self._build_skeleton()
+        self._set_tag_attributes()
+        self._set_payoff_fn()
+
     def _build_skeleton(self) -> None:
         #
         # Builds a structure where nodes are:
@@ -332,6 +335,27 @@ class DecisionTree:
                 'Tree node #{} does not have a probability associated"'.format(idx)
             )
         self._nodes[idx]["tag_prob"] = probability
+
+    def change_successor(self, name: str, new_successors: dict) -> None:
+        """Changes node successor. Used to change the structure of  tree."""
+        type_ = self.variables[name].get("type")
+        if type_ == "CHANCE":
+            for i_branch, branch in enumerate(self._variables[name]["branches"]):
+                bname, prob, value, successor = branch
+                if successor in new_successors.keys():
+                    successor = new_successors[successor]
+                self._variables[name]["branches"][i_branch] = (
+                    bname,
+                    prob,
+                    value,
+                    successor,
+                )
+        if type_ == "DECISION":
+            for i_branch, branch in enumerate(self._variables[name]["branches"]):
+                bname, value, successor = branch
+                if successor in new_successors.keys():
+                    successor = new_successors[successor]
+                self._variables[name]["branches"][i_branch] = (bname, value, successor)
 
     # -------------------------------------------------------------------------
     #

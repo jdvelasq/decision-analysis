@@ -30,7 +30,7 @@ from graphviz import Digraph
 
 from .nodes import Nodes
 
-NAMEMAXLEN = 20
+NAMEMAXLEN = 10
 
 # -------------------------------------------------------------------------
 #
@@ -534,8 +534,7 @@ class DecisionTree:
                 text = []
             else:
                 if tag_name is not None:
-                    # text = ["| {}".format(tag_name)]
-                    text = ["|"]
+                    text = ["| {}".format(tag_name)]
                 else:
                     text = ["|"]
 
@@ -613,14 +612,13 @@ class DecisionTree:
                     if successor_type == "TERMINAL" and successor == successors[0]:
                         successor_tag_name = self._nodes[successor].get("tag_name")
                         if successor_tag_name is not None:
-                            # text.extend(
-                            #     [
-                            #         vbar
-                            #         + " " * (len_branch_text - 3)
-                            #         + "| {}".format(successor_tag_name)
-                            #     ]
-                            # )
-                            text.extend([vbar + " " * (len_branch_text - 3) + "|"])
+                            text.extend(
+                                [
+                                    vbar
+                                    + " " * (len_branch_text - 3)
+                                    + "| {}".format(successor_tag_name)
+                                ]
+                            )
                         else:
                             text.extend([vbar + " " * (len_branch_text - 3) + "|"])
 

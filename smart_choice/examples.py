@@ -21,25 +21,25 @@ def stguide():
     nodes.decision(
         name="bid",
         branches=[
-            ("bid-low", 500, "compbid"),
-            ("bid-high", 700, "compbid"),
+            ("low", 500, "compbid"),
+            ("high", 700, "compbid"),
         ],
         maximize=True,
     )
     nodes.chance(
         name="compbid",
         branches=[
-            ("comp-low", 0.35, 400, "cost"),
-            ("comp-mediumt", 0.50, 600, "cost"),
-            ("comp-high", 0.15, 800, "cost"),
+            ("low", 0.35, 400, "cost"),
+            ("medium", 0.50, 600, "cost"),
+            ("high", 0.15, 800, "cost"),
         ],
     )
     nodes.chance(
         name="cost",
         branches=[
-            ("low-cost", 0.25, 200, "profit"),
-            ("medium-cost", 0.50, 400, "profit"),
-            ("high-cost", 0.25, 600, "profit"),
+            ("low", 0.25, 200, "profit"),
+            ("medium", 0.50, 400, "profit"),
+            ("high", 0.25, 600, "profit"),
         ],
     )
     nodes.terminal(name="profit", payoff_fn=payoff_fn)
@@ -73,17 +73,17 @@ def stbook():
     nodes.chance(
         name="compbid",
         branches=[
-            ("comp-low", 35.0, 400, "cost"),
-            ("comp-med", 50.0, 600, "cost"),
-            ("comp-hgh", 15.0, 800, "cost"),
+            ("low", 35.0, 400, "cost"),
+            ("medium", 50.0, 600, "cost"),
+            ("high", 15.0, 800, "cost"),
         ],
     )
     nodes.chance(
         name="cost",
         branches=[
-            ("low-cost", 25.0, 200, "profit"),
-            ("mdm-cost", 50.0, 400, "profit"),
-            ("hgh-cost", 25.0, 600, "profit"),
+            ("low", 25.0, 200, "profit"),
+            ("medium", 50.0, 400, "profit"),
+            ("high", 25.0, 600, "profit"),
         ],
     )
     nodes.terminal(name="profit", payoff_fn=payoff_fn)
@@ -111,9 +111,9 @@ def oil_tree_example():
     nodes.chance(
         name="test_results",
         branches=[
-            ("indicates-dry", 0.38, 0, "drill_decision"),
-            ("indicates-small", 0.39, 0, "drill_decision"),
-            ("indicates-large", 0.23, 0, "drill_decision"),
+            ("dry", 0.38, 0, "drill_decision"),
+            ("small", 0.39, 0, "drill_decision"),
+            ("large", 0.23, 0, "drill_decision"),
         ],
     )
 
@@ -129,9 +129,9 @@ def oil_tree_example():
     nodes.chance(
         name="oil_found",
         branches=[
-            ("dry-well", 0.38, 0, "profit"),
-            ("small-well", 0.39, 1500, "profit"),
-            ("large-well", 0.23, 3400, "profit"),
+            ("dry", 0.38, 0, "profit"),
+            ("small", 0.39, 1500, "profit"),
+            ("large", 0.23, 3400, "profit"),
         ],
     )
 

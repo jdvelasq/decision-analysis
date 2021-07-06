@@ -965,9 +965,11 @@ class DecisionTree:
         def decision_node(idx: int, cum_prob: float) -> None:
             successors = self._nodes[idx].get("successors")
             optimal_successor = self._nodes[idx].get("optimal_successor")
+            prob = self._nodes[idx].get("tag_prob")
+            prob = 1.0 if prob is None else prob
             for successor in successors:
                 if successor == optimal_successor:
-                    dispatch(idx=successor, cum_prob=cum_prob)
+                    dispatch(idx=successor, cum_prob=cum_prob * prob)
                 else:
                     dispatch(idx=successor, cum_prob=0.0)
 
@@ -1022,14 +1024,14 @@ class DecisionTree:
 
             risk_profile = self._nodes[idx].get("RiskProfile").copy()
             values = sorted(risk_profile.keys())
-            probs = [risk_profile[value] for value in values]
+            probs = [round(risk_profile[value], 2) for value in values]
 
             expval = self._nodes[idx].get("EV")
             tag_value = self._nodes[idx].get("tag_value")
             if tag_value is not None:
-                label = "{};EV={}".format(tag_value, expval)
+                label = "{};EV={:.2f}".format(tag_value, expval)
             else:
-                label = "EV={}".format(expval)
+                label = "EV={:.2f}".format(expval)
 
             if plot is False:
                 labels = [label] * len(probs)
@@ -1059,15 +1061,15 @@ class DecisionTree:
 
             risk_profile = self._nodes[idx].get("RiskProfile").copy()
             values = sorted(risk_profile.keys())
-            probs = [risk_profile[value] for value in values]
+            probs = [round(risk_profile[value], 4) for value in values]
             cumprobs = np.cumsum(probs).tolist()
 
             expval = self._nodes[idx].get("EV")
             tag_value = self._nodes[idx].get("tag_value")
             if tag_value is not None:
-                label = "{};EV={}".format(tag_value, expval)
+                label = "{};EV={:.2f}".format(tag_value, expval)
             else:
-                label = "EV={}".format(expval)
+                label = "EV={:.2f}".format(expval)
 
             if plot is False:
                 labels = [label] * len(probs)

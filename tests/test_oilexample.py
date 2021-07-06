@@ -29,6 +29,29 @@ def _run_test(filename, capsys):
     matcher.fnmatch_lines(captured_text, consecutive=True)
 
 
+#
+# ---------------------------------------------------------------------------------------
+#
+def test_pag32(capsys):
+    """Typical risk profile"""
+    tree = oil_tree_example()
+    tree.evaluate()
+    tree.rollback()
+    tree.risk_profile(idx=0, cumulative=False, single=False)
+
+    _run_test("./tests/oilexample_pag32.txt", capsys)
+
+
+def test_pag33(capsys):
+    """Typical risk profile"""
+    tree = oil_tree_example()
+    tree.evaluate()
+    tree.rollback()
+    tree.display(policy_suggestion=True)
+
+    _run_test("./tests/oilexample_pag33.txt", capsys)
+
+
 def test_pag43(capsys):
     """Basic oil tree example"""
 

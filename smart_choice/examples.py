@@ -207,21 +207,10 @@ def oil_tree_example():
 
     tree = DecisionTree(variables=nodes, initial_variable="test_decision")
 
-    tree.set_probability(idx=4, probability=0.7895)
-    tree.set_probability(idx=5, probability=0.1579)
-    tree.set_probability(idx=6, probability=0.0526)
-
-    tree.set_probability(idx=10, probability=0.3846)
-    tree.set_probability(idx=11, probability=0.4615)
-    tree.set_probability(idx=12, probability=0.1538)
-
-    tree.set_probability(idx=16, probability=0.2174)
-    tree.set_probability(idx=17, probability=0.2609)
-    tree.set_probability(idx=18, probability=0.5217)
-
-    tree.set_probability(idx=22, probability=0.5000)
-    tree.set_probability(idx=23, probability=0.3000)
-    tree.set_probability(idx=24, probability=0.2000)
+    tree.set_probabilities(nodes=[4, 5, 6], probabilities=[0.7895, 0.1579, 0.0526])
+    tree.set_probabilities(nodes=[10, 11, 12], probabilities=[0.3846, 0.4615, 0.1538])
+    tree.set_probabilities(nodes=[16, 17, 18], probabilities=[0.2174, 0.2609, 0.5217])
+    tree.set_probabilities(nodes=[22, 23, 24], probabilities=[0.5000, 0.3000, 0.2000])
 
     return tree
 

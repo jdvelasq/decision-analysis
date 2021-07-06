@@ -132,20 +132,7 @@ class Nodes:
 
         The following code a decision node with four branches.
 
-        >>> nodes = Nodes()
-        >>> nodes.decision(
-        ...     name='DecisionNode-------------',
-        ...     branches=[
-        ...         (100,  'next-node'),
-        ...         ('branch-1', 200,  'next-node'),
-        ...         ('a long long very long name', 400,  'next-node'),
-        ...    ],
-        ...    maximize=True,
-        ... )
-        >>> nodes # doctest: +NORMALIZE_WHITESPACE
-        0  D DecisionNode... 100                   100.00 next-node
-                             branch-1              200.00 next-node
-                             a long long very...   400.00 next-node
+
 
 
         """
@@ -218,7 +205,7 @@ class Nodes:
                 name_ = shorten(name_, width=NAMEMAXLEN, placeholder="...")
                 fmt = "{:<" + str(NAMEMAXLEN) + "s}"
                 branch_text = fmt.format(name_) + " "
-                branch_text += " {:6.2f} {:<s}".format(outcome, successor)
+                branch_text += "     {:6.2f} {:<s}".format(outcome, successor)
                 if branch == self.data[name]["branches"][0]:
                     if len(name) > 15:
                         varname = name[:12] + "..."
@@ -239,6 +226,8 @@ class Nodes:
                 text = repr_chance(text, idx, name)
             if type_ == "DECISION":
                 text = repr_decision(text, idx, name)
+
+        text = [line.rstrip() for line in text]
         return "\n".join(text)
 
     def get_top_bottom_branches(self, name):

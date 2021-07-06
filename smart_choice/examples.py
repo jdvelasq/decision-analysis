@@ -19,7 +19,12 @@ def stguide():
 
     nodes = Nodes()
     nodes.decision(
-        name="bid", branches=[(500, "compbid"), (700, "compbid")], maximize=True
+        name="bid",
+        branches=[
+            ("bid-low", 500, "compbid"),
+            ("bid-high", 700, "compbid"),
+        ],
+        maximize=True,
     )
     nodes.chance(
         name="compbid",

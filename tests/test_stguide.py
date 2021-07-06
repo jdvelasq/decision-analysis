@@ -11,6 +11,36 @@ from smart_choice.decisiontree import DecisionTree
 from smart_choice.examples import stguide
 
 
+def test_fit_5_4a(capsys):
+    """Table of variables"""
+
+    expected_text = dedent(
+        """
+        0  D bid             bid-low                   500.00 compbid
+                             bid-high                  700.00 compbid
+        1  C compbid         comp-low             .350 400.00 cost
+                             comp-mediumt         .500 600.00 cost
+                             comp-high            .150 800.00 cost
+        2  C cost            low-cost             .250 200.00 profit
+                             medium-cost          .500 400.00 profit
+                             high-cost            .250 600.00 profit
+        3  T profit
+        """
+    )
+
+    nodes = stguide()
+    print(nodes)
+
+    #
+    # Test
+    #
+    captured_text = capsys.readouterr().out.splitlines()
+    captured_text = captured_text[1:]
+    captured_text = [text.rstrip() for text in captured_text]
+    matcher = LineMatcher(expected_text.splitlines()[1:])
+    matcher.fnmatch_lines(captured_text, consecutive=True)
+
+
 def test_fig_5_1(capsys):
     """Example creation from Fig. 5.1"""
 
@@ -72,8 +102,8 @@ def test_fig_5_1(capsys):
     )
 
     nodes = stguide()
-    # tree = DecisionTree(variables=nodes, initial_variable="bid")
-    # tree.display()
+    tree = DecisionTree(variables=nodes, initial_variable="bid")
+    tree.display()
 
     #
     # Test
@@ -124,36 +154,6 @@ def test_fit_5_4(capsys):
     nodes = stguide()
     tree = DecisionTree(variables=nodes, initial_variable="bid")
     print(tree)
-
-    #
-    # Test
-    #
-    captured_text = capsys.readouterr().out.splitlines()
-    captured_text = captured_text[1:]
-    captured_text = [text.rstrip() for text in captured_text]
-    matcher = LineMatcher(expected_text.splitlines()[1:])
-    matcher.fnmatch_lines(captured_text, consecutive=True)
-
-
-def test_fit_5_4a(capsys):
-    """Table of variables"""
-
-    expected_text = dedent(
-        """
-        0  D bid                   500             compbid
-                                   700             compbid
-        1  C compbid         .3500 400             cost
-                             .5000 600             cost
-                             .1500 800             cost
-        2  C cost            .2500 200             profit
-                             .5000 400             profit
-                             .2500 600             profit
-        3  T profit
-        """
-    )
-
-    nodes = stguide()
-    print(nodes)
 
     #
     # Test

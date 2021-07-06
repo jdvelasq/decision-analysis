@@ -111,9 +111,9 @@ def oil_tree_example():
     nodes.chance(
         name="test_results",
         branches=[
-            ("dry", 0.38, 0, "drill_decision"),
-            ("small", 0.39, 0, "drill_decision"),
-            ("large", 0.23, 0, "drill_decision"),
+            ("ind-dry", 0.38, 0, "drill_decision"),
+            ("ind-small", 0.39, 0, "drill_decision"),
+            ("ind-large", 0.23, 0, "drill_decision"),
         ],
     )
 
@@ -129,9 +129,9 @@ def oil_tree_example():
     nodes.chance(
         name="oil_found",
         branches=[
-            ("dry", 0.38, 0, "profit"),
-            ("small", 0.39, 1500, "profit"),
-            ("large", 0.23, 3400, "profit"),
+            ("dry-well", 0.38, 0, "profit"),
+            ("small-well", 0.39, 1500, "profit"),
+            ("large-well", 0.23, 3400, "profit"),
         ],
     )
 

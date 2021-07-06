@@ -208,13 +208,9 @@ def test_fig_7_6(capsys):
 
 
 def test_fig_7_14(capsys):
-    """Node reordering"""
+    """Node reordering: add new nodes to the tree data"""
     nodes = stguide()
-    tree = DecisionTree(variables=nodes, initial_variable="bid")
-    tree.change_successor(name="bid", new_successors={"compbid": "cost"})
-    tree.change_successor(name="compbid", new_successors={"cost": "bid"})
-    tree.set_initial_variable("compbid")
-    tree.rebuild()
+    tree = DecisionTree(variables=nodes, initial_variable="compbid-1")
     tree.evaluate()
     tree.rollback()
     tree.display()

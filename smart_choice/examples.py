@@ -13,9 +13,12 @@ def stguide():
 
     def payoff_fn(**kwargs):
         values = kwargs["values"]
-        return (values["bid"] - values["cost"]) * (
-            1 if values["bid"] < values["compbid"] else 0
+        bid = values["bid"] if "bid" in values.keys() else values["bid-1"]
+        compbid = (
+            values["compbid"] if "compbid" in values.keys() else values["compbid-1"]
         )
+        cost = values["cost"]
+        return (bid - cost) * (1 if bid < compbid else 0)
 
     nodes = Nodes()
     nodes.decision(
@@ -43,6 +46,25 @@ def stguide():
         ],
     )
     nodes.terminal(name="profit", payoff_fn=payoff_fn)
+    #
+    # Nodes for reordering the tree
+    #
+    nodes.chance(
+        name="compbid-1",
+        branches=[
+            ("low", 0.35, 400, "bid-1"),
+            ("medium", 0.50, 600, "bid-1"),
+            ("high", 0.15, 800, "bid-1"),
+        ],
+    )
+    nodes.decision(
+        name="bid-1",
+        branches=[
+            ("low", 500, "cost"),
+            ("high", 700, "cost"),
+        ],
+        maximize=True,
+    )
 
     return nodes
 

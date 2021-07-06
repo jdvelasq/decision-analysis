@@ -157,36 +157,16 @@ def test_fig_5_8c(capsys):
     _run_test("./tests/stguide_fig_5_8b.txt", capsys)
 
 
-# def test_fig_5_10(capsys):
-#     """Fig. 5.10 --- Cumulative plot distribution"""
+def test_fig_5_10(capsys):
+    """Fig. 5.10 --- Cumulative plot distribution"""
 
-#     expected_text = dedent(
-#         r"""
-#                  Label  Value  Cumulative Probability
-#         0  500;EV=65.0   -100                  0.1625
-#         1  500;EV=65.0      0                  0.5125
-#         2  500;EV=65.0    100                  0.8375
-#         3  500;EV=65.0    300                  1.0000
-#         0  700;EV=45.0      0                  0.8500
-#         1  700;EV=45.0    100                  0.8875
-#         2  700;EV=45.0    300                  0.9625
-#         3  700;EV=45.0    500                  1.0000
-#         """
-#     )
+    nodes = stguide()
+    tree = DecisionTree(variables=nodes, initial_variable="bid")
+    tree.evaluate()
+    tree.rollback()
+    tree.risk_profile(idx=0, cumulative=True, single=False)
 
-#     nodes = stguide()
-#     tree = DecisionTree(variables=nodes, initial_variable="bid")
-#     tree.evaluate()
-#     tree.rollback()
-#     tree.risk_profile(idx=0, cumulative=True, single=False)
-
-#     #
-#     # Test
-#     #
-#     captured_text = capsys.readouterr().out.splitlines()
-#     captured_text = [text.rstrip() for text in captured_text]
-#     matcher = LineMatcher(expected_text.splitlines()[1:])
-#     matcher.fnmatch_lines(captured_text, consecutive=True)
+    _run_test("./tests/stguide_fig_5_10.txt", capsys)
 
 
 # def test_fig_7_2(capsys):

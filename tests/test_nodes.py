@@ -41,9 +41,9 @@ def test_chance_node_output(capsys):
 
     expected_text = dedent(
         """
-        0  C ChanceNode      .3000 100             next-node
-                             .3000 200             next-node
-                             .4000 last-branch     next-node
+        0  C ChanceNode      branch-1             .300 100.00 next-node
+                             branch-2             .300 200.00 next-node
+                             branch-3             .400 300.00 next-node
         """
     )
 
@@ -51,9 +51,9 @@ def test_chance_node_output(capsys):
     nodes.chance(
         name="ChanceNode",
         branches=[
-            (0.30, 100, "next-node"),
-            (0.30, 200, "next-node"),
-            (0.40, "last-branch", "next-node"),
+            ("branch-1", 0.30, 100, "next-node"),
+            ("branch-2", 0.30, 200, "next-node"),
+            ("branch-3", 0.40, 300, "next-node"),
         ],
     )
     print(nodes)
@@ -73,9 +73,9 @@ def test_decision_node_output(capsys):
 
     expected_text = dedent(
         """
-        0  D DecisionNode          100             next-node
-                                   200             next-node
-                                   branch-4        next-node
+        0  D DecisionNode    branch-1              100.00 next-node
+                             branch-2              200.00 next-node
+                             branch-3              300.00 next-node
         """
     )
 
@@ -83,9 +83,9 @@ def test_decision_node_output(capsys):
     nodes.decision(
         name="DecisionNode",
         branches=[
-            (100, "next-node"),
-            (200, "next-node"),
-            ("branch-4", "next-node"),
+            ("branch-1", 100, "next-node"),
+            ("branch-2", 200, "next-node"),
+            ("branch-3", 300, "next-node"),
         ],
         maximize=True,
     )

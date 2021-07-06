@@ -27,9 +27,9 @@ class Nodes:
     to create the nodes.
     """
 
-    def __init__(self, chance_probabilities: str = "must_100%"):
+    def __init__(self, chance_probabilities="must_100%"):
         self.data = {}
-        self._chance_probabilities: str = chance_probabilities
+        self._chance_probabilities = chance_probabilities
 
     def __getitem__(self, name: str) -> dict:
         return self.data[name]
@@ -67,33 +67,32 @@ class Nodes:
 
         """
         #
-        # Checks branch data
+        # Checks branch information.
         #
         for i_branch, branch in enumerate(branches):
-            if len(branch) != 3:
+            if len(branch) != 4:
                 raise ValueError(
-                    'Branch #{} for variable "{}" has invalid data. Expected (prob, value, next-variable)'.format(
-                        i_branch, name
+                    "Branch #{} of variable {} has invalid information".format(
+                        name, i_branch
                     )
                 )
 
         #
-        # Probability checks
-        #
-        probabilities = [prob for prob, _, _ in branches]
-        if self._chance_probabilities == "must_100%":
-            if sum(probabilities) != float(1.0):
-                raise ValueError(
-                    'Probabilities for variable "{}" must sum 1.0.)'.format(name)
-                )
-        #
         # Normalize probability
         #
-        if self._chance_probabilities == "normalized":
+        probabilities = [prob for _, prob, _, _ in branches]
+
+        if self._chance_probabilities == "must_100%":
+            if sum(probabilities) != float(1):
+                raise ValueError(
+                    "Sum of probabilities for variable {} has must be 100%".format(name)
+                )
+
+        if self._chance_probabilities == "normalize" and sum(probabilities) != 1.0:
             probabilities = [prob / sum(probabilities) for prob in probabilities]
             for i_branch, (branch, prob) in enumerate(zip(branches, probabilities)):
-                _, value, next_node = branch
-                branches[i_branch] = (prob, value, next_node)
+                branch_name, _, value, next_node = branch
+                branches[i_branch] = (branch_name, prob, value, next_node)
 
         self.data[name] = {
             "type": "CHANCE",
@@ -150,14 +149,11 @@ class Nodes:
 
 
         """
-        #
-        # Checks branch data
-        #
         for i_branch, branch in enumerate(branches):
-            if len(branch) != 2:
+            if len(branch) != 3:
                 raise ValueError(
-                    'Branch #{} for variable "{}" has invalid data. Expected (value, next-variable)'.format(
-                        i_branch, name
+                    "Branch #{} of variable {} has invalid information".format(
+                        name, i_branch
                     )
                 )
 
@@ -198,11 +194,12 @@ class Nodes:
         def repr_chance(text: list, idx: int, name: str) -> list:
             text = text[:]
             for branch in self.data[name]["branches"]:
-                prob, outcome, successor = branch
-                branch_text = "{:.4f}".format(prob)[1:] if prob < 1.0 else "1.000"
-                outcome = str(outcome)
-                outcome = outcome if len(outcome) <= 15 else outcome[:12] + "..."
-                branch_text += " {:<15s} {:<s}".format(outcome, successor)
+                name_, prob, outcome, successor = branch
+                name_ = shorten(name_, width=NAMEMAXLEN, placeholder="...")
+                fmt = "{:<" + str(NAMEMAXLEN) + "s}"
+                branch_text = fmt.format(name_) + " "
+                branch_text += "{:.3f}".format(prob)[1:] if prob < 1.0 else "1.00"
+                branch_text += " {:6.2f} {:<s}".format(outcome, successor)
                 if branch == self.data[name]["branches"][0]:
                     if len(name) > 15:
                         varname = name[:12] + "..."
@@ -217,20 +214,19 @@ class Nodes:
         def repr_decision(text: list, idx: int, name: str) -> list:
             text = text[:]
             for branch in self.data[name]["branches"]:
-                outcome, successor = branch
-                outcome = str(outcome)
-                outcome = outcome if len(outcome) <= 15 else outcome[:12] + "..."
-                branch_text = " {:<15s} {:<s}".format(outcome, successor)
+                name_, outcome, successor = branch
+                name_ = shorten(name_, width=NAMEMAXLEN, placeholder="...")
+                fmt = "{:<" + str(NAMEMAXLEN) + "s}"
+                branch_text = fmt.format(name_) + " "
+                branch_text += " {:6.2f} {:<s}".format(outcome, successor)
                 if branch == self.data[name]["branches"][0]:
                     if len(name) > 15:
                         varname = name[:12] + "..."
                     else:
                         varname = name
-                    branch_text = (
-                        "{:<2d} D {:<15s}      ".format(idx, varname) + branch_text
-                    )
+                    branch_text = "{:<2d} D {:<15s} ".format(idx, varname) + branch_text
                 else:
-                    branch_text = " " * 26 + branch_text
+                    branch_text = " " * 21 + branch_text
                 text.append(branch_text)
             return text
 
@@ -243,8 +239,6 @@ class Nodes:
                 text = repr_chance(text, idx, name)
             if type_ == "DECISION":
                 text = repr_decision(text, idx, name)
-
-        text = [line.rstrip() for line in text]
         return "\n".join(text)
 
     def get_top_bottom_branches(self, name):

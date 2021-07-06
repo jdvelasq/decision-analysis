@@ -100,152 +100,25 @@ def test_fit_5_4(capsys):
     matcher.fnmatch_lines(captured_text, consecutive=True)
 
 
-# def test_fig_5_6a(capsys):
-#     """Fig. 5.6 (a) --- Evaluation of terminal nodes"""
+def test_fig_5_6a(capsys):
+    """Fig. 5.6 (a) --- Evaluation of terminal nodes"""
 
-#     expected_text = dedent(
-#         r"""
-#         |
-#         |
-#         \---[D] #0
-#              | bid
-#              |   500.00
-#              +------[C] #1
-#              |       | compbid
-#              |       | .3500   400.00
-#              |       +------------[C] #2
-#              |       |             | cost
-#              |       |             | .2500   200.00 :     0.00
-#              |       |             | .5000   400.00 :     0.00
-#              |       |             \ .2500   600.00 :     0.00
-#              |       | compbid
-#              |       | .5000   600.00
-#              |       +------------[C] #6
-#              |       |             | cost
-#              |       |             | .2500   200.00 :   300.00
-#              |       |             | .5000   400.00 :   100.00
-#              |       |             \ .2500   600.00 :  -100.00
-#              |       | compbid
-#              |       | .1500   800.00
-#              |       \------------[C] #10
-#              |                     | cost
-#              |                     | .2500   200.00 :   300.00
-#              |                     | .5000   400.00 :   100.00
-#              |                     \ .2500   600.00 :  -100.00
-#              | bid
-#              |   700.00
-#              \------[C] #14
-#                      | compbid
-#                      | .3500   400.00
-#                      +------------[C] #15
-#                      |             | cost
-#                      |             | .2500   200.00 :     0.00
-#                      |             | .5000   400.00 :     0.00
-#                      |             \ .2500   600.00 :     0.00
-#                      | compbid
-#                      | .5000   600.00
-#                      +------------[C] #19
-#                      |             | cost
-#                      |             | .2500   200.00 :     0.00
-#                      |             | .5000   400.00 :     0.00
-#                      |             \ .2500   600.00 :     0.00
-#                      | compbid
-#                      | .1500   800.00
-#                      \------------[C] #23
-#                                    | cost
-#                                    | .2500   200.00 :   500.00
-#                                    | .5000   400.00 :   300.00
-#                                    \ .2500   600.00 :   100.00
-
-#         """
-#     )
-
-#     nodes = stguide()
-#     tree = DecisionTree(variables=nodes, initial_variable="bid")
-#     tree.evaluate()
-#     tree.display()
-
-#     #
-#     # Test
-#     #
-#     captured_text = capsys.readouterr().out.splitlines()
-#     captured_text = [text.rstrip() for text in captured_text]
-#     matcher = LineMatcher(expected_text.splitlines()[1:])
-#     matcher.fnmatch_lines(captured_text, consecutive=True)
+    nodes = stguide()
+    tree = DecisionTree(variables=nodes, initial_variable="bid")
+    tree.evaluate()
+    tree.display()
+    _run_test("./tests/stguide_fig_5_6a.txt", capsys)
 
 
-# def test_fig_5_6b(capsys):
-#     """Fig. 5.6 (b) --- Expected Values"""
+def test_fig_5_6b(capsys):
+    """Fig. 5.6 (b) --- Expected Values"""
 
-#     expected_text = dedent(
-#         r"""
-#         |
-#         |    65.00
-#         \------[D] #0
-#                 | bid
-#                 >   500.00    65.00
-#                 +---------------[C] #1
-#                 |                | compbid
-#                 |                | .3500   400.00     0.00
-#                 |                +---------------------[C] #2
-#                 |                |                      | cost
-#                 |                |                      | .2500   200.00 :     0.00 .0875
-#                 |                |                      | .5000   400.00 :     0.00 .1750
-#                 |                |                      \ .2500   600.00 :     0.00 .0875
-#                 |                | compbid
-#                 |                | .5000   600.00   100.00
-#                 |                +---------------------[C] #6
-#                 |                |                      | cost
-#                 |                |                      | .2500   200.00 :   300.00 .1250
-#                 |                |                      | .5000   400.00 :   100.00 .2500
-#                 |                |                      \ .2500   600.00 :  -100.00 .1250
-#                 |                | compbid
-#                 |                | .1500   800.00   100.00
-#                 |                \---------------------[C] #10
-#                 |                                       | cost
-#                 |                                       | .2500   200.00 :   300.00 .0375
-#                 |                                       | .5000   400.00 :   100.00 .0750
-#                 |                                       \ .2500   600.00 :  -100.00 .0375
-#                 | bid
-#                 |   700.00    45.00
-#                 \---------------[C] #14
-#                                  | compbid
-#                                  | .3500   400.00     0.00
-#                                  +---------------------[C] #15
-#                                  |                      | cost
-#                                  |                      | .2500   200.00 :     0.00 .0000
-#                                  |                      | .5000   400.00 :     0.00 .0000
-#                                  |                      \ .2500   600.00 :     0.00 .0000
-#                                  | compbid
-#                                  | .5000   600.00     0.00
-#                                  +---------------------[C] #19
-#                                  |                      | cost
-#                                  |                      | .2500   200.00 :     0.00 .0000
-#                                  |                      | .5000   400.00 :     0.00 .0000
-#                                  |                      \ .2500   600.00 :     0.00 .0000
-#                                  | compbid
-#                                  | .1500   800.00   300.00
-#                                  \---------------------[C] #23
-#                                                         | cost
-#                                                         | .2500   200.00 :   500.00 .0000
-#                                                         | .5000   400.00 :   300.00 .0000
-#                                                         \ .2500   600.00 :   100.00 .0000
-#         """
-#     )
-
-#     nodes = stguide()
-#     tree = DecisionTree(variables=nodes, initial_variable="bid")
-#     tree.evaluate()
-#     tree.rollback()
-#     tree.display()
-
-#     #
-#     # Test
-#     #
-#     captured_text = capsys.readouterr().out.splitlines()
-#     captured_text = [text.rstrip() for text in captured_text]
-#     matcher = LineMatcher(expected_text.splitlines()[1:])
-#     matcher.fnmatch_lines(captured_text, consecutive=True)
+    nodes = stguide()
+    tree = DecisionTree(variables=nodes, initial_variable="bid")
+    tree.evaluate()
+    tree.rollback()
+    tree.display()
+    _run_test("./tests/stguide_fig_5_6b.txt", capsys)
 
 
 # def test_fig_5_8a(capsys):

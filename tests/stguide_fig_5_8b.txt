@@ -1,0 +1,5 @@
+     Label  Value  Cumulative Probability
+0  EV=65.0   -100                  0.1625
+1  EV=65.0      0                  0.5125
+2  EV=65.0    100                  0.8375
+3  EV=65.0    300                  1.0000

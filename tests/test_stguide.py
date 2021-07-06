@@ -121,92 +121,40 @@ def test_fig_5_6b(capsys):
     _run_test("./tests/stguide_fig_5_6b.txt", capsys)
 
 
-# def test_fig_5_8a(capsys):
-#     """Fig. 5.8 (a) --- Plot distribution"""
+def test_fig_5_8a(capsys):
+    """Fig. 5.8 (a) --- Plot distribution"""
 
-#     expected_text = dedent(
-#         r"""
-#              Label  Value  Probability
-#         0  EV=65.0   -100       0.1625
-#         1  EV=65.0      0       0.3500
-#         2  EV=65.0    100       0.3250
-#         3  EV=65.0    300       0.1625
-#         """
-#     )
+    nodes = stguide()
+    tree = DecisionTree(variables=nodes, initial_variable="bid")
+    tree.evaluate()
+    tree.rollback()
+    tree.risk_profile(idx=0, cumulative=False, single=True)
 
-#     nodes = stguide()
-#     tree = DecisionTree(variables=nodes, initial_variable="bid")
-#     tree.evaluate()
-#     tree.rollback()
-#     tree.risk_profile(idx=0, cumulative=False, single=True)
-
-#     #
-#     # Test
-#     #
-#     captured_text = capsys.readouterr().out.splitlines()
-#     captured_text = [text.rstrip() for text in captured_text]
-#     matcher = LineMatcher(expected_text.splitlines()[1:])
-#     matcher.fnmatch_lines(captured_text, consecutive=True)
+    _run_test("./tests/stguide_fig_5_8a.txt", capsys)
 
 
-# def test_fig_5_8b(capsys):
-#     """Fig. 5.8 (b) --- Plot distribution"""
+def test_fig_5_8b(capsys):
+    """Fig. 5.8 (b) --- Plot distribution"""
 
-#     expected_text = dedent(
-#         r"""
-#              Label  Value  Cumulative Probability
-#         0  EV=65.0   -100                  0.1625
-#         1  EV=65.0      0                  0.5125
-#         2  EV=65.0    100                  0.8375
-#         3  EV=65.0    300                  1.0000
-#         """
-#     )
+    nodes = stguide()
+    tree = DecisionTree(variables=nodes, initial_variable="bid")
+    tree.evaluate()
+    tree.rollback()
+    tree.risk_profile(idx=0, cumulative=True, single=True)
 
-#     nodes = stguide()
-#     tree = DecisionTree(variables=nodes, initial_variable="bid")
-#     tree.evaluate()
-#     tree.rollback()
-#     tree.risk_profile(idx=0, cumulative=True, single=True)
-
-#     #
-#     # Test
-#     #
-#     captured_text = capsys.readouterr().out.splitlines()
-#     captured_text = [text.rstrip() for text in captured_text]
-#     matcher = LineMatcher(expected_text.splitlines()[1:])
-#     matcher.fnmatch_lines(captured_text, consecutive=True)
+    _run_test("./tests/stguide_fig_5_8b.txt", capsys)
 
 
-# def test_fig_5_8c(capsys):
-#     """Fig. 5.8 (c) --- Plot distribution"""
+def test_fig_5_8c(capsys):
+    """Fig. 5.8 (c) --- Plot distribution"""
 
-#     expected_text = dedent(
-#         r"""
-#                  Label  Value  Probability
-#         0  500;EV=65.0   -100       0.1625
-#         1  500;EV=65.0      0       0.3500
-#         2  500;EV=65.0    100       0.3250
-#         3  500;EV=65.0    300       0.1625
-#         0  700;EV=45.0      0       0.8500
-#         1  700;EV=45.0    100       0.0375
-#         2  700;EV=45.0    300       0.0750
-#         3  700;EV=45.0    500       0.0375
-#         """
-#     )
+    nodes = stguide()
+    tree = DecisionTree(variables=nodes, initial_variable="bid")
+    tree.evaluate()
+    tree.rollback()
+    tree.risk_profile(idx=0, cumulative=False, single=False)
 
-#     nodes = stguide()
-#     tree = DecisionTree(variables=nodes, initial_variable="bid")
-#     tree.evaluate()
-#     tree.rollback()
-#     tree.risk_profile(idx=0, cumulative=False, single=False)
-
-#     #
-#     # Test
-#     #
-#     captured_text = capsys.readouterr().out.splitlines()
-#     captured_text = [text.rstrip() for text in captured_text]
-#     matcher = LineMatcher(expected_text.splitlines()[1:])
-#     matcher.fnmatch_lines(captured_text, consecutive=True)
+    _run_test("./tests/stguide_fig_5_8b.txt", capsys)
 
 
 # def test_fig_5_10(capsys):

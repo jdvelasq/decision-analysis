@@ -14,20 +14,12 @@ from smart_choice.examples import stguide
 def test_fig_5_4a(capsys):
     """Table of variables"""
 
-    expected_text = dedent(
-        """
-        0  D bid             bid-low                   500.00 compbid
-                             bid-high                  700.00 compbid
-        1  C compbid         comp-low             .350 400.00 cost
-                             comp-mediumt         .500 600.00 cost
-                             comp-high            .150 800.00 cost
-        2  C cost            low-cost             .250 200.00 profit
-                             medium-cost          .500 400.00 profit
-                             high-cost            .250 600.00 profit
-        3  T profit
-        """
-    )
-
+    #
+    # File
+    #
+    with open("./tests/stguide_fig_5_4a.txt", "r") as file:
+        expected_text = file.readlines()
+    expected_text = [line.replace("\n", "") for line in expected_text]
     nodes = stguide()
     print(nodes)
 
@@ -37,7 +29,7 @@ def test_fig_5_4a(capsys):
     captured_text = capsys.readouterr().out.splitlines()
     captured_text = captured_text[1:]
     captured_text = [text.rstrip() for text in captured_text]
-    matcher = LineMatcher(expected_text.splitlines()[1:])
+    matcher = LineMatcher(expected_text)
     matcher.fnmatch_lines(captured_text, consecutive=True)
 
 

@@ -2,10 +2,9 @@
 PrecisionTree Oil Example
 
 """
-from textwrap import dedent
+
 
 from _pytest.pytester import LineMatcher
-
 from smart_choice.examples import oil_tree_example
 
 

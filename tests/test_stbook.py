@@ -58,6 +58,39 @@ def test_fig_3_8_pag55(capsys):
     _run_test("./tests/stbook_fig_3_8_pag55.txt", capsys)
 
 
+def test_fig_4_5_pag81(capsys):
+    """Dependent outcomes"""
+
+    nodes = stbook()
+    tree = DecisionTree(variables=nodes, initial_variable="bid")
+
+    # changes the order of original nodes in the tree
+    bid_ = {"compbid": "cost"}
+    compbid_ = {"cost": "profit"}
+    cost_ = {"profit": "compbid"}
+
+    tree.change_successor(name="bid", new_successors=bid_)
+    tree.change_successor(name="compbid", new_successors=compbid_)
+    tree.change_successor(name="cost", new_successors=cost_)
+    tree.rebuild()
+
+    tree.set_dependent_outcomes(
+        variable="compbid",
+        depends_on="cost",
+        outcomes={
+            "low": [200, 400, 600],
+            "medium": [400, 600, 800],
+            "high": [600, 800, 1000],
+        },
+    )
+
+    tree.evaluate()
+    tree.rollback()
+    tree.display()
+
+    _run_test("./tests/stbook_fig_4_5_pag81.txt", capsys)
+
+
 def test_fig_5_13_pag114(capsys):
     """Expected utility"""
 

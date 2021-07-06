@@ -196,19 +196,12 @@ def test_fig_7_6(capsys):
     nodes = stguide()
     tree = DecisionTree(variables=nodes, initial_variable="bid")
 
-    ## Probabilities for COST depends on COMPBID, BID
-    tree.set_dependent_outcomes(
-        variable="cost",
-        depends_on=("compbid", "bid"),
-        outcomes={
-            ("low", "low"): [170, 350, 550],
-            ("medium", "high"): [190, 380, 570],
-            ("high", "low"): [200, 400, 600],
-            ("low", "high"): [220, 420, 610],
-            ("medium", "low"): [280, 450, 650],
-            ("high", "high"): [300, 480, 680],
-        },
-    )
+    tree.set_values(nodes=[3, 4, 5], values=[170, 350, 550])
+    tree.set_values(nodes=[16, 17, 18], values=[190, 380, 570])
+    tree.set_values(nodes=[7, 8, 9], values=[200, 400, 600])
+    tree.set_values(nodes=[20, 21, 22], values=[220, 420, 610])
+    tree.set_values(nodes=[11, 12, 13], values=[280, 450, 650])
+    tree.set_values(nodes=[24, 25, 26], values=[300, 480, 680])
     print(tree)
 
     _run_test("./tests/stguide_fig_7_6.txt", capsys)

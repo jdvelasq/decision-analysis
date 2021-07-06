@@ -21,7 +21,7 @@ sequence of use is the following:
 
 """
 import json
-from typing import Any
+from typing import Any, Union, List
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -322,40 +322,59 @@ class DecisionTree:
     #  S E T    P R O P E R T I E S
     #
     #
-    def set_value(self, idx: int, value: float) -> None:
-        if "tag_value" not in self._nodes[idx].keys():
-            raise ValueError(
-                'Tree node #{} does not have a value associated"'.format(idx)
-            )
-        self._nodes[idx]["tag_value"] = value
-
-    def set_probability(self, idx: int, probability: float) -> None:
-        if "tag_prob" not in self._nodes[idx].keys():
-            raise ValueError(
-                'Tree node #{} does not have a probability associated"'.format(idx)
-            )
-        self._nodes[idx]["tag_prob"] = probability
-
-    def change_successor(self, name: str, new_successors: dict) -> None:
-        """Changes node successor. Used to change the structure of  tree."""
-        type_ = self.variables[name].get("type")
-        if type_ == "CHANCE":
-            for i_branch, branch in enumerate(self._variables[name]["branches"]):
-                bname, prob, value, successor = branch
-                if successor in new_successors.keys():
-                    successor = new_successors[successor]
-                self._variables[name]["branches"][i_branch] = (
-                    bname,
-                    prob,
-                    value,
-                    successor,
+    def set_values(
+        self, nodes: Union[int, List[int]], values: Union[float, List[float]]
+    ) -> None:
+        if isinstance(nodes, int):
+            nodes = [nodes]
+        if isinstance(values, float):
+            values = [values]
+        for idx in nodes:
+            if "tag_value" not in self._nodes[idx].keys():
+                raise ValueError(
+                    'Tree node #{} does not have a value associated"'.format(idx)
                 )
-        if type_ == "DECISION":
-            for i_branch, branch in enumerate(self._variables[name]["branches"]):
-                bname, value, successor = branch
-                if successor in new_successors.keys():
-                    successor = new_successors[successor]
-                self._variables[name]["branches"][i_branch] = (bname, value, successor)
+        for idx, value in zip(nodes, values):
+            self._nodes[idx]["tag_value"] = value
+
+    def set_probabilities(
+        self, nodes: Union[int, List[int]], probabilities: Union[float, List[float]]
+    ) -> None:
+        if isinstance(nodes, int):
+            nodes = [nodes]
+        if isinstance(probabilities, float):
+            probabilities = [probabilities]
+        for idx in nodes:
+            if "tag_prob" not in self._nodes[idx].keys():
+                raise ValueError(
+                    'Tree node #{} does not have a probability associated"'.format(idx)
+                )
+        for idx, probability in zip(nodes, probabilities):
+            self._nodes[idx]["tag_prob"] = probability
+
+    # def change_successor(self, name: str, new_successors: dict) -> None:
+    #     """Changes node successor. Used to change the structure of  tree."""
+    #     type_ = self.variables[name].get("type")
+    #     if type_ == "CHANCE":
+    #         for i_branch, branch in enumerate(self._variables[name]["branches"]):
+    #             bname, prob, value, successor = branch
+    #             if successor in new_successors.keys():
+    #                 successor = new_successors[successor]
+    #             self._variables[name]["branches"][i_branch] = (
+    #                 bname,
+    #                 prob,
+    #                 value,
+    #                 successor,
+    #             )
+    #     if type_ == "DECISION":
+    #         for i_branch, branch in enumerate(self._variables[name]["branches"]):
+    #             bname, value, successor = branch
+    #             if successor in new_successors.keys():
+    #                 successor = new_successors[successor]
+    #             self._variables[name]["branches"][i_branch] = (bname, value, successor)
+
+    # def set_initial_variable(self, initial_variable):
+    #     self._initial_variable = initial_variable
 
     # -------------------------------------------------------------------------
     #

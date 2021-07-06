@@ -58,6 +58,9 @@ def test_fig_3_8_pag55(capsys):
     _run_test("./tests/stbook_fig_3_8_pag55.txt", capsys)
 
 
+#
+#
+#
 def test_fig_4_5_pag81(capsys):
     """Dependent outcomes"""
 

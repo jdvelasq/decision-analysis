@@ -170,20 +170,19 @@ def test_fig_5_10(capsys):
 
 
 def test_fig_7_2(capsys):
-    """Dependent probabilities"""
+    """Change probabilities"""
 
     nodes = stguide()
     tree = DecisionTree(variables=nodes, initial_variable="bid")
 
-    ## Probabilities for COST depends on COMPBID
-    tree.set_dependent_probabilities(
-        variable="cost",
-        depends_on="compbid",
-        probabilities={
-            "low": [0.4, 0.4, 0.2],
-            "medium": [0.25, 0.50, 0.25],
-            "high": [0.1, 0.45, 0.45],
-        },
+    tree.set_probabilities(
+        nodes=[3, 4, 5, 16, 17, 18], probabilities=[0.4, 0.4, 0.2] * 2
+    )
+    tree.set_probabilities(
+        nodes=[7, 8, 9, 20, 21, 22], probabilities=[0.25, 0.5, 0.25] * 2
+    )
+    tree.set_probabilities(
+        nodes=[11, 12, 13, 24, 25, 26], probabilities=[0.1, 0.45, 0.45] * 2
     )
 
     print(tree)
@@ -213,6 +212,20 @@ def test_fig_7_6(capsys):
     print(tree)
 
     _run_test("./tests/stguide_fig_7_6.txt", capsys)
+
+
+def test_fig_7_14(capsys):
+    """Node reordering"""
+    nodes = stguide()
+    tree = DecisionTree(variables=nodes, initial_variable="bid")
+    tree.change_successor(name="bid", new_successors={"compbid": "cost"})
+    tree.change_successor(name="compbid", new_successors={"cost": "bid"})
+    tree.set_initial_variable("compbid")
+    tree.rebuild()
+    tree.evaluate()
+    tree.rollback()
+    tree.display()
+    _run_test("./tests/stguide_fig_7_14.txt", capsys)
 
 
 def test_fig_7_15(capsys):

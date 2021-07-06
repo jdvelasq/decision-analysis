@@ -18,7 +18,7 @@ import copy
 from textwrap import shorten
 from typing import Any, List
 
-NAMEMAXLEN = 20
+NAMEMAXLEN = 10
 
 
 class Nodes:

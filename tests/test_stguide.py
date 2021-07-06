@@ -11,7 +11,7 @@ from smart_choice.decisiontree import DecisionTree
 from smart_choice.examples import stguide
 
 
-def test_fit_5_4a(capsys):
+def test_fig_5_4a(capsys):
     """Table of variables"""
 
     expected_text = dedent(

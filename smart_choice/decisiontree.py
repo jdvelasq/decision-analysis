@@ -399,8 +399,8 @@ class DecisionTree:
 
             if "tag_name" in self._nodes[idx].keys():
                 tag_name = self._nodes[idx]["tag_name"]
-                tag_value = self._nodes[idx]["tag_value"]
-                args = {**args, **{tag_name: tag_value}}
+                tag_branch = self._nodes[idx]["tag_branch"]
+                args = {**args, **{tag_name: tag_branch}}
 
             name = self._nodes[idx].get("name")
             if name == variable:

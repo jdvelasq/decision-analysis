@@ -191,69 +191,28 @@ def test_fig_7_2(capsys):
     _run_test("./tests/stguide_fig_7_2.txt", capsys)
 
 
-# def test_fig_7_6(capsys):
-#     """Dependent outcomes"""
+def test_fig_7_6(capsys):
+    """Dependent outcomes"""
 
-#     expected_text = dedent(
-#         """
-#         STRUCTURE    NAMES    OUTCOMES     PROBABILIES
-#         ------------------------------------------------------
-#         0D1 14       bid      500 700
-#         1C2 6 10     compbid  400 600 800  .3500 .5000 .1500
-#         2C3 4 5      cost     170 350 550  .2500 .5000 .2500
-#         3T           profit
-#         4T           profit
-#         5T           profit
-#         6C7 8 9      cost     200 400 600  .2500 .5000 .2500
-#         7T           profit
-#         8T           profit
-#         9T           profit
-#         10C11 12 13  cost     280 450 650  .2500 .5000 .2500
-#         11T          profit
-#         12T          profit
-#         13T          profit
-#         14C15 19 23  compbid  400 600 800  .3500 .5000 .1500
-#         15C16 17 18  cost     190 380 570  .2500 .5000 .2500
-#         16T          profit
-#         17T          profit
-#         18T          profit
-#         19C20 21 22  cost     220 420 610  .2500 .5000 .2500
-#         20T          profit
-#         21T          profit
-#         22T          profit
-#         23C24 25 26  cost     300 480 680  .2500 .5000 .2500
-#         24T          profit
-#         25T          profit
-#         26T          profit
-#         """
-#     )
+    nodes = stguide()
+    tree = DecisionTree(variables=nodes, initial_variable="bid")
 
-#     nodes = stguide()
-#     tree = DecisionTree(variables=nodes, initial_variable="bid")
+    ## Probabilities for COST depends on COMPBID, BID
+    tree.set_dependent_outcomes(
+        variable="cost",
+        depends_on=("compbid", "bid"),
+        outcomes={
+            ("low", "low"): [170, 350, 550],
+            ("medium", "high"): [190, 380, 570],
+            ("high", "low"): [200, 400, 600],
+            ("low", "high"): [220, 420, 610],
+            ("medium", "low"): [280, 450, 650],
+            ("high", "high"): [300, 480, 680],
+        },
+    )
+    print(tree)
 
-#     ## Probabilities for COST depends on COMPBID, BID
-#     tree.set_dependent_outcomes(
-#         variable="cost",
-#         depends_on=("compbid", "bid"),
-#         outcomes={
-#             (400, 500): [170, 350, 550],
-#             (400, 700): [190, 380, 570],
-#             (600, 500): [200, 400, 600],
-#             (600, 700): [220, 420, 610],
-#             (800, 500): [280, 450, 650],
-#             (800, 700): [300, 480, 680],
-#         },
-#     )
-#     print(tree)
-
-#     #
-#     # Test
-#     #
-#     captured_text = capsys.readouterr().out.splitlines()
-#     captured_text = captured_text[1:]
-#     captured_text = [text.rstrip() for text in captured_text]
-#     matcher = LineMatcher(expected_text.splitlines()[1:])
-#     matcher.fnmatch_lines(captured_text, consecutive=True)
+    _run_test("./tests/stguide_fig_7_6.txt", capsys)
 
 
 # def test_fig_7_15(capsys):

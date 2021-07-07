@@ -52,6 +52,28 @@ def test_pag33(capsys):
     _run_test("./tests/oilexample_pag33.txt", capsys)
 
 
+def test_pag34a(capsys):
+    """Sensitivity"""
+    tree = oil_tree_example()
+    print(
+        tree.value_sensitivity(
+            name="oil_found", branch="large-well", values=(2500, 5000)
+        )
+    )
+    _run_test("./tests/oilexample_pag34a.txt", capsys)
+
+
+def test_pag34b(capsys):
+    """Sensitivity"""
+    tree = oil_tree_example()
+    print(
+        tree.value_sensitivity(
+            name="drill_decision", branch="drill", values=(-750, -450)
+        )
+    )
+    _run_test("./tests/oilexample_pag34b.txt", capsys)
+
+
 def test_pag43(capsys):
     """Basic oil tree example"""
 

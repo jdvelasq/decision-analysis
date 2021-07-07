@@ -206,11 +206,22 @@ def oil_tree_example():
     nodes.terminal(name="profit", payoff_fn=payoff_fn)
 
     tree = DecisionTree(variables=nodes, initial_variable="test_decision")
-
-    tree.set_probabilities(nodes=[4, 5, 6], probabilities=[0.7895, 0.1579, 0.0526])
-    tree.set_probabilities(nodes=[10, 11, 12], probabilities=[0.3846, 0.4615, 0.1538])
-    tree.set_probabilities(nodes=[16, 17, 18], probabilities=[0.2174, 0.2609, 0.5217])
-    tree.set_probabilities(nodes=[22, 23, 24], probabilities=[0.5000, 0.3000, 0.2000])
+    tree.set_node_probabilities(
+        {
+            4: 0.7895,
+            5: 0.1579,
+            6: 0.0526,
+            10: 0.3846,
+            11: 0.4615,
+            12: 0.1538,
+            16: 0.2174,
+            17: 0.2609,
+            18: 0.5217,
+            22: 0.5000,
+            23: 0.3000,
+            24: 0.2000,
+        }
+    )
 
     return tree
 

@@ -174,15 +174,27 @@ def test_fig_7_2(capsys):
 
     nodes = stguide()
     tree = DecisionTree(variables=nodes, initial_variable="bid")
-
-    tree.set_probabilities(
-        nodes=[3, 4, 5, 16, 17, 18], probabilities=[0.4, 0.4, 0.2] * 2
-    )
-    tree.set_probabilities(
-        nodes=[7, 8, 9, 20, 21, 22], probabilities=[0.25, 0.5, 0.25] * 2
-    )
-    tree.set_probabilities(
-        nodes=[11, 12, 13, 24, 25, 26], probabilities=[0.1, 0.45, 0.45] * 2
+    tree.set_node_probabilities(
+        {
+            3: 0.40,
+            4: 0.40,
+            5: 0.20,
+            16: 0.40,
+            17: 0.40,
+            18: 0.20,
+            7: 0.25,
+            8: 0.50,
+            9: 0.25,
+            20: 0.25,
+            21: 0.50,
+            22: 0.25,
+            11: 0.10,
+            12: 0.45,
+            13: 0.45,
+            24: 0.10,
+            25: 0.45,
+            26: 0.45,
+        }
     )
 
     print(tree)
@@ -195,13 +207,29 @@ def test_fig_7_6(capsys):
 
     nodes = stguide()
     tree = DecisionTree(variables=nodes, initial_variable="bid")
+    tree.set_node_values(
+        {
+            3: 170,
+            4: 350,
+            5: 550,
+            16: 190,
+            17: 380,
+            18: 570,
+            7: 200,
+            8: 400,
+            9: 600,
+            20: 220,
+            21: 420,
+            22: 610,
+            11: 280,
+            12: 450,
+            13: 650,
+            24: 300,
+            25: 480,
+            26: 680,
+        }
+    )
 
-    tree.set_values(nodes=[3, 4, 5], values=[170, 350, 550])
-    tree.set_values(nodes=[16, 17, 18], values=[190, 380, 570])
-    tree.set_values(nodes=[7, 8, 9], values=[200, 400, 600])
-    tree.set_values(nodes=[20, 21, 22], values=[220, 420, 610])
-    tree.set_values(nodes=[11, 12, 13], values=[280, 450, 650])
-    tree.set_values(nodes=[24, 25, 26], values=[300, 480, 680])
     print(tree)
 
     _run_test("./tests/stguide_fig_7_6.txt", capsys)

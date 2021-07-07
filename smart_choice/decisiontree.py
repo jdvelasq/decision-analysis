@@ -322,59 +322,73 @@ class DecisionTree:
     #  S E T    P R O P E R T I E S
     #
     #
-    def set_values(
-        self, nodes: Union[int, List[int]], values: Union[float, List[float]]
-    ) -> None:
-        if isinstance(nodes, int):
-            nodes = [nodes]
-        if isinstance(values, float):
-            values = [values]
-        for idx in nodes:
+    def set_node_values(self, new_values: dict) -> None:
+        for idx, value in new_values.items():
             if "tag_value" not in self._nodes[idx].keys():
                 raise ValueError(
                     'Tree node #{} does not have a value associated"'.format(idx)
                 )
-        for idx, value in zip(nodes, values):
             self._nodes[idx]["tag_value"] = value
 
-    def set_probabilities(
-        self, nodes: Union[int, List[int]], probabilities: Union[float, List[float]]
-    ) -> None:
-        if isinstance(nodes, int):
-            nodes = [nodes]
-        if isinstance(probabilities, float):
-            probabilities = [probabilities]
-        for idx in nodes:
+    def set_node_probabilities(self, new_probabilities: dict) -> None:
+        for idx, probability in new_probabilities.items():
             if "tag_prob" not in self._nodes[idx].keys():
                 raise ValueError(
                     'Tree node #{} does not have a probability associated"'.format(idx)
                 )
-        for idx, probability in zip(nodes, probabilities):
             self._nodes[idx]["tag_prob"] = probability
 
-    # def change_successor(self, name: str, new_successors: dict) -> None:
-    #     """Changes node successor. Used to change the structure of  tree."""
-    #     type_ = self.variables[name].get("type")
-    #     if type_ == "CHANCE":
-    #         for i_branch, branch in enumerate(self._variables[name]["branches"]):
-    #             bname, prob, value, successor = branch
-    #             if successor in new_successors.keys():
-    #                 successor = new_successors[successor]
-    #             self._variables[name]["branches"][i_branch] = (
-    #                 bname,
-    #                 prob,
-    #                 value,
-    #                 successor,
-    #             )
-    #     if type_ == "DECISION":
-    #         for i_branch, branch in enumerate(self._variables[name]["branches"]):
-    #             bname, value, successor = branch
-    #             if successor in new_successors.keys():
-    #                 successor = new_successors[successor]
-    #             self._variables[name]["branches"][i_branch] = (bname, value, successor)
+    def set_variable_value(self, name, branch, value):
+        for node in self._nodes:
+            tag_name = node.get("tag_name")
+            tag_branch = node.get("tag_branch")
+            if (
+                tag_name == name
+                and tag_branch == branch
+                and node.get("tag_value") is not None
+            ):
+                node["tag_value"] = value
 
-    # def set_initial_variable(self, initial_variable):
-    #     self._initial_variable = initial_variable
+    def set_variable_probability(self, name, branch, probability):
+        for node in self._nodes:
+            tag_name = node.get("tag_name")
+            tag_branch = node.get("tag_branch")
+            if (
+                tag_name == name
+                and tag_branch == branch
+                and node.get("tab_prob") is not None
+            ):
+                node["tag_prob"] = probability
+
+    # def set_values(
+    #     self, nodes: Union[int, List[int]], values: Union[float, List[float]]
+    # ) -> None:
+    #     if isinstance(nodes, int):
+    #         nodes = [nodes]
+    #     if isinstance(values, float):
+    #         values = [values]
+    #     for idx in nodes:
+    #         if "tag_value" not in self._nodes[idx].keys():
+    #             raise ValueError(
+    #                 'Tree node #{} does not have a value associated"'.format(idx)
+    #             )
+    #     for idx, value in zip(nodes, values):
+    #         self._nodes[idx]["tag_value"] = value
+
+    # def set_probabilities(
+    #     self, nodes: Union[int, List[int]], probabilities: Union[float, List[float]]
+    # ) -> None:
+    #     if isinstance(nodes, int):
+    #         nodes = [nodes]
+    #     if isinstance(probabilities, float):
+    #         probabilities = [probabilities]
+    #     for idx in nodes:
+    #         if "tag_prob" not in self._nodes[idx].keys():
+    #             raise ValueError(
+    #                 'Tree node #{} does not have a probability associated"'.format(idx)
+    #             )
+    #     for idx, probability in zip(nodes, probabilities):
+    #         self._nodes[idx]["tag_prob"] = probability
 
     # -------------------------------------------------------------------------
     #
@@ -1192,7 +1206,7 @@ class DecisionTree:
 
     # -------------------------------------------------------------------------
     #
-    #  P R O B A B I L I S T I  C     S E N S I T I V I T Y
+    #  P R O B A B I L I S T I C     S E N S I T I V I T Y
     #
     #
     def probabilistic_sensitivity(self, varname: str, plot: bool = False) -> Any:
@@ -1340,6 +1354,133 @@ class DecisionTree:
 
         if plot is False:
             return result
+
+    # -------------------------------------------------------------------------
+    #
+    #  V A L U E     S E N S I T I V I T Y
+    #
+    #
+
+    def value_sensitivity(
+        self, name: str, branch: str, values: tuple, n_points=11, plot: bool = False
+    ):
+        def get_original_value():
+            for node in self._nodes:
+                tag_name = node.get("tag_name")
+                tag_branch = node.get("tag_branch")
+                if tag_name == name and tag_branch == branch:
+                    return node.get("tag_value")
+
+        def restore_original_value(original_value):
+            for i_node, node in enumerate(self._nodes):
+                tag_name = node.get("tag_name")
+                tag_branch = node.get("tag_branch")
+                if tag_name == name and tag_branch == branch:
+                    self._nodes[i_node]["tag_value"] = original_value
+
+        def value_sensitivity_chance(
+            name: str, branch: str, values: tuple, n_points=11, plot: bool = False
+        ):
+
+            min_value, max_value = values
+            values = np.linspace(start=min_value, stop=max_value, num=n_points)
+
+            expvals = []
+            for value in values:
+                for i_node, node in enumerate(self._nodes):
+                    tag_name = node.get("tag_name")
+                    tag_branch = node.get("tag_branch")
+                    if tag_name == name and tag_branch == branch:
+                        self._nodes[i_node]["tag_value"] = value
+                self.evaluate()
+                expvals.append(round(self.rollback(), 2))
+
+            if plot is False:
+                return pd.DataFrame(
+                    {
+                        "value": values,
+                        "ExpVal": expvals,
+                    }
+                )
+
+            plt.gca().plot(values, expvals)
+            plt.gca().spines["bottom"].set_visible(False)
+            plt.gca().spines["left"].set_visible(False)
+            plt.gca().spines["right"].set_visible(False)
+            plt.gca().spines["top"].set_visible(False)
+            plt.gca().set_ylabel("Expected values")
+            plt.gca().set_xlabel("Values")
+            # plt.gca().legend()
+            plt.grid()
+
+            return None
+
+        def value_sensitivity_decision(
+            name: str, branch: str, values: tuple, n_points=11, plot: bool = False
+        ):
+
+            results = {}
+            successors = self._nodes[0].get("successors")
+            tag_branches_root = [
+                self._nodes[successor].get("tag_branch") for successor in successors
+            ]
+            for tag_branch_root in tag_branches_root:
+                results[tag_branch_root] = []
+
+            min_value, max_value = values
+            values = np.linspace(start=min_value, stop=max_value, num=n_points)
+
+            for value in values:
+                for i_node, node in enumerate(self._nodes):
+                    tag_name = node.get("tag_name")
+                    tag_branch = node.get("tag_branch")
+                    if tag_name == name and tag_branch == branch:
+                        self._nodes[i_node]["tag_value"] = value
+                self.evaluate()
+                self.rollback()
+                expvals = [self._nodes[successor].get("EV") for successor in successors]
+                for expval, tag_branch_root in zip(expvals, tag_branches_root):
+                    results[tag_branch_root].append(expval)
+
+            if plot is False:
+                return pd.concat(
+                    [
+                        pd.DataFrame(
+                            {
+                                "Branch": [tag_branch_root] * len(values),
+                                "Value": values,
+                                "ExpVal": results[tag_branch_root],
+                            }
+                        )
+                        for tag_branch_root in tag_branches_root
+                    ]
+                )
+
+            plt.gca().plot(values, expvals)
+            plt.gca().spines["bottom"].set_visible(False)
+            plt.gca().spines["left"].set_visible(False)
+            plt.gca().spines["right"].set_visible(False)
+            plt.gca().spines["top"].set_visible(False)
+            plt.gca().set_ylabel("Expected values")
+            plt.gca().set_xlabel("Values")
+            # plt.gca().legend()
+            plt.grid()
+
+            return None
+
+        original_value = get_original_value()
+        type_ = self._nodes[0]["type"]
+        if type_ == "CHANCE":
+            result = value_sensitivity_chance(
+                name=name, branch=branch, values=values, n_points=n_points
+            )
+        if type_ == "DECISION":
+            result = value_sensitivity_decision(
+                name=name, branch=branch, values=values, n_points=n_points
+            )
+
+        restore_original_value(original_value)
+        return result
 
     # -------------------------------------------------------------------------
     #

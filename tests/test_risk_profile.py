@@ -66,7 +66,7 @@ def test_stguide_fig_7_15(capsys):
     check_capsys("./tests/files/stguide_fig_7_15.txt", capsys)
 
 
-def test_pag32(capsys):
+def test_oilexample_pag32(capsys):
     """Typical risk profile"""
     nodes = oil_tree_example()
     tree = DecisionTree(nodes=nodes)
@@ -76,11 +76,11 @@ def test_pag32(capsys):
     check_capsys("./tests/files/oilexample_pag32.txt", capsys)
 
 
-def test_pag33(capsys):
+def test_oilexample_pag33(capsys):
     """Typical risk profile"""
-    tree = oil_tree_example()
+    nodes = oil_tree_example()
+    tree = DecisionTree(nodes=nodes)
     tree.evaluate()
     tree.rollback()
     tree.display(policy_suggestion=True)
-
-    _run_test("./tests/oilexample_pag33.txt", capsys)
+    check_capsys("./tests/files/oilexample_pag33.txt", capsys)

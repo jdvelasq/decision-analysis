@@ -36,54 +36,6 @@ def _run_test(filename, capsys):
     matcher.fnmatch_lines(captured_text, consecutive=True)
 
 
-def test_fig_5_8a(capsys):
-    """Fig. 5.8 (a) --- Plot distribution"""
-
-    nodes = stguide()
-    tree = DecisionTree(variables=nodes, initial_variable="bid")
-    tree.evaluate()
-    tree.rollback()
-    tree.risk_profile(idx=0, cumulative=False, single=True)
-
-    _run_test("./tests/stguide_fig_5_8a.txt", capsys)
-
-
-def test_fig_5_8b(capsys):
-    """Fig. 5.8 (b) --- Plot distribution"""
-
-    nodes = stguide()
-    tree = DecisionTree(variables=nodes, initial_variable="bid")
-    tree.evaluate()
-    tree.rollback()
-    tree.risk_profile(idx=0, cumulative=True, single=True)
-
-    _run_test("./tests/stguide_fig_5_8b.txt", capsys)
-
-
-def test_fig_5_8c(capsys):
-    """Fig. 5.8 (c) --- Plot distribution"""
-
-    nodes = stguide()
-    tree = DecisionTree(variables=nodes, initial_variable="bid")
-    tree.evaluate()
-    tree.rollback()
-    tree.risk_profile(idx=0, cumulative=False, single=False)
-
-    _run_test("./tests/stguide_fig_5_8b.txt", capsys)
-
-
-def test_fig_5_10(capsys):
-    """Fig. 5.10 --- Cumulative plot distribution"""
-
-    nodes = stguide()
-    tree = DecisionTree(variables=nodes, initial_variable="bid")
-    tree.evaluate()
-    tree.rollback()
-    tree.risk_profile(idx=0, cumulative=True, single=False)
-
-    _run_test("./tests/stguide_fig_5_10.txt", capsys)
-
-
 def test_fig_7_3a(capsys):
     """Change probabilities"""
 

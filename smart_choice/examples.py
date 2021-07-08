@@ -213,6 +213,63 @@ def stbook():
     return nodes
 
 
+def stbook_dependent_outcomes():
+    """Dependent outcomes"""
+
+    def payoff_fn(**kwargs):
+        values = kwargs["values"]
+        bid = values["bid"] if "bid" in values.keys() else 0
+        competitor_bid = (
+            values["competitor_bid"] if "competitor_bid" in values.keys() else 0
+        )
+        cost = values["cost"] if "cost" in values.keys() else 0
+        return (bid - cost) * (1 if bid < competitor_bid else 0)
+
+    nodes = DataNodes()
+    nodes.add_decision(
+        name="bid",
+        branches=[
+            ("low", 300, "cost"),
+            ("medium", 500, "cost"),
+            ("high", 700, "cost"),
+            ("no-bid", 0, "nobid"),
+        ],
+        maximize=True,
+    )
+    nodes.add_chance(
+        name="cost",
+        branches=[
+            ("low", 0.25, 200, "competitor_bid"),
+            ("medium", 0.50, 400, "competitor_bid"),
+            ("high", 0.25, 600, "competitor_bid"),
+        ],
+    )
+    nodes.add_chance(
+        name="competitor_bid",
+        branches=[
+            ("low", 0.35, 400, "profit"),
+            ("medium", 0.50, 600, "profit"),
+            ("high", 0.15, 800, "profit"),
+        ],
+    )
+
+    nodes.add_terminal(name="profit", payoff_fn=payoff_fn)
+
+    nodes.set_outcome(200, cost="low", competitor_bid="low")
+    nodes.set_outcome(400, cost="low", competitor_bid="medium")
+    nodes.set_outcome(600, cost="low", competitor_bid="high")
+
+    nodes.set_outcome(400, cost="medium", competitor_bid="low")
+    nodes.set_outcome(600, cost="medium", competitor_bid="medium")
+    nodes.set_outcome(800, cost="medium", competitor_bid="high")
+
+    nodes.set_outcome(600, cost="high", competitor_bid="low")
+    nodes.set_outcome(800, cost="high", competitor_bid="medium")
+    nodes.set_outcome(1000, cost="high", competitor_bid="high")
+
+    return nodes
+
+
 def stbook_1():
     """Bid example from "Decision Analysis for the professional."""
 

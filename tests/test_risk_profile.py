@@ -3,7 +3,7 @@ Risk profile
 
 """
 from smart_choice.decisiontree import DecisionTree
-from smart_choice.examples import stguide
+from smart_choice.examples import stguide, oil_tree_example
 
 from tests.capsys import check_capsys
 
@@ -64,3 +64,23 @@ def test_stguide_fig_7_15(capsys):
     tree.rollback()
     tree.risk_profile(idx=23, cumulative=True, single=True)
     check_capsys("./tests/files/stguide_fig_7_15.txt", capsys)
+
+
+def test_pag32(capsys):
+    """Typical risk profile"""
+    nodes = oil_tree_example()
+    tree = DecisionTree(nodes=nodes)
+    tree.evaluate()
+    tree.rollback()
+    tree.risk_profile(idx=0, cumulative=False, single=False)
+    check_capsys("./tests/files/oilexample_pag32.txt", capsys)
+
+
+def test_pag33(capsys):
+    """Typical risk profile"""
+    tree = oil_tree_example()
+    tree.evaluate()
+    tree.rollback()
+    tree.display(policy_suggestion=True)
+
+    _run_test("./tests/oilexample_pag33.txt", capsys)

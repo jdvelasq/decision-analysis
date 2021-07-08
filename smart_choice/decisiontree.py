@@ -124,6 +124,8 @@ class DecisionTree:
         self._build_skeleton()
         self._set_tag_attributes()
         self._set_payoff_fn()
+        self._set_dependent_probability()
+        self._set_dependent_outcomes()
 
     def _build_skeleton(self) -> None:
         #
@@ -222,8 +224,9 @@ class DecisionTree:
                 for successor in self._tree_nodes[idx]["successors"]:
                     dispatch(probability, conditions, idx=successor, args=args)
 
-        for probability, conditions in self._data_nodes.dependent_probabilities:
-            dispatch(probability, conditions, idx=0, args={})
+        if self._data_nodes.dependent_probabilities is not None:
+            for probability, conditions in self._data_nodes.dependent_probabilities:
+                dispatch(probability, conditions, idx=0, args={})
 
     def _set_dependent_outcomes(self) -> None:
         """Set outcomes in a node dependent on previous nodes"""
@@ -250,8 +253,9 @@ class DecisionTree:
                 for successor in self._tree_nodes[idx]["successors"]:
                     dispatch(outcome, conditions, idx=successor, args=args)
 
-        for outcome, conditions in self._data_nodes.dependent_outcomes:
-            dispatch(outcome, conditions, idx=0, args={})
+        if self._data_nodes.dependent_outcomes is not None:
+            for outcome, conditions in self._data_nodes.dependent_outcomes:
+                dispatch(outcome, conditions, idx=0, args={})
 
     # -------------------------------------------------------------------------
     #

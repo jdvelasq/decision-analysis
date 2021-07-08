@@ -41,6 +41,8 @@ class DataNodes:
         by the package."""
         result = DataNodes()
         result.data = copy.deepcopy(self.data)
+        result.dependent_probabilities = copy.deepcopy(self.dependent_probabilities)
+        result.dependent_outcomes = copy.deepcopy(self.dependent_outcomes)
         return result
 
     def add_chance(self, name: str, branches: List[tuple]) -> None:

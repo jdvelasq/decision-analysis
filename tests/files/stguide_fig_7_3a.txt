@@ -1,0 +1,28 @@
+0  D bid             low                     500.00 competitor_bid
+                     high                    700.00 competitor_bid
+1  C competitor_bid  low             .3500   400.00 cost
+                     medium          .5000   600.00 cost
+                     high            .1500   800.00 cost
+2  C cost            low             .2500   200.00 profit
+                     medium          .5000   400.00 profit
+                     high            .2500   600.00 profit
+3  T profit
+---
+.4000  competitor_bid==low
+       & cost==low
+.4000  competitor_bid==low
+       & cost==medium
+.2000  competitor_bid==low
+       & cost==high
+.2500  competitor_bid==medium
+       & cost==low
+.5000  competitor_bid==medium
+       & cost==medium
+.2500  competitor_bid==medium
+       & cost==high
+.1000  competitor_bid==high
+       & cost==low
+.4500  competitor_bid==high
+       & cost==medium
+.4500  competitor_bid==high
+       & cost==high

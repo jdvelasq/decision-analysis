@@ -18,3 +18,11 @@ def test_stguide_fig_5_4a(capsys):
     nodes = stguide()
     print(nodes)
     check_capsys("./tests/files/stguide_fig_5_4a.txt", capsys)
+
+
+def test_stguide_fig_7_3a(capsys):
+    """Change probabilities"""
+
+    nodes = stguide_dependent_probabilities()
+    print(nodes)
+    check_capsys("./tests/files/stguide_fig_7_3a.txt", capsys)

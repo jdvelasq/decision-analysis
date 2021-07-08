@@ -74,6 +74,14 @@ def test_pag34b(capsys):
     _run_test("./tests/oilexample_pag34b.txt", capsys)
 
 
+def test_pag_43a(capsys):
+    """Table of variables"""
+
+    nodes = oil_tree_example()
+    print(nodes)
+    _run_test("./tests/oilexample_pag_43a.txt", capsys)
+
+
 def test_pag43(capsys):
     """Basic oil tree example"""
 

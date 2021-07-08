@@ -1,9 +1,0 @@
-0  D bid             low             500.00 compbid
-                     high            700.00 compbid
-1  C compbid         low        .350 400.00 cost
-                     medium     .500 600.00 cost
-                     high       .150 800.00 cost
-2  C cost            low        .250 200.00 profit
-                     medium     .500 400.00 profit
-                     high       .250 600.00 profit
-3  T profit

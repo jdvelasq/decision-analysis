@@ -18,10 +18,10 @@ import copy
 from textwrap import shorten
 from typing import Any, List
 
-NAMEMAXLEN = 10
+NAMEMAXLEN = 15
 
 
-class Nodes:
+class DataNodes:
     """This is a bag used to create and contain the different types of the
     tree nodes. The functions `terminal`, `chance`, and `decision` are used
     to create the nodes.
@@ -30,6 +30,8 @@ class Nodes:
     def __init__(self, chance_probabilities="must_100%"):
         self.data = {}
         self._chance_probabilities = chance_probabilities
+        self.dependent_outcomes = None
+        self.dependent_probabilities = None
 
     def __getitem__(self, name: str) -> dict:
         return self.data[name]
@@ -37,11 +39,11 @@ class Nodes:
     def copy(self):
         """Creates a deep copy of the bag. This function is used internally
         by the package."""
-        result = Nodes()
+        result = DataNodes()
         result.data = copy.deepcopy(self.data)
         return result
 
-    def chance(self, name: str, branches: List[tuple]) -> None:
+    def add_chance(self, name: str, branches: List[tuple]) -> None:
         """Adds a chance node to the bag.
 
         :param name:
@@ -99,7 +101,7 @@ class Nodes:
             "branches": branches,
         }
 
-    def decision(
+    def add_decision(
         self,
         name: str,
         branches: List[tuple],
@@ -150,7 +152,7 @@ class Nodes:
             "maximize": maximize,
         }
 
-    def terminal(self, name: str, payoff_fn: Any = None) -> None:
+    def add_terminal(self, name: str, payoff_fn: Any = None) -> None:
         """Adds a decision node to the bag.
 
         :param name:
@@ -168,33 +170,46 @@ class Nodes:
             "forced_branch": None,
         }
 
+    def set_outcome(self, outcome, **conditions):
+        if self.dependent_outcomes is None:
+            self.dependent_outcomes = []
+        self.dependent_outcomes.append((outcome, conditions))
+
+    def set_probability(self, probability, **conditions):
+        if self.dependent_probabilities is None:
+            self.dependent_probabilities = []
+        self.dependent_probabilities.append((probability, conditions))
+
     def __repr__(self):
         def repr_terminal(text: List[str], idx: int, name: str) -> List[str]:
             text = text[:]
-            if len(name) > 15:
-                varname = name[:12] + "..."
+            if len(name) > NAMEMAXLEN:
+                varname = name[: NAMEMAXLEN - 3] + "..."
             else:
                 varname = name
-            text.append("{:<2d} T {:<15s}".format(idx, varname))
+            fmt = "{:<2d} T {:<" + str(NAMEMAXLEN) + "s}"
+            text.append(fmt.format(idx, varname))
             return text
 
         def repr_chance(text: list, idx: int, name: str) -> list:
             text = text[:]
             for branch in self.data[name]["branches"]:
                 name_, prob, outcome, successor = branch
-                name_ = shorten(name_, width=NAMEMAXLEN, placeholder="...")
+                if len(name_) > NAMEMAXLEN:
+                    name_ = name_[: NAMEMAXLEN - 3] + "..."
                 fmt = "{:<" + str(NAMEMAXLEN) + "s}"
                 branch_text = fmt.format(name_) + " "
-                branch_text += "{:.3f}".format(prob)[1:] if prob < 1.0 else "1.00"
-                branch_text += " {:6.2f} {:<s}".format(outcome, successor)
+                branch_text += "{:.4f}".format(prob)[1:] if prob < 1.0 else "1.000"
+                branch_text += " {:8.2f} {:<s}".format(outcome, successor)
                 if branch == self.data[name]["branches"][0]:
-                    if len(name) > 15:
-                        varname = name[:12] + "..."
+                    if len(name) > NAMEMAXLEN:
+                        varname = name[: NAMEMAXLEN - 3] + "..."
                     else:
                         varname = name
-                    branch_text = "{:<2d} C {:<15s} ".format(idx, varname) + branch_text
+                    fmt = "{:<2d} C {:<" + str(NAMEMAXLEN) + "s} "
+                    branch_text = fmt.format(idx, varname) + branch_text
                 else:
-                    branch_text = " " * 21 + branch_text
+                    branch_text = " " * (NAMEMAXLEN + 6) + branch_text
                 text.append(branch_text)
             return text
 
@@ -205,7 +220,7 @@ class Nodes:
                 name_ = shorten(name_, width=NAMEMAXLEN, placeholder="...")
                 fmt = "{:<" + str(NAMEMAXLEN) + "s}"
                 branch_text = fmt.format(name_) + " "
-                branch_text += "     {:6.2f} {:<s}".format(outcome, successor)
+                branch_text += "      {:8.2f} {:<s}".format(outcome, successor)
                 if branch == self.data[name]["branches"][0]:
                     if len(name) > 15:
                         varname = name[:12] + "..."
@@ -217,6 +232,41 @@ class Nodes:
                 text.append(branch_text)
             return text
 
+        def repr_dependent_probabilities(text: list) -> list:
+
+            if self.dependent_probabilities is None:
+                return text
+
+            text.append("-" * 3)
+            for probability, conditions in self.dependent_probabilities:
+                for i_key, key in enumerate(conditions.keys()):
+                    if i_key == 0:
+                        text.append(
+                            "{:.4f}  ".format(probability)[1:]
+                            + key
+                            + "=="
+                            + conditions[key]
+                        )
+                    else:
+                        text.append("       " + "& " + key + "==" + conditions[key])
+            return text
+
+        def repr_dependent_outcomes(text: list) -> list:
+
+            if self.dependent_outcomes is None:
+                return text
+
+            text.append("-" * 3)
+            for outcome, conditions in self.dependent_outcomes:
+                for i_key, key in enumerate(conditions.keys()):
+                    if i_key == 0:
+                        text.append(
+                            "{:8.2f}  ".format(outcome) + key + "==" + conditions[key]
+                        )
+                    else:
+                        text.append("          " + "& " + key + "==" + conditions[key])
+            return text
+
         text = []
         for idx, name in enumerate(self.data.keys()):
             type_ = self.data[name]["type"]
@@ -226,6 +276,9 @@ class Nodes:
                 text = repr_chance(text, idx, name)
             if type_ == "DECISION":
                 text = repr_decision(text, idx, name)
+
+        text = repr_dependent_probabilities(text)
+        text = repr_dependent_outcomes(text)
 
         text = [line.rstrip() for line in text]
         return "\n".join(text)

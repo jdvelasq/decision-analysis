@@ -4,8 +4,7 @@ Decision tree examples
 
 """
 
-from .decisiontree import DecisionTree
-from .nodes import Nodes
+from .datanodes import DataNodes
 
 
 def stguide():
@@ -13,31 +12,31 @@ def stguide():
 
     def payoff_fn(**kwargs):
         values = kwargs["values"]
-        bid = values["bid"] if "bid" in values.keys() else values["bid-1"]
-        compbid = (
-            values["compbid"] if "compbid" in values.keys() else values["compbid-1"]
+        bid = values["bid"] if "bid" in values.keys() else 0
+        competitor_bid = (
+            values["competitor_bid"] if "competitor_bid" in values.keys() else 0
         )
-        cost = values["cost"]
-        return (bid - cost) * (1 if bid < compbid else 0)
+        cost = values["cost"] if "cost" in values.keys() else 0
+        return (bid - cost) * (1 if bid < competitor_bid else 0)
 
-    nodes = Nodes()
-    nodes.decision(
+    nodes = DataNodes()
+    nodes.add_decision(
         name="bid",
         branches=[
-            ("low", 500, "compbid"),
-            ("high", 700, "compbid"),
+            ("low", 500, "competitor_bid"),
+            ("high", 700, "competitor_bid"),
         ],
         maximize=True,
     )
-    nodes.chance(
-        name="compbid",
+    nodes.add_chance(
+        name="competitor_bid",
         branches=[
             ("low", 0.35, 400, "cost"),
             ("medium", 0.50, 600, "cost"),
             ("high", 0.15, 800, "cost"),
         ],
     )
-    nodes.chance(
+    nodes.add_chance(
         name="cost",
         branches=[
             ("low", 0.25, 200, "profit"),
@@ -45,26 +44,127 @@ def stguide():
             ("high", 0.25, 600, "profit"),
         ],
     )
-    nodes.terminal(name="profit", payoff_fn=payoff_fn)
-    #
-    # Nodes for reordering the tree
-    #
-    nodes.chance(
-        name="compbid-1",
+    nodes.add_terminal(name="profit", payoff_fn=payoff_fn)
+
+    return nodes
+
+
+def stguide_dependent_probabilities():
+    """Supertree dependent probabilities example"""
+
+    def payoff_fn(**kwargs):
+        values = kwargs["values"]
+        bid = values["bid"] if "bid" in values.keys() else 0
+        competitor_bid = (
+            values["competitor_bid"] if "competitor_bid" in values.keys() else 0
+        )
+        cost = values["cost"] if "cost" in values.keys() else 0
+        return (bid - cost) * (1 if bid < competitor_bid else 0)
+
+    nodes = DataNodes()
+    nodes.add_decision(
+        name="bid",
         branches=[
-            ("low", 0.35, 400, "bid-1"),
-            ("medium", 0.50, 600, "bid-1"),
-            ("high", 0.15, 800, "bid-1"),
-        ],
-    )
-    nodes.decision(
-        name="bid-1",
-        branches=[
-            ("low", 500, "cost"),
-            ("high", 700, "cost"),
+            ("low", 500, "competitor_bid"),
+            ("high", 700, "competitor_bid"),
         ],
         maximize=True,
     )
+    nodes.add_chance(
+        name="competitor_bid",
+        branches=[
+            ("low", 0.35, 400, "cost"),
+            ("medium", 0.50, 600, "cost"),
+            ("high", 0.15, 800, "cost"),
+        ],
+    )
+    nodes.add_chance(
+        name="cost",
+        branches=[
+            ("low", 0.25, 200, "profit"),
+            ("medium", 0.50, 400, "profit"),
+            ("high", 0.25, 600, "profit"),
+        ],
+    )
+    nodes.add_terminal(name="profit", payoff_fn=payoff_fn)
+
+    nodes.set_probability(0.4000, competitor_bid="low", cost="low")
+    nodes.set_probability(0.4000, competitor_bid="low", cost="medium")
+    nodes.set_probability(0.2000, competitor_bid="low", cost="high")
+
+    nodes.set_probability(0.2500, competitor_bid="medium", cost="low")
+    nodes.set_probability(0.5000, competitor_bid="medium", cost="medium")
+    nodes.set_probability(0.2500, competitor_bid="medium", cost="high")
+
+    nodes.set_probability(0.1000, competitor_bid="high", cost="low")
+    nodes.set_probability(0.4500, competitor_bid="high", cost="medium")
+    nodes.set_probability(0.4500, competitor_bid="high", cost="high")
+
+    return nodes
+
+
+def stguide_dependent_outcomes():
+    """Supertree dependent outcomes example"""
+
+    def payoff_fn(**kwargs):
+        values = kwargs["values"]
+        bid = values["bid"] if "bid" in values.keys() else 0
+        competitor_bid = (
+            values["competitor_bid"] if "competitor_bid" in values.keys() else 0
+        )
+        cost = values["cost"] if "cost" in values.keys() else 0
+        return (bid - cost) * (1 if bid < competitor_bid else 0)
+
+    nodes = DataNodes()
+    nodes.add_decision(
+        name="bid",
+        branches=[
+            ("low", 500, "competitor_bid"),
+            ("high", 700, "competitor_bid"),
+        ],
+        maximize=True,
+    )
+    nodes.add_chance(
+        name="competitor_bid",
+        branches=[
+            ("low", 0.35, 400, "cost"),
+            ("medium", 0.50, 600, "cost"),
+            ("high", 0.15, 800, "cost"),
+        ],
+    )
+    nodes.add_chance(
+        name="cost",
+        branches=[
+            ("low", 0.25, 200, "profit"),
+            ("medium", 0.50, 400, "profit"),
+            ("high", 0.25, 600, "profit"),
+        ],
+    )
+    nodes.add_terminal(name="profit", payoff_fn=payoff_fn)
+
+    nodes.set_outcome(170, competitor_bid="low", bid="low", cost="low")
+    nodes.set_outcome(350, competitor_bid="low", bid="low", cost="medium")
+    nodes.set_outcome(350, competitor_bid="low", bid="low", cost="high")
+
+    nodes.set_outcome(190, competitor_bid="low", bid="high", cost="low")
+    nodes.set_outcome(380, competitor_bid="low", bid="high", cost="medium")
+    nodes.set_outcome(570, competitor_bid="low", bid="high", cost="high")
+
+    nodes.set_outcome(200, competitor_bid="medium", bid="low", cost="low")
+    nodes.set_outcome(400, competitor_bid="medium", bid="low", cost="medium")
+    nodes.set_outcome(600, competitor_bid="medium", bid="low", cost="high")
+
+    nodes.set_outcome(220, competitor_bid="medium", bid="high", cost="low")
+    nodes.set_outcome(420, competitor_bid="medium", bid="high", cost="medium")
+    nodes.set_outcome(610, competitor_bid="medium", bid="high", cost="high")
+
+    nodes.set_outcome(280, competitor_bid="high", bid="low", cost="low")
+    nodes.set_outcome(450, competitor_bid="high", bid="low", cost="medium")
+    nodes.set_outcome(650, competitor_bid="high", bid="low", cost="high")
+
+    nodes.set_outcome(300, competitor_bid="high", bid="high", cost="low")
+    nodes.set_outcome(480, competitor_bid="high", bid="high", cost="medium")
+    nodes.set_outcome(680, competitor_bid="high", bid="high", cost="high")
 
     return nodes
 
@@ -74,33 +174,33 @@ def stbook():
 
     def payoff_fn(**kwargs):
         values = kwargs["values"]
-        return (values["bid"] - values["cost"]) * (
-            1 if values["bid"] < values["compbid"] else 0
+        bid = values["bid"] if "bid" in values.keys() else 0
+        competitor_bid = (
+            values["competitor_bid"] if "competitor_bid" in values.keys() else 0
         )
+        cost = values["cost"] if "cost" in values.keys() else 0
+        return (bid - cost) * (1 if bid < competitor_bid else 0)
 
-    def nobid_fn(**kwargs):
-        return 0
-
-    nodes = Nodes()
-    nodes.decision(
+    nodes = DataNodes()
+    nodes.add_decision(
         name="bid",
         branches=[
-            ("low", 300, "compbid"),
-            ("medium", 500, "compbid"),
-            ("high", 700, "compbid"),
+            ("low", 300, "competitor_bid"),
+            ("medium", 500, "competitor_bid"),
+            ("high", 700, "competitor_bid"),
             ("no-bid", 0, "nobid"),
         ],
         maximize=True,
     )
-    nodes.chance(
-        name="compbid",
+    nodes.add_chance(
+        name="competitor_bid",
         branches=[
             ("low", 0.35, 400, "cost"),
             ("medium", 0.50, 600, "cost"),
             ("high", 0.15, 800, "cost"),
         ],
     )
-    nodes.chance(
+    nodes.add_chance(
         name="cost",
         branches=[
             ("low", 0.25, 200, "profit"),
@@ -108,8 +208,7 @@ def stbook():
             ("high", 0.25, 600, "profit"),
         ],
     )
-    nodes.terminal(name="profit", payoff_fn=payoff_fn)
-    nodes.terminal(name="nobid", payoff_fn=nobid_fn)
+    nodes.add_terminal(name="profit", payoff_fn=payoff_fn)
 
     return nodes
 
@@ -119,15 +218,15 @@ def stbook_1():
 
     def payoff_fn(**kwargs):
         values = kwargs["values"]
-        return (values["bid"] - values["cost"]) * (
-            1 if values["bid"] < values["compbid"] else 0
+        bid = values["bid"] if "bid" in values.keys() else 0
+        competitor_bid = (
+            values["competitor_bid"] if "competitor_bid" in values.keys() else 0
         )
+        cost = values["cost"] if "cost" in values.keys() else 0
+        return (bid - cost) * (1 if bid < competitor_bid else 0)
 
-    def nobid_fn(**kwargs):
-        return 0
-
-    nodes = Nodes()
-    nodes.decision(
+    nodes = DataNodes()
+    nodes.add_decision(
         name="bid",
         branches=[
             ("low", 300, "cost"),
@@ -137,24 +236,23 @@ def stbook_1():
         ],
         maximize=True,
     )
-    nodes.chance(
+    nodes.add_chance(
         name="cost",
         branches=[
-            ("low", 0.25, 200, "compbid"),
-            ("medium", 0.50, 400, "compbid"),
-            ("high", 0.25, 600, "compbid"),
+            ("low", 0.25, 200, "competitor_bid"),
+            ("medium", 0.50, 400, "competitor_bid"),
+            ("high", 0.25, 600, "competitor_bid"),
         ],
     )
-    nodes.chance(
-        name="compbid",
+    nodes.add_chance(
+        name="competitor_bid",
         branches=[
             ("low", 0.35, 400, "profit"),
             ("medium", 0.50, 600, "profit"),
             ("high", 0.15, 800, "profit"),
         ],
     )
-    nodes.terminal(name="profit", payoff_fn=payoff_fn)
-    nodes.terminal(name="nobid", payoff_fn=nobid_fn)
+    nodes.add_terminal(name="profit", payoff_fn=payoff_fn)
 
     return nodes
 
@@ -165,8 +263,9 @@ def oil_tree_example():
     def payoff_fn(**kwargs):
         return sum([value for _, value in kwargs["values"].items()])
 
-    nodes = Nodes()
-    nodes.decision(
+    nodes = DataNodes()
+
+    nodes.add_decision(
         name="test_decision",
         branches=[
             ("test", -55, "test_results"),
@@ -175,233 +274,45 @@ def oil_tree_example():
         maximize=True,
     )
 
-    nodes.chance(
+    nodes.add_chance(
         name="test_results",
         branches=[
-            ("ind-dry", 0.38, 0, "drill_decision"),
-            ("ind-small", 0.39, 0, "drill_decision"),
-            ("ind-large", 0.23, 0, "drill_decision"),
+            ("dry", 0.38, 0, "drill_decision"),
+            ("small", 0.39, 0, "drill_decision"),
+            ("large", 0.23, 0, "drill_decision"),
         ],
     )
 
-    nodes.decision(
+    nodes.add_decision(
         name="drill_decision",
         branches=[
             ("drill", -600, "oil_found"),
-            ("dont-drill", 0, "no_drill"),
+            ("dont-drill", 0, "profit"),
         ],
         maximize=True,
     )
 
-    nodes.chance(
+    nodes.add_chance(
         name="oil_found",
         branches=[
-            ("dry-well", 0.38, 0, "profit"),
-            ("small-well", 0.39, 1500, "profit"),
-            ("large-well", 0.23, 3400, "profit"),
+            ("dry-well", 0.7895, 0, "profit"),
+            ("small-well", 0.1579, 1500, "profit"),
+            ("large-well", 0.0526, 3400, "profit"),
         ],
     )
 
-    nodes.terminal(name="no_drill", payoff_fn=payoff_fn)
-    nodes.terminal(name="profit", payoff_fn=payoff_fn)
+    nodes.add_terminal(name="profit", payoff_fn=payoff_fn)
 
-    tree = DecisionTree(variables=nodes, initial_variable="test_decision")
-    tree.set_node_probabilities(
-        {
-            4: 0.7895,
-            5: 0.1579,
-            6: 0.0526,
-            10: 0.3846,
-            11: 0.4615,
-            12: 0.1538,
-            16: 0.2174,
-            17: 0.2609,
-            18: 0.5217,
-            22: 0.5000,
-            23: 0.3000,
-            24: 0.2000,
-        }
-    )
+    nodes.set_probability(0.5000, test_decision="dont-test", oil_found="dry-well")
+    nodes.set_probability(0.3000, test_decision="dont-test", oil_found="small-well")
+    nodes.set_probability(0.2000, test_decision="dont-test", oil_found="large-well")
 
-    return tree
+    nodes.set_probability(0.3846, test_results="small", oil_found="dry-well")
+    nodes.set_probability(0.4615, test_results="small", oil_found="small-well")
+    nodes.set_probability(0.1538, test_results="small", oil_found="large-well")
 
+    nodes.set_probability(0.2174, test_results="large", oil_found="dry-well")
+    nodes.set_probability(0.2609, test_results="large", oil_found="small-well")
+    nodes.set_probability(0.5217, test_results="large", oil_found="large-well")
 
-# def supertree_bid():
-#     """SuperTree basic bid example."""
-#
-
-#     #
-#     # Bid proposal
-#     #
-#     nodes.decision(
-#         name="bid",
-#         branches=[
-#             (500, "compbid"),
-#             (700, "compbid"),
-#         ],
-#         max_=True,
-#     )
-
-#     #
-#     # Competitor proposal
-#     #
-#     nodes.chance(
-#         name="compbid",
-#         branches=[
-#             (0.35, 400, "cost"),
-#             (0.50, 600, "cost"),
-#             (0.15, 800, "cost"),
-#         ],
-#     )
-
-#     #
-#     # Production costs
-#     #
-#     nodes.chance(
-#         name="cost",
-#         branches=[
-#             (0.25, 200, "profit"),
-#             (0.50, 400, "profit"),
-#             (0.25, 600, "profit"),
-#         ],
-#     )
-
-#     #
-#     # Profit
-#     #
-#     def profit(bid, cost, compbid):
-#         return (bid - cost) * (1 if bid < compbid else 0)
-
-#     nodes.terminal(
-#         name="profit",
-#         user_fn=profit,
-#     )
-
-#     return nodes
-
-
-# def supertree_bid_2134():
-#     """SuperTree basic bid example nodes 2-1-3-4."""
-#     nodes = Nodes()
-
-#     #
-#     # Competitor proposal
-#     #
-#     nodes.chance(
-#         name="compbid",
-#         branches=[(0.35, 400, "bid"), (0.50, 600, "bid"), (0.15, 800, "bid")],
-#     )
-
-#     #
-#     # Bid proposal
-#     #
-#     nodes.decision(
-#         name="bid",
-#         branches=[(500, "cost"), (700, "cost")],
-#         max_=True,
-#     )
-
-#     #
-#     # Production costs
-#     #
-#     nodes.chance(
-#         name="cost",
-#         branches=[(0.25, 200, "profit"), (0.50, 400, "profit"), (0.25, 600, "profit")],
-#     )
-
-#     #
-#     # Profit
-#     #
-#     def profit(bid, cost, compbid):
-#         return (bid - cost) * (1 if bid < compbid else 0)
-
-#     nodes.terminal(name="profit", user_fn=profit)
-
-#     return nodes
-
-
-# def supertree_bid_2314():
-#     """SuperTree basic bid example nodes 2-3-1-4."""
-#     nodes = Nodes()
-
-#     #
-#     # Competitor proposal
-#     #
-#     nodes.chance(
-#         name="compbid",
-#         branches=[(0.35, 400, "cost"), (0.50, 600, "cost"), (0.15, 800, "cost")],
-#     )
-
-#     #
-#     # Production costs
-#     #
-#     nodes.chance(
-#         name="cost",
-#         branches=[(0.25, 200, "bid"), (0.50, 400, "bid"), (0.25, 600, "bid")],
-#     )
-#     #
-#     # Bid proposal
-#     #
-#     nodes.decision(
-#         name="bid",
-#         branches=[(500, "profit"), (700, "profit")],
-#         max_=True,
-#     )
-
-#     #
-#     # Profit
-#     #
-#     def profit(bid, cost, compbid):
-#         return (bid - cost) * (1 if bid < compbid else 0)
-
-#     nodes.terminal(name="profit", user_fn=profit)
-
-#     return nodes
-
-
-# def supertree_prob_sensitivity():
-#     """SuperTree basic bid example."""
-
-#     def profit(bid, cost, compbid):
-#         return (bid - cost) * (1 if bid < compbid else 0)
-
-#     nodes = Nodes()
-#     nodes.decision(
-#         name="bid",
-#         branches=[(500, "compbid"), (700, "compbid")],
-#         max_=True,
-#     )
-#     nodes.chance(
-#         name="compbid",
-#         branches=[(0.35, 400, "cost"), (0.50, 600, "cost"), (0.15, 800, "cost")],
-#     )
-#     nodes.chance(
-#         name="cost",
-#         branches=[(0.00, 200, "profit"), (0.00, 400, "profit"), (1.0, 600, "profit")],
-#     )
-#     nodes.terminal(name="profit", user_fn=profit)
-#     return nodes
-
-
-# def supertree_prob_sensitivity_chp3():
-#     """SuperTree basic bid example."""
-
-#     def profit(bid, cost, compbid):
-#         return (bid - cost) * (1 if bid < compbid else 0)
-
-#     nodes = Nodes()
-#     nodes.decision(
-#         name="bid",
-#         branches=[(300, "compbid"), (500, "compbid"), (700, "compbid")],
-#         max_=True,
-#     )
-#     nodes.chance(
-#         name="compbid",
-#         branches=[(0.35, 400, "cost"), (0.50, 600, "cost"), (0.15, 800, "cost")],
-#     )
-#     nodes.chance(
-#         name="cost",
-#         branches=[(0.25, 200, "profit"), (0.50, 400, "profit"), (0.25, 600, "profit")],
-#     )
-#     nodes.terminal(name="profit", user_fn=profit)
-#     return nodes
+    return nodes

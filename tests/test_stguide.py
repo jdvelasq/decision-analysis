@@ -8,7 +8,11 @@ from textwrap import dedent
 from _pytest.pytester import LineMatcher
 
 from smart_choice.decisiontree import DecisionTree
-from smart_choice.examples import stguide
+from smart_choice.examples import (
+    stguide,
+    stguide_dependent_probabilities,
+    stguide_dependent_outcomes,
+)
 
 
 def _get_matcher(filename):
@@ -30,14 +34,6 @@ def _run_test(filename, capsys):
     matcher = _get_matcher(filename)
     captured_text = _get_captured_text(capsys)
     matcher.fnmatch_lines(captured_text, consecutive=True)
-
-
-def test_fig_5_4a(capsys):
-    """Table of variables"""
-
-    nodes = stguide()
-    print(nodes)
-    _run_test("./tests/stguide_fig_5_4a.txt", capsys)
 
 
 def test_fig_5_1(capsys):
@@ -169,70 +165,40 @@ def test_fig_5_10(capsys):
     _run_test("./tests/stguide_fig_5_10.txt", capsys)
 
 
-def test_fig_7_2(capsys):
+def test_fig_7_3a(capsys):
     """Change probabilities"""
 
-    nodes = stguide()
-    tree = DecisionTree(variables=nodes, initial_variable="bid")
-    tree.set_node_probabilities(
-        {
-            3: 0.40,
-            4: 0.40,
-            5: 0.20,
-            16: 0.40,
-            17: 0.40,
-            18: 0.20,
-            7: 0.25,
-            8: 0.50,
-            9: 0.25,
-            20: 0.25,
-            21: 0.50,
-            22: 0.25,
-            11: 0.10,
-            12: 0.45,
-            13: 0.45,
-            24: 0.10,
-            25: 0.45,
-            26: 0.45,
-        }
-    )
+    nodes = stguide_dependent_probabilities()
+    print(nodes)
+    _run_test("./tests/stguide_fig_7_3a.txt", capsys)
 
+
+def test_fig_7_3b(capsys):
+    """Change probabilities"""
+
+    nodes = stguide_dependent_probabilities()
+    tree = DecisionTree(variables=nodes, initial_variable="bid")
     print(tree)
 
-    _run_test("./tests/stguide_fig_7_2.txt", capsys)
+    _run_test("./tests/stguide_fig_7_3b.txt", capsys)
 
 
-def test_fig_7_6(capsys):
+def test_fig_7_6a(capsys):
     """Dependent outcomes"""
 
-    nodes = stguide()
-    tree = DecisionTree(variables=nodes, initial_variable="bid")
-    tree.set_node_values(
-        {
-            3: 170,
-            4: 350,
-            5: 550,
-            16: 190,
-            17: 380,
-            18: 570,
-            7: 200,
-            8: 400,
-            9: 600,
-            20: 220,
-            21: 420,
-            22: 610,
-            11: 280,
-            12: 450,
-            13: 650,
-            24: 300,
-            25: 480,
-            26: 680,
-        }
-    )
+    nodes = stguide_dependent_outcomes()
+    print(nodes)
+    _run_test("./tests/stguide_fig_7_6a.txt", capsys)
 
+
+def test_fig_7_6b(capsys):
+    """Dependent outcomes"""
+
+    nodes = stguide_dependent_outcomes()
+    tree = DecisionTree(variables=nodes, initial_variable="bid")
     print(tree)
 
-    _run_test("./tests/stguide_fig_7_6.txt", capsys)
+    _run_test("./tests/stguide_fig_7_6b.txt", capsys)
 
 
 def test_fig_7_14(capsys):

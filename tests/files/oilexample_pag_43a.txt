@@ -1,0 +1,30 @@
+0  D test_decision   test                    -55.00 test_results
+                     dont-test                 0.00 drill_decision
+1  C test_results    dry             .3800     0.00 drill_decision
+                     small           .3900     0.00 drill_decision
+                     large           .2300     0.00 drill_decision
+2  D drill_decision  drill                  -600.00 oil_found
+                     dont-drill                0.00 profit
+3  C oil_found       dry-well        .7895     0.00 profit
+                     small-well      .1579  1500.00 profit
+                     large-well      .0526  3400.00 profit
+4  T profit
+---
+.5000  test_decision==dont-test
+       & oil_found==dry-well
+.3000  test_decision==dont-test
+       & oil_found==small-well
+.2000  test_decision==dont-test
+       & oil_found==large-well
+.3846  test_results==small
+       & oil_found==dry-well
+.4615  test_results==small
+       & oil_found==small-well
+.1538  test_results==small
+       & oil_found==large-well
+.2174  test_results==large
+       & oil_found==dry-well
+.2609  test_results==large
+       & oil_found==small-well
+.5217  test_results==large
+       & oil_found==large-well

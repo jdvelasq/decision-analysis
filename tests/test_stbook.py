@@ -25,26 +25,26 @@ def _get_captured_text(capsys):
 def _run_test(filename, capsys):
     matcher = _get_matcher(filename)
     captured_text = _get_captured_text(capsys)
-    matcher.fnmatch_lines(captured_text, consecutive=True)
+    matcher.fnmatch_lines(captured_text)
 
 
 def test_fig_3_7_pag54(capsys):
     """Example creation from Fig. 5.1"""
 
     nodes = stbook()
-    tree = DecisionTree(variables=nodes, initial_variable="bid")
+    tree = DecisionTree(variables=nodes)
     tree.evaluate()
     tree.rollback()
     tree.display()
 
-    _run_test("./tests/stbook_fig_3_7_pag54.txt", capsys)
+    _run_test("./tests/files/stbook_fig_3_7_pag54.txt", capsys)
 
 
 def test_fig_3_8_pag55(capsys):
     """Probabilistic Sensitivity"""
 
     nodes = stbook()
-    tree = DecisionTree(variables=nodes, initial_variable="bid")
+    tree = DecisionTree(variables=nodes)
     tree.evaluate()
     tree.rollback()
     sensitivity = tree.probabilistic_sensitivity(varname="cost")
@@ -53,7 +53,7 @@ def test_fig_3_8_pag55(capsys):
     print(sensitivity.tail(42).head(21))
     print(sensitivity.tail(21))
 
-    _run_test("./tests/stbook_fig_3_8_pag55.txt", capsys)
+    _run_test("./tests/files/stbook_fig_3_8_pag55.txt", capsys)
 
 
 #
@@ -75,7 +75,7 @@ def test_fig_4_5_pag81(capsys):
     tree.rollback()
     tree.display()
 
-    _run_test("./tests/stbook_fig_4_5_pag81.txt", capsys)
+    _run_test("./tests/files/stbook_fig_4_5_pag81.txt", capsys)
 
 
 def test_fig_5_11_pag112(capsys):
@@ -88,7 +88,7 @@ def test_fig_5_11_pag112(capsys):
     tree.rollback(utility_fn="exp", risk_tolerance=1000)
     tree.display(view="eu")
 
-    _run_test("./tests/stbook_fig_5_11_pag112.txt", capsys)
+    _run_test("./tests/files/stbook_fig_5_11_pag112.txt", capsys)
 
 
 def test_fig_5_13_pag114(capsys):
@@ -100,4 +100,4 @@ def test_fig_5_13_pag114(capsys):
     tree.rollback(utility_fn="exp", risk_tolerance=1000)
     tree.display(view="ce")
 
-    _run_test("./tests/stbook_fig_5_13_pag114.txt", capsys)
+    _run_test("./tests/files/stbook_fig_5_13_pag114.txt", capsys)

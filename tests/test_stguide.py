@@ -36,15 +36,6 @@ def _run_test(filename, capsys):
     matcher.fnmatch_lines(captured_text, consecutive=True)
 
 
-def test_fig_5_1(capsys):
-    """Example creation from Fig. 5.1"""
-
-    nodes = stguide()
-    tree = DecisionTree(variables=nodes, initial_variable="bid")
-    tree.display()
-    _run_test("./tests/stguide_fig_5_1.txt", capsys)
-
-
 def test_fit_5_4(capsys):
     """Example creatioin from Fig. 5.4"""
 

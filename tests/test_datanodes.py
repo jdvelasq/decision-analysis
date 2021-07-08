@@ -2,15 +2,14 @@
 DataNodes creation tests.
 
 """
-from tests.capsys import check_capsys
-from _pytest.pytester import LineMatcher
-
 from smart_choice.decisiontree import DecisionTree
 from smart_choice.examples import (
     stguide,
-    stguide_dependent_probabilities,
     stguide_dependent_outcomes,
+    stguide_dependent_probabilities,
 )
+
+from tests.capsys import check_capsys
 
 
 def test_stguide_fig_5_4a(capsys):

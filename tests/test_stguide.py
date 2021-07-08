@@ -36,27 +36,6 @@ def _run_test(filename, capsys):
     matcher.fnmatch_lines(captured_text, consecutive=True)
 
 
-def test_fig_5_6a(capsys):
-    """Fig. 5.6 (a) --- Evaluation of terminal nodes"""
-
-    nodes = stguide()
-    tree = DecisionTree(variables=nodes, initial_variable="bid")
-    tree.evaluate()
-    tree.display()
-    _run_test("./tests/stguide_fig_5_6a.txt", capsys)
-
-
-def test_fig_5_6b(capsys):
-    """Fig. 5.6 (b) --- Expected Values"""
-
-    nodes = stguide()
-    tree = DecisionTree(variables=nodes, initial_variable="bid")
-    tree.evaluate()
-    tree.rollback()
-    tree.display()
-    _run_test("./tests/stguide_fig_5_6b.txt", capsys)
-
-
 def test_fig_5_8a(capsys):
     """Fig. 5.8 (a) --- Plot distribution"""
 

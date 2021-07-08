@@ -681,7 +681,7 @@ class DecisionTree:
         #
         # Builts kwargs for user function in terminal nodes
         #
-        def dispatch(idx: int, args: dict, probs: dict) -> None:
+        def dispatch(idx: int, args: dict, probs: dict, branches: dict) -> None:
 
             args = args.copy()
 
@@ -696,18 +696,23 @@ class DecisionTree:
                 prob = self._tree_nodes[idx]["tag_prob"]
                 probs = {**probs, **{name: prob}}
 
+            if "tag_branch" in self._tree_nodes[idx].keys():
+                branch = self._tree_nodes[idx]["tag_branch"]
+                branches = {**branches, **{name: branch}}
+
             type_ = self._tree_nodes[idx].get("type")
 
             if type_ == "TERMINAL":
                 self._tree_nodes[idx]["payoff_fn_args"] = args
                 self._tree_nodes[idx]["payoff_fn_probs"] = probs
+                self._tree_nodes[idx]["payoff_fn_branches"] = branches
                 return
 
             if "successors" in self._tree_nodes[idx].keys():
                 for successor in self._tree_nodes[idx]["successors"]:
-                    dispatch(idx=successor, args=args, probs=probs)
+                    dispatch(idx=successor, args=args, probs=probs, branches=branches)
 
-        dispatch(idx=0, args={}, probs={})
+        dispatch(idx=0, args={}, probs={}, branches={})
 
     def _compute_payoff_fn(self):
         #
@@ -719,8 +724,13 @@ class DecisionTree:
             if node.get("type") == "TERMINAL":
                 payoff_fn_args = node.get("payoff_fn_args")
                 payoff_fn_probs = node.get("payoff_fn_probs")
+                payoff_fn_branches = node.get("payoff_fn_branches")
                 payoff_fn = node.get("payoff_fn")
-                node["EV"] = payoff_fn(values=payoff_fn_args, probs=payoff_fn_probs)
+                node["EV"] = payoff_fn(
+                    values=payoff_fn_args,
+                    probs=payoff_fn_probs,
+                    branches=payoff_fn_branches,
+                )
 
     def evaluate(self) -> None:
         """Calculates the values at the end of the tree (terminal nodes)."""

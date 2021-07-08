@@ -274,14 +274,18 @@ def oil_tree_example():
     """PrecisionTree Oil Example"""
 
     def payoff_fn(**kwargs):
-        return sum([value for _, value in kwargs["values"].items()])
+        values = kwargs["values"]
+        test_decision = values["test_decision"]
+        drill_decision = values["drill_decision"]
+        oil_found = values["oil_found"] if "oil_found" in values.keys() else 0
+        return oil_found - drill_decision - test_decision
 
     nodes = DataNodes()
 
     nodes.add_decision(
         name="test_decision",
         branches=[
-            ("test", -55, "test_results"),
+            ("test", 55, "test_results"),
             ("dont-test", 0, "drill_decision"),
         ],
         maximize=True,
@@ -299,7 +303,7 @@ def oil_tree_example():
     nodes.add_decision(
         name="drill_decision",
         branches=[
-            ("drill", -600, "oil_found"),
+            ("drill", 600, "oil_found"),
             ("dont-drill", 0, "profit"),
         ],
         maximize=True,

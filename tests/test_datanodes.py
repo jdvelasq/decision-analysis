@@ -2,7 +2,6 @@
 DataNodes creation tests.
 
 """
-from smart_choice.decisiontree import DecisionTree
 from smart_choice.examples import (
     stguide,
     stguide_dependent_outcomes,
@@ -26,3 +25,11 @@ def test_stguide_fig_7_3a(capsys):
     nodes = stguide_dependent_probabilities()
     print(nodes)
     check_capsys("./tests/files/stguide_fig_7_3a.txt", capsys)
+
+
+def test_stguide_fig_7_6a(capsys):
+    """Dependent outcomes"""
+
+    nodes = stguide_dependent_outcomes()
+    print(nodes)
+    check_capsys("./tests/files/stguide_fig_7_6a.txt", capsys)

@@ -39,14 +39,6 @@ def test_stguide_fig_7_3b(capsys):
     check_capsys("./tests/files/stguide_fig_7_3b.txt", capsys)
 
 
-def test_stguide_fig_7_6a(capsys):
-    """Dependent outcomes"""
-
-    nodes = stguide_dependent_outcomes()
-    print(nodes)
-    check_capsys("./tests/files/stguide_fig_7_6a.txt", capsys)
-
-
 def test_stguide_fig_7_6b(capsys):
     """Dependent outcomes"""
 

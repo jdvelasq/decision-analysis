@@ -36,57 +36,6 @@ def _run_test(filename, capsys):
     matcher.fnmatch_lines(captured_text, consecutive=True)
 
 
-def test_fit_5_4(capsys):
-    """Example creatioin from Fig. 5.4"""
-
-    expected_text = dedent(
-        """
-        STRUCTURE    NAMES    OUTCOMES     PROBABILIES
-        ------------------------------------------------------
-        0D1 14       bid      500 700
-        1C2 6 10     compbid  400 600 800  .3500 .5000 .1500
-        2C3 4 5      cost     200 400 600  .2500 .5000 .2500
-        3T           profit
-        4T           profit
-        5T           profit
-        6C7 8 9      cost     200 400 600  .2500 .5000 .2500
-        7T           profit
-        8T           profit
-        9T           profit
-        10C11 12 13  cost     200 400 600  .2500 .5000 .2500
-        11T          profit
-        12T          profit
-        13T          profit
-        14C15 19 23  compbid  400 600 800  .3500 .5000 .1500
-        15C16 17 18  cost     200 400 600  .2500 .5000 .2500
-        16T          profit
-        17T          profit
-        18T          profit
-        19C20 21 22  cost     200 400 600  .2500 .5000 .2500
-        20T          profit
-        21T          profit
-        22T          profit
-        23C24 25 26  cost     200 400 600  .2500 .5000 .2500
-        24T          profit
-        25T          profit
-        26T          profit
-        """
-    )
-
-    nodes = stguide()
-    tree = DecisionTree(variables=nodes, initial_variable="bid")
-    print(tree)
-
-    #
-    # Test
-    #
-    captured_text = capsys.readouterr().out.splitlines()
-    captured_text = captured_text[1:]
-    captured_text = [text.rstrip() for text in captured_text]
-    matcher = LineMatcher(expected_text.splitlines()[1:])
-    matcher.fnmatch_lines(captured_text, consecutive=True)
-
-
 def test_fig_5_6a(capsys):
     """Fig. 5.6 (a) --- Evaluation of terminal nodes"""
 

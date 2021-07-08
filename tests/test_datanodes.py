@@ -36,7 +36,7 @@ def test_stguide_fig_7_6a(capsys):
     check_capsys("./tests/files/stguide_fig_7_6a.txt", capsys)
 
 
-def test_pag_43a(capsys):
+def test_oilexample_pag_43a(capsys):
     """Table of variables"""
 
     nodes = oil_tree_example()

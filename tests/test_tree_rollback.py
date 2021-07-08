@@ -29,7 +29,7 @@ def test_stguide_fig_5_6b(capsys):
     check_capsys("./tests/files/stguide_fig_5_6b.txt", capsys)
 
 
-def test_stbook_fig_3_7_pag54(capsys):
+def test_stbook_fig_3_7_pag_54(capsys):
     """Example creation from Fig. 5.1"""
 
     nodes = stbook()
@@ -37,10 +37,10 @@ def test_stbook_fig_3_7_pag54(capsys):
     tree.evaluate()
     tree.rollback()
     tree.display()
-    check_capsys("./tests/files/stbook_fig_3_7_pag54.txt", capsys)
+    check_capsys("./tests/files/stbook_fig_3_7_pag_54.txt", capsys)
 
 
-def test_stbook_fig_5_13_pag114(capsys):
+def test_stbook_fig_5_13_pag_114(capsys):
     """Expected utility"""
 
     nodes = stbook()
@@ -48,10 +48,10 @@ def test_stbook_fig_5_13_pag114(capsys):
     tree.evaluate()
     tree.rollback(utility_fn="exp", risk_tolerance=1000)
     tree.display(view="ce")
-    check_capsys("./tests/files/stbook_fig_5_13_pag114.txt", capsys)
+    check_capsys("./tests/files/stbook_fig_5_13_pag_114.txt", capsys)
 
 
-def test_stbook_fig_5_11_pag112(capsys):
+def test_stbook_fig_5_11_pag_112(capsys):
     """Dependent outcomes"""
 
     nodes = stbook()
@@ -59,10 +59,10 @@ def test_stbook_fig_5_11_pag112(capsys):
     tree.evaluate()
     tree.rollback(utility_fn="exp", risk_tolerance=1000)
     tree.display(view="eu")
-    check_capsys("./tests/files/stbook_fig_5_11_pag112.txt", capsys)
+    check_capsys("./tests/files/stbook_fig_5_11_pag_112.txt", capsys)
 
 
-def test_oilexample_pag43(capsys):
+def test_oilexample_pag_43(capsys):
     """Basic oil tree example"""
 
     nodes = oil_tree_example()
@@ -70,10 +70,10 @@ def test_oilexample_pag43(capsys):
     tree.evaluate()
     tree.rollback()
     tree.display()
-    check_capsys("./tests/oilexample_pag43.txt", capsys)
+    check_capsys("./tests/files/oilexample_pag_43.txt", capsys)
 
 
-def test_pag56(capsys):
+def test_oilexample_pag_56(capsys):
     """Basic oil tree example"""
 
     nodes = oil_tree_example()
@@ -81,4 +81,4 @@ def test_pag56(capsys):
     tree.evaluate()
     tree.rollback()
     tree.display(max_deep=3)
-    check_capsys("./tests/files/oilexample_pag56.txt", capsys)
+    check_capsys("./tests/files/oilexample_pag_56.txt", capsys)

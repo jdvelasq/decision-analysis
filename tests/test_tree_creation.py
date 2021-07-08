@@ -50,7 +50,7 @@ def test_stguide_fig_7_6b(capsys):
     check_capsys("./tests/files/stguide_fig_7_6b.txt", capsys)
 
 
-def test_stbook_fig_4_5_pag81(capsys):
+def test_stbook_fig_4_5_pag_81(capsys):
     """Dependent outcomes"""
 
     nodes = stbook_dependent_outcomes()
@@ -58,4 +58,4 @@ def test_stbook_fig_4_5_pag81(capsys):
     tree.evaluate()
     tree.rollback()
     tree.display()
-    check_capsys("./tests/files/stbook_fig_4_5_pag81.txt", capsys)
+    check_capsys("./tests/files/stbook_fig_4_5_pag_81.txt", capsys)

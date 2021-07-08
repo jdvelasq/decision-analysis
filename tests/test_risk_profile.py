@@ -52,5 +52,15 @@ def test_stguide_fig_5_10(capsys):
     tree.evaluate()
     tree.rollback()
     tree.risk_profile(idx=0, cumulative=True, single=False)
-
     check_capsys("./tests/files/stguide_fig_5_10.txt", capsys)
+
+
+def test_stguide_fig_7_15(capsys):
+    """Fig. 7.15 --- Plot distribution"""
+
+    nodes = stguide()
+    tree = DecisionTree(nodes=nodes)
+    tree.evaluate()
+    tree.rollback()
+    tree.risk_profile(idx=23, cumulative=True, single=True)
+    check_capsys("./tests/files/stguide_fig_7_15.txt", capsys)

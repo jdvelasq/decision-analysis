@@ -1439,7 +1439,7 @@ class DecisionTree:
                     }
                 )
 
-            plt.gca().plot(values, expvals)
+            plt.gca().plot(values, expvals, "-k")
             plt.gca().spines["bottom"].set_visible(False)
             plt.gca().spines["left"].set_visible(False)
             plt.gca().spines["right"].set_visible(False)
@@ -1495,14 +1495,32 @@ class DecisionTree:
                     ]
                 )
 
-            plt.gca().plot(values, expvals)
+            linefmts = [
+                "-k",
+                "--k",
+                ".-k",
+                ":k",
+                "-r",
+                "--r",
+                ".-r",
+                ":r",
+                "-g",
+                "--g",
+                ".-g",
+                ":g",
+            ]
+            for fmt, tag_branch_root in zip(linefmts, tag_branches_root):
+                plt.gca().plot(
+                    values, results[tag_branch_root], fmt, label=tag_branch_root
+                )
+
             plt.gca().spines["bottom"].set_visible(False)
             plt.gca().spines["left"].set_visible(False)
             plt.gca().spines["right"].set_visible(False)
             plt.gca().spines["top"].set_visible(False)
             plt.gca().set_ylabel("Expected values")
             plt.gca().set_xlabel("Values")
-            # plt.gca().legend()
+            plt.gca().legend()
             plt.grid()
 
             return None
@@ -1511,11 +1529,11 @@ class DecisionTree:
         type_ = self._tree_nodes[0]["type"]
         if type_ == "CHANCE":
             result = value_sensitivity_chance(
-                name=name, branch=branch, values=values, n_points=n_points
+                name=name, branch=branch, values=values, n_points=n_points, plot=plot
             )
         if type_ == "DECISION":
             result = value_sensitivity_decision(
-                name=name, branch=branch, values=values, n_points=n_points
+                name=name, branch=branch, values=values, n_points=n_points, plot=plot
             )
 
         restore_original_value(original_value)
@@ -1539,8 +1557,14 @@ class DecisionTree:
             tag_values = [
                 self._tree_nodes[successor].get("tag_value") for successor in successors
             ]
-            for tag_value in tag_values:
-                results[tag_value] = []
+            tag_branches = [
+                self._tree_nodes[successor].get("tag_branch")
+                for successor in successors
+            ]
+            ## for tag_value in tag_values:
+            ##    results[tag_value] = []
+            for tag_branch in tag_branches:
+                results[tag_branch] = []
 
             risk_aversions = np.linspace(
                 start=0, stop=1.0 / risk_tolerance, num=11
@@ -1565,8 +1589,10 @@ class DecisionTree:
                         for successor in successors
                     ]
 
-                for ceq, tag_value in zip(ceqs, tag_values):
-                    results[tag_value].append(ceq)
+                for ceq, tag_branch in zip(ceqs, tag_branches):
+                    results[tag_branch].append(ceq)
+                ## for ceq, tag_value in zip(ceqs, tag_values):
+                ##    results[tag_value].append(ceq)
 
             if plot is True:
 
@@ -1574,22 +1600,22 @@ class DecisionTree:
                     "-k",
                     "--k",
                     ".-k",
-                    ":-k",
+                    ":k",
                     "-r",
                     "--r",
                     ".-r",
-                    ":-r",
+                    ":r",
                     "-g",
                     "--g",
                     ".-g",
-                    ":-g",
+                    ":g",
                 ]
-                for linefmt, tag_value in zip(linefmts, tag_values):
+                for linefmt, tag_branch in zip(linefmts, tag_branches):
                     plt.gca().plot(
                         risk_aversions,
-                        results[tag_value],
+                        results[tag_branch],
                         linefmt,
-                        label=str(tag_value),
+                        label=tag_branch,
                     )
 
                 labels = [

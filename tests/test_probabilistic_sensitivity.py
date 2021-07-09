@@ -8,7 +8,7 @@ from smart_choice.examples import stguide, stbook
 from tests.capsys import check_capsys
 
 
-def test_fig_7_17(capsys):
+def test_stguide_fig_7_17(capsys):
     """Fig. 7.17 --- Probabilistic Sensitivity"""
 
     nodes = stguide()

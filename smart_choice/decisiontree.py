@@ -1276,11 +1276,18 @@ class DecisionTree:
 
             results = {}
             successors = self._tree_nodes[0].get("successors")
+            tag_branches = [
+                self._tree_nodes[successor].get("tag_branch")
+                for successor in successors
+            ]
             tag_values = [
                 self._tree_nodes[successor].get("tag_value") for successor in successors
             ]
-            for tag_value in tag_values:
-                results[tag_value] = []
+            # for tag_value in tag_values:
+            #     results[tag_value] = []
+
+            for tag_branch in tag_branches:
+                results[tag_branch] = []
 
             probabilities = np.linspace(start=0, stop=1, num=21).tolist()
             for probability in probabilities:
@@ -1309,14 +1316,34 @@ class DecisionTree:
                 expvals = [
                     self._tree_nodes[successor].get("EV") for successor in successors
                 ]
-                for expval, tag_value in zip(expvals, tag_values):
-                    results[tag_value].append(expval)
+                for expval, tag_branch in zip(expvals, tag_branches):
+                    results[tag_branch].append(expval)
+                ## for expval, tag_value in zip(expvals, tag_values):
+                ##    results[tag_value].append(expval)
 
             if plot is True:
-                for tag_value in tag_values:
+                linefmts = [
+                    "-k",
+                    "--k",
+                    ".-k",
+                    ":k",
+                    "-r",
+                    "--r",
+                    ".-r",
+                    ":r",
+                    "-g",
+                    "--g",
+                    ".-g",
+                    ":g",
+                ]
+                for fmt, tag_branch in zip(linefmts, tag_branches):
                     plt.gca().plot(
-                        probabilities, results[tag_value], label=str(tag_value)
+                        probabilities, results[tag_branch], fmt, label=tag_branch
                     )
+                ## for fmt, tag_value in zip(linefmts, tag_values):
+                ##    plt.gca().plot(
+                ##         probabilities, results[tag_value], fmt, label=str(tag_value)
+                ##    )
                 plt.gca().spines["bottom"].set_visible(False)
                 plt.gca().spines["left"].set_visible(False)
                 plt.gca().spines["right"].set_visible(False)
@@ -1331,12 +1358,12 @@ class DecisionTree:
                 [
                     pd.DataFrame(
                         {
-                            "Branch": [str(tag_value)] * len(probabilities),
+                            "Branch": [str(tag_branch)] * len(probabilities),
                             "Probability": probabilities,
-                            "Value": results[tag_value],
+                            "Value": results[tag_branch],
                         }
                     )
-                    for tag_value in tag_values
+                    for tag_branch in tag_branches
                 ]
             )
 
@@ -1366,10 +1393,10 @@ class DecisionTree:
 
     # -------------------------------------------------------------------------
     #
+    #
     #  V A L U E     S E N S I T I V I T Y
     #
     #
-
     def value_sensitivity(
         self, name: str, branch: str, values: tuple, n_points=11, plot: bool = False
     ):
@@ -1543,7 +1570,20 @@ class DecisionTree:
 
             if plot is True:
 
-                linefmts = ["-k", "--k", ".-k", "-g", "--g", ".-g", "-r", "--r", ".-r"]
+                linefmts = [
+                    "-k",
+                    "--k",
+                    ".-k",
+                    ":-k",
+                    "-r",
+                    "--r",
+                    ".-r",
+                    ":-r",
+                    "-g",
+                    "--g",
+                    ".-g",
+                    ":-g",
+                ]
                 for linefmt, tag_value in zip(linefmts, tag_values):
                     plt.gca().plot(
                         risk_aversions,

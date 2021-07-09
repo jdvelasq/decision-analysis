@@ -491,7 +491,9 @@ class DecisionTree:
 
         """
 
-        def display_node(idx, is_last_node, is_optimal_choice, deep, max_deep):
+        def display_node(
+            idx, is_first_node, is_last_node, is_optimal_choice, deep, max_deep
+        ):
             #
             def prepare_text():
 
@@ -506,16 +508,11 @@ class DecisionTree:
 
                 text = ""
 
-                # if tag_branch is not None and tag_branch != str(tag_value):
-                #     if len(tag_branch) > 10:
-                #         tag_branch = tag_branch[:7] + "..."
-                #     text += " {:<10s}".format(tag_branch)
                 if tag_branch is not None:
                     if len(tag_branch) > NAMEMAXLEN:
                         tag_branch = tag_branch[: NAMEMAXLEN - 3] + "..."
                     fmt = " {:<" + str(NAMEMAXLEN) + "s}"
                     text += fmt.format(tag_branch)
-                # text += " {:<10s}".format(tag_branch)
                 if tag_prob is not None:
                     text += " " + "{:.4f}".format(tag_prob)[1:]
                 if tag_value is not None:
@@ -557,12 +554,23 @@ class DecisionTree:
                 branch_text = ">" + branch_text[1:]
 
             # ---------------------------------------------------------------------------
+            # max deep
+            deep += 1
+
+            # ---------------------------------------------------------------------------
             # line between --------[?] and childrens
             if type_ == "TERMINAL":
                 text = []
             else:
                 if tag_name is not None:
-                    text = ["| {}".format(tag_name)]
+                    if is_first_node is True:
+                        text = ["| {}".format(tag_name)]
+                    elif max_deep is None or (
+                        max_deep is not None and deep <= max_deep
+                    ):
+                        text = ["| {}".format(tag_name)]
+                    else:
+                        text = []
                 else:
                     text = ["|"]
 
@@ -587,15 +595,16 @@ class DecisionTree:
                         + "-" * (len_branch_text - 4)
                         + "[{}] #{}".format(letter, idx)
                     )
-                text.append(branch)
+
+                #
+                # Policy suggestion
+                #
+                if max_deep is None or (max_deep is not None and deep <= max_deep):
+                    text.append(branch)
 
             # ---------------------------------------------------------------------------
             # successors
             successors = self._tree_nodes[idx].get("successors")
-
-            # ---------------------------------------------------------------------------
-            # max deep
-            deep += 1
 
             if successors is not None and (
                 max_deep is None or (max_deep is not None and deep <= max_deep)
@@ -617,15 +626,24 @@ class DecisionTree:
                     # -------------------------------------------------------------------
                     # vbar following the line of preious node
                     if policy_suggestion is False:
+                        is_first_child_node = successor == successors[0]
                         is_last_child_node = successor == successors[-1]
+
                     else:
                         if type_ == "DECISION":
+                            is_first_child_node = True
                             is_last_child_node = True
                         else:
+                            is_first_child_node = successor == successors[0]
                             is_last_child_node = successor == successors[-1]
 
                     text_ = display_node(
-                        successor, is_last_child_node, is_optimal_choice, deep, max_deep
+                        successor,
+                        is_first_child_node,
+                        is_last_child_node,
+                        is_optimal_choice,
+                        deep,
+                        max_deep,
                     )
 
                     vbar = " " if is_last_node else "|"
@@ -661,6 +679,7 @@ class DecisionTree:
 
         text = display_node(
             idx=idx,
+            is_first_node=True,
             is_last_node=True,
             is_optimal_choice=False,
             deep=0,
@@ -1477,6 +1496,7 @@ class DecisionTree:
 
     # -------------------------------------------------------------------------
     #
+    #
     #  R I S K    S E N S I T I V I T Y
     #
     #
@@ -1636,242 +1656,12 @@ class DecisionTree:
         if plot is False:
             return result
 
-    ##
-    ##
-    ##
-    ##   R E F A C T O R I N G !
-    ##
-    ##
-    ##
-
-    #
-    # Auxiliary functions
-    #
-    def set_display(self, option: str) -> None:
-        if option not in ["ev", "eu", "ce"]:
-            raise ValueError(
-                'Value {} not is a valid option ("ev", "eu", "ce")'.format(option)
-            )
-        self._display = option
-
+    # -------------------------------------------------------------------------
     #
     #
-    #
-
-    #
-    # Pendiente
-    #
-    def pendiente(self):
-
-        self._compute_path_probabilities()
-
+    #  P L O T
     #
     #
-    #  I N T E R N A L   F U N C T I O N S
-    #
-    #
-
-    # =========================================================================
-    #
-    # __init__()
-    #
-    # =========================================================================
-
-    def export_text(
-        self,
-        idx: int = 0,
-        risk_profile: bool = False,
-        max_deep: int = None,
-        policy_suggestion: bool = False,
-    ) -> str:
-        """Exports the tree as text diagram.
-
-        :param idx:
-            Id number of the root of the tree to be exported. When it is zero, the entire tree is exported.
-
-        :param risk_profile:
-            Includes the risk profile information on each node. The risk profile
-            is the possibles results (payoffs or losses) and the associated
-            probabilities for any decision strategy.
-
-        :param max_deep:
-            Controls the maximum deep of the nodes in the tree exported as text.
-
-        :param policy_suggestion:
-            When `True` exports only the subtree showing the nodes and branches
-            relevants to the optimal decision (optimal strategy).
-
-
-
-        """
-
-        def node_type_chance(text: list, is_last_node: bool) -> list:
-            text: list = text.copy()
-            if is_last_node is True:
-                text.append("\\-------[C]")
-            else:
-                text.append("+-------[C]")
-            return text
-
-        def node_type_decision(text: list, is_last_node: bool) -> list:
-            text: list = text.copy()
-            if is_last_node is True:
-                text.append("\\-------[D]")
-            else:
-                text.append("+-------[D]")
-            return text
-
-        def node_type_terminal(text: list, idx: int, is_last_node: bool) -> list:
-            text = text.copy()
-            name = self._tree_nodes[idx].get("name")
-            if "ExpVal" in self._tree_nodes[idx].keys():
-                value = self._tree_nodes[idx].get("ExpVal")
-                if is_last_node is True:
-                    text.append("\\-------[T] {}={:.2f}".format(name, value))
-                else:
-                    text.append("+-------[T] {}={:.2f}".format(name, value))
-            else:
-                if is_last_node is True:
-                    text.append("\\-------[T] {}".format(name))
-                else:
-                    text.append("+-------[T] {}".format(name))
-            return text
-
-        def node_type(text, idx, is_last_node):
-            type_ = self._tree_nodes[idx]["type"]
-            if type_ == "TERMINAL":
-                text = node_type_terminal(text, idx, is_last_node)
-            if type_ == "DECISION":
-                text = node_type_decision(text, is_last_node)
-            if type_ == "CHANCE":
-                text = node_type_chance(text, is_last_node)
-            return text
-
-        def newline(text, idx, key, formatstr):
-            text = text.copy()
-            if key in self._tree_nodes[idx].keys():
-                value = self._tree_nodes[idx].get(key)
-                text.append(formatstr.format(value))
-            return text
-
-        def selected_strategy(text, idx):
-            text = text.copy()
-            if "selected_strategy" in self._tree_nodes[idx].keys():
-                if self._tree_nodes[idx]["selected_strategy"] is True:
-                    text.append("| (selected strategy)")
-            return text
-
-        def riskprofile(text: list, idx: int) -> list:
-            text = text.copy()
-            type_ = self._tree_nodes[idx]["type"]
-            if type_ != "TERMINAL" and "RiskProfile" in self._tree_nodes[idx].keys():
-                text.append("| Risk Profile:")
-                text.append("|         Value  Prob")
-                values = sorted(self._tree_nodes[idx]["RiskProfile"].keys())
-                for value in values:
-                    prob = self._tree_nodes[idx]["RiskProfile"][value]
-                    text.append("| {:-13.2f} {:5.2f}".format(value, prob))
-            return text
-
-        def export_branches(
-            text: list,
-            idx: int,
-            is_last_node: bool,
-            max_deep: int,
-            deep: int,
-            strategy: bool,
-        ) -> list:
-
-            text = text.copy()
-            if "successors" not in self._tree_nodes[idx].keys():
-                return text
-
-            successors = self._tree_nodes[idx]["successors"]
-
-            type_ = self._tree_nodes[idx]["type"]
-
-            for successor in successors:
-
-                next_is_last_node = successor == successors[-1]
-
-                if "selected_strategy" in self._tree_nodes[successor].keys():
-                    selected_strategy = self._tree_nodes[successor]["selected_strategy"]
-                else:
-                    selected_strategy = False
-
-                if strategy is True and selected_strategy is False:
-                    continue
-
-                if strategy is True and type_ == "DECISION":
-                    next_is_last_node = True
-
-                result = export_node(
-                    successor, next_is_last_node, max_deep, deep, strategy
-                )
-
-                for txt in result:
-                    if is_last_node is True:
-                        text.append(" " * 9 + txt)
-                    else:
-                        text.append("|" + " " * 8 + txt)
-
-            return text
-
-        def export_node(
-            idx: int,
-            is_last_node: bool,
-            max_deep: int,
-            deep: int,
-            strategy: bool,
-        ) -> list:
-
-            if deep is None:
-                deep: int = 0
-
-            text = ["|"]
-            type_ = self._tree_nodes[idx]["type"]
-            text.append("| #{}".format(idx))
-            #
-            if "tag_name" in self._tree_nodes[idx].keys():
-                text.append(
-                    "| {}={}".format(
-                        self._tree_nodes[idx].get("tag_name"),
-                        self._tree_nodes[idx].get("tag_value"),
-                    )
-                )
-
-            text = newline(text, idx, "tag_prob", "| Prob={:.2f}")
-            if type_ != "TERMINAL":
-                text = newline(text, idx, "ExpVal", "| ExpVal={:.2f}")
-            text = newline(text, idx, "PathProb", "| PathProb={:.2f}")
-            if self._use_utility_fn is True:
-                text = newline(text, idx, "ExpUtl", "| ExpUtl={:.2f}")
-                text = newline(text, idx, "CE", "| CE={:.2f}")
-
-            if risk_profile is True:
-                text = riskprofile(text, idx)
-            text = selected_strategy(text, idx)
-            text = node_type(text, idx, is_last_node)
-
-            if max_deep is None or (max_deep is not None and deep < max_deep):
-                deep += 1
-                text = export_branches(
-                    text, idx, is_last_node, max_deep, deep, strategy
-                )
-                deep -= 1
-
-            return text
-
-        text = export_node(
-            idx=idx,
-            is_last_node=True,
-            max_deep=max_deep,
-            deep=None,
-            strategy=policy_suggestion,
-        )
-
-        return "\n".join(text)
-
     def plot(self, max_deep: int = None, policy_suggestion: bool = False):
         """Plots the tree.
 
@@ -2068,381 +1858,6 @@ class DecisionTree:
         dot.attr(rankdir="LR")  # splines="compound"
         dot = dispatch(idx=0, dot=dot, max_deep=max_deep, deep=0)
         return dot
-
-    @property
-    def variables(self):
-        """Returns the variables used to build the decision tree."""
-        return self._data_nodes
-
-    #
-    #
-    #  R E F A C T O R I N G
-    #
-    #
-
-    #     def print_branch(prefix, this_branch, is_node_last_branch):
-
-    #         print(prefix + "|")
-
-    #         type = this_branch.get("type")
-    #         if "id" in this_branch.keys():
-    #             print(prefix + "| #" + str(this_branch.get("id")))
-
-    #         ## prints the name and value of the variable
-    #         if "tag" in this_branch.keys():
-    #             var = this_branch["tag"]
-    #             if "value" in this_branch.keys():
-    #                 txt = "| " + var + "=" + str(this_branch["value"])
-    #             else:
-    #                 txt = "| " + var
-    #             print(prefix + txt)
-
-    #         ## prints the probability
-    #         if "prob" in this_branch.keys():
-    #             txt = "| Prob={:1.2f}".format(this_branch["prob"])
-    #             print(prefix + txt)
-
-    #         ## prints the cumulative probability
-    #         if type == "TERMINAL" and "PathProb" in this_branch.keys():
-    #             txt = "| PathProb={:1.2f}".format(this_branch["PathProb"])
-    #             print(prefix + txt)
-
-    #         if "ExpVal" in this_branch.keys() and this_branch["ExpVal"] is not None:
-    #             txt = "| ExpVal={:1.2f}".format(this_branch["ExpVal"])
-    #             print(prefix + txt)
-
-    #         if "ExpUtl" in this_branch.keys() and this_branch["ExpUtl"] is not None:
-    #             txt = "| ExpUtl={:1.2f}".format(this_branch["ExpUtl"])
-    #             print(prefix + txt)
-
-    #         if "CE" in this_branch.keys() and this_branch["CE"] is not None:
-    #             txt = "| CE={:1.2f}".format(this_branch["CE"])
-    #             print(prefix + txt)
-
-    #         if "RiskProfile" in this_branch.keys() and type != "TERMINAL":
-    #             print(prefix + "| Risk Profile:")
-    #             print(prefix + "|      Value  Prob")
-    #             for key in sorted(this_branch["RiskProfile"]):
-    #                 txt = "|   {:8.2f} {:5.2f}".format(
-    #                     key, this_branch["RiskProfile"][key]
-    #                 )
-    #                 print(prefix + txt)
-
-    #         if (
-    #             "sel_strategy" in this_branch.keys()
-    #             and this_branch["sel_strategy"] is True
-    #         ):
-    #             txt = "| (selected strategy)"
-    #             print(prefix + txt)
-
-    #         if (
-    #             "forced_branch_idx" in this_branch.keys()
-    #             and this_branch["forced_branch_idx"] is not None
-    #         ):
-    #             txt = "| (forced branch = {:1d})".format(
-    #                 this_branch["forced_branch_idx"]
-    #             )
-    #             print(prefix + txt)
-
-    #         next_branches = (
-    #             this_branch["next_branches"]
-    #             if "next_branches" in this_branch.keys()
-    #             else None
-    #         )
-
-    #         if is_node_last_branch is True:
-    #             if type == "DECISION":
-    #                 txt = r"\-------[D]"
-    #             if type == "CHANCE":
-    #                 txt = r"\-------[C]"
-    #             if type == "TERMINAL":
-    #                 txt = r"\-------[T] {:s}".format(this_branch["expr"])
-    #         else:
-    #             if type == "DECISION":
-    #                 txt = "+-------[D]"
-    #             if type == "CHANCE":
-    #                 txt = "+-------[C]"
-    #             if type == "TERMINAL":
-    #                 txt = "+-------[T] {:s}".format(this_branch["expr"])
-    #         print(prefix + txt)
-
-    #         if maxdeep is not None and self.current_deep == maxdeep:
-    #             return
-
-    #         self.current_deep += 1
-
-    #         if next_branches is not None:
-
-    #             if selected_strategy is True and type == "DECISION":
-    #                 optbranch = this_branch["opt_branch_idx"]
-    #                 if is_node_last_branch is True:
-    #                     print_branch(
-    #                         prefix + " " * 9,
-    #                         self.tree[next_branches[optbranch]],
-    #                         is_node_last_branch=True,
-    #                     )
-    #                 else:
-    #                     print_branch(
-    #                         prefix + "|" + " " * 8,
-    #                         self.tree[next_branches[optbranch]],
-    #                         is_node_last_branch=True,
-    #                     )
-    #             else:
-    #                 for next_branch_idx, next_branch_id in enumerate(next_branches):
-    #                     is_last_tree_branch = (
-    #                         True if next_branch_idx == len(next_branches) - 1 else False
-    #                     )
-    #                     if is_node_last_branch is True:
-    #                         print_branch(
-    #                             prefix + " " * 9,
-    #                             self.tree[next_branch_id],
-    #                             is_node_last_branch=is_last_tree_branch,
-    #                         )
-    #                     else:
-    #                         print_branch(
-    #                             prefix + "|" + " " * 8,
-    #                             self.tree[next_branch_id],
-    #                             is_node_last_branch=is_last_tree_branch,
-    #                         )
-
-    #         self.current_deep -= 1
-
-    #     self.current_deep = 0
-    #     print_branch(prefix="", this_branch=self.tree[0], is_node_last_branch=True)
-
-    # def display_tree_as_text(self, maxdeep=None, selected_strategy=False):
-    #     r"""Prints the tree as a text diagram.
-
-    #     Args:
-    #         maxdeep (int, None): maximum deep of tree to print.
-    #         selected_strategy (bool): When it is `True`, only the
-    #             optimal (or forced branches) in the tree are displayed.
-
-    #     Returns:
-    #         None.
-
-    #     The following example creates a decision tree with a unique decision
-    #     node at the root of the tree. When the tree has not been evaluated,
-    #     this function shows only the number of the branch and the name and
-    #     value of the variable representing the type of node.
-
-    #     >>> tree = DecisionTree()
-    #     >>> tree.decision_node(name='DecisionNode',
-    #     ...                    branches=[(100,  1),
-    #     ...                              (200,  1),
-    #     ...                              (300,  1),
-    #     ...                              (400,  1)],
-    #     ...                    max=True)
-    #     >>> tree.terminal_node()
-    #     >>> tree.build_tree()
-    #     >>> tree.display_tree()  # doctest: +NORMALIZE_WHITESPACE
-    #     |
-    #     | #0
-    #     \-------[D]
-    #              |
-    #              | #1
-    #              | DecisionNode=100
-    #              +-------[T] DecisionNode
-    #              |
-    #              | #2
-    #              | DecisionNode=200
-    #              +-------[T] DecisionNode
-    #              |
-    #              | #3
-    #              | DecisionNode=300
-    #              +-------[T] DecisionNode
-    #              |
-    #              | #4
-    #              | DecisionNode=400
-    #              \-------[T] DecisionNode
-
-    #     When the tree is evaluated, additional information is displayed for
-    #     each branch. `PathProb` is the path probability for the corresponding
-    #     branch of the tree. `ExpVal` is the expected value of the node.
-    #     `(selected strategy)` indicates the branches corresponding to the
-    #     optimal (or forced) decision strategy.
-
-    #     >>> tree.evaluate()
-    #     >>> tree.display_tree()  # doctest: +NORMALIZE_WHITESPACE
-    #     |
-    #     | #0
-    #     | ExpVal=400.00
-    #     | (selected strategy)
-    #     \-------[D]
-    #              |
-    #              | #1
-    #              | DecisionNode=100
-    #              | PathProb=0.00
-    #              | ExpVal=100.00
-    #              +-------[T] DecisionNode
-    #              |
-    #              | #2
-    #              | DecisionNode=200
-    #              | PathProb=0.00
-    #              | ExpVal=200.00
-    #              +-------[T] DecisionNode
-    #              |
-    #              | #3
-    #              | DecisionNode=300
-    #              | PathProb=0.00
-    #              | ExpVal=300.00
-    #              +-------[T] DecisionNode
-    #              |
-    #              | #4
-    #              | DecisionNode=400
-    #              | PathProb=100.00
-    #              | ExpVal=400.00
-    #              | (selected strategy)
-    #              \-------[T] DecisionNode
-
-    #     The parameter `selected_strategy` are used to print the branches of
-    #     tree in the optimal decision strategy. This option allows the user
-    #     to analyze the sequence of optimal decisions.
-
-    #     >>> tree.display_tree(selected_strategy=True)  # doctest: +NORMALIZE_WHITESPACE
-    #     |
-    #     | #0
-    #     | ExpVal=400.00
-    #     | (selected strategy)
-    #     \-------[D]
-    #              |
-    #              | #4
-    #              | DecisionNode=400
-    #              | PathProb=100.00
-    #              | ExpVal=400.00
-    #              | (selected strategy)
-    #              \-------[T] DecisionNode
-    #     """
-
-    #     def print_branch(prefix, this_branch, is_node_last_branch):
-
-    #         print(prefix + "|")
-
-    #         type = this_branch.get("type")
-    #         if "id" in this_branch.keys():
-    #             print(prefix + "| #" + str(this_branch.get("id")))
-
-    #         ## prints the name and value of the variable
-    #         if "tag" in this_branch.keys():
-    #             var = this_branch["tag"]
-    #             if "value" in this_branch.keys():
-    #                 txt = "| " + var + "=" + str(this_branch["value"])
-    #             else:
-    #                 txt = "| " + var
-    #             print(prefix + txt)
-
-    #         ## prints the probability
-    #         if "prob" in this_branch.keys():
-    #             txt = "| Prob={:1.2f}".format(this_branch["prob"])
-    #             print(prefix + txt)
-
-    #         ## prints the cumulative probability
-    #         if type == "TERMINAL" and "PathProb" in this_branch.keys():
-    #             txt = "| PathProb={:1.2f}".format(this_branch["PathProb"])
-    #             print(prefix + txt)
-
-    #         if "ExpVal" in this_branch.keys() and this_branch["ExpVal"] is not None:
-    #             txt = "| ExpVal={:1.2f}".format(this_branch["ExpVal"])
-    #             print(prefix + txt)
-
-    #         if "ExpUtl" in this_branch.keys() and this_branch["ExpUtl"] is not None:
-    #             txt = "| ExpUtl={:1.2f}".format(this_branch["ExpUtl"])
-    #             print(prefix + txt)
-
-    #         if "CE" in this_branch.keys() and this_branch["CE"] is not None:
-    #             txt = "| CE={:1.2f}".format(this_branch["CE"])
-    #             print(prefix + txt)
-
-    #         if "RiskProfile" in this_branch.keys() and type != "TERMINAL":
-    #             print(prefix + "| Risk Profile:")
-    #             print(prefix + "|      Value  Prob")
-    #             for key in sorted(this_branch["RiskProfile"]):
-    #                 txt = "|   {:8.2f} {:5.2f}".format(
-    #                     key, this_branch["RiskProfile"][key]
-    #                 )
-    #                 print(prefix + txt)
-
-    #         if (
-    #             "sel_strategy" in this_branch.keys()
-    #             and this_branch["sel_strategy"] is True
-    #         ):
-    #             txt = "| (selected strategy)"
-    #             print(prefix + txt)
-
-    #         if (
-    #             "forced_branch_idx" in this_branch.keys()
-    #             and this_branch["forced_branch_idx"] is not None
-    #         ):
-    #             txt = "| (forced branch = {:1d})".format(
-    #                 this_branch["forced_branch_idx"]
-    #             )
-    #             print(prefix + txt)
-
-    #         next_branches = (
-    #             this_branch["next_branches"]
-    #             if "next_branches" in this_branch.keys()
-    #             else None
-    #         )
-
-    #         if is_node_last_branch is True:
-    #             if type == "DECISION":
-    #                 txt = r"\-------[D]"
-    #             if type == "CHANCE":
-    #                 txt = r"\-------[C]"
-    #             if type == "TERMINAL":
-    #                 txt = r"\-------[T] {:s}".format(this_branch["expr"])
-    #         else:
-    #             if type == "DECISION":
-    #                 txt = "+-------[D]"
-    #             if type == "CHANCE":
-    #                 txt = "+-------[C]"
-    #             if type == "TERMINAL":
-    #                 txt = "+-------[T] {:s}".format(this_branch["expr"])
-    #         print(prefix + txt)
-
-    #         if maxdeep is not None and self.current_deep == maxdeep:
-    #             return
-
-    #         self.current_deep += 1
-
-    #         if next_branches is not None:
-
-    #             if selected_strategy is True and type == "DECISION":
-    #                 optbranch = this_branch["opt_branch_idx"]
-    #                 if is_node_last_branch is True:
-    #                     print_branch(
-    #                         prefix + " " * 9,
-    #                         self.tree[next_branches[optbranch]],
-    #                         is_node_last_branch=True,
-    #                     )
-    #                 else:
-    #                     print_branch(
-    #                         prefix + "|" + " " * 8,
-    #                         self.tree[next_branches[optbranch]],
-    #                         is_node_last_branch=True,
-    #                     )
-    #             else:
-    #                 for next_branch_idx, next_branch_id in enumerate(next_branches):
-    #                     is_last_tree_branch = (
-    #                         True if next_branch_idx == len(next_branches) - 1 else False
-    #                     )
-    #                     if is_node_last_branch is True:
-    #                         print_branch(
-    #                             prefix + " " * 9,
-    #                             self.tree[next_branch_id],
-    #                             is_node_last_branch=is_last_tree_branch,
-    #                         )
-    #                     else:
-    #                         print_branch(
-    #                             prefix + "|" + " " * 8,
-    #                             self.tree[next_branch_id],
-    #                             is_node_last_branch=is_last_tree_branch,
-    #                         )
-
-    #         self.current_deep -= 1
-
-    #     self.current_deep = 0
-    #     print_branch(prefix="", this_branch=self.tree[0], is_node_last_branch=True)
 
 
 if __name__ == "__main__":

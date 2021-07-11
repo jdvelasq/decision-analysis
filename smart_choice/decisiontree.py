@@ -1921,8 +1921,6 @@ class DecisionTree:
 
             if max_deep is None or (max_deep is not None and deep < max_deep):
 
-                deep += 1
-
                 successors = self._tree_nodes[idx].get("successors")
 
                 #
@@ -1963,14 +1961,14 @@ class DecisionTree:
                 #
                 for successor in successors:
 
-                    if "selected_strategy" in self._tree_nodes[successor].keys():
-                        selected_strategy = self._tree_nodes[successor][
-                            "selected_strategy"
+                    if "optimal_strategy" in self._tree_nodes[successor].keys():
+                        optimal_strategy = self._tree_nodes[successor][
+                            "optimal_strategy"
                         ]
                     else:
-                        selected_strategy = False
+                        optimal_strategy = False
 
-                    if policy_suggestion is True and selected_strategy is False:
+                    if policy_suggestion is True and optimal_strategy is False:
                         continue
 
                     dispatch(
@@ -1996,43 +1994,6 @@ class DecisionTree:
                         penwidth=penwidth,
                     )
 
-                    # tag_name = self._tree_nodes[successor].get("tag_name")
-                    # tag_value = self._tree_nodes[successor].get("tag_value")
-                    # type_ = self._tree_nodes[successor].get("type")
-                    selected_strategy = self._tree_nodes[successor].get(
-                        "selected_strategy"
-                    )
-
-                    # if "ExpVal" in self._tree_nodes[successor].keys():
-                    #     expval = self._tree_nodes[successor].get("ExpVal")
-
-                    #     if type_ != "TERMINAL":
-                    #         label = "{}={}, ExpVal={}".format(
-                    #             tag_name, tag_value, round(expval, 2)
-                    #         )
-                    #     else:
-                    #         label = "{}={}".format(tag_name, tag_value)
-                    # else:
-                    #     label = "{}={}".format(tag_name, tag_value)
-
-                    # if selected_strategy is True:
-                    #     penwidth = "2"
-                    # else:
-                    #     penwidth = "1"
-
-                    # dot.edge(
-                    #     str(idx),
-                    #     str(successor),
-                    #     arrowsize=arrowsize,
-                    #     # label=label,
-                    #     fontsize=fontsize,
-                    #     penwidth=penwidth,
-                    #     fontname="Courier New",
-                    # )
-
-                deep -= 1
-
-            ## return main_dot
 
         def dispatch(idx: int, main_dot, max_deep: int, deep: int):
 

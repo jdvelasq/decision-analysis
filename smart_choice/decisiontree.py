@@ -32,6 +32,12 @@ from .datanodes import DataNodes
 
 NAMEMAXLEN = 15
 
+
+def jitter(x):
+    stdev = 0.002 * (max(x) - min(x))
+    return x + stdev * np.random.randn(len(x))
+
+
 # -------------------------------------------------------------------------
 #
 #
@@ -1044,9 +1050,9 @@ class DecisionTree:
             probs = [round(risk_profile[value], 2) for value in values]
 
             expval = self._tree_nodes[idx].get("EV")
-            tag_value = self._tree_nodes[idx].get("tag_value")
-            if tag_value is not None:
-                label = "{};EV={:.2f}".format(tag_value, expval)
+            tag_branch = self._tree_nodes[idx].get("tag_branch")
+            if tag_branch is not None:
+                label = "{}; EV={:.2f}".format(tag_branch, expval)
             else:
                 label = "EV={:.2f}".format(expval)
 
@@ -1083,8 +1089,9 @@ class DecisionTree:
 
             expval = self._tree_nodes[idx].get("EV")
             tag_value = self._tree_nodes[idx].get("tag_value")
+            tag_branch = self._tree_nodes[idx].get("tag_branch")
             if tag_value is not None:
-                label = "{};EV={:.2f}".format(tag_value, expval)
+                label = "{};EV={:.2f}".format(tag_branch, expval)
             else:
                 label = "EV={:.2f}".format(expval)
 
@@ -1134,9 +1141,9 @@ class DecisionTree:
 
         linefmts = [
             "-k",
-            "-b",
-            "-r",
-            "-g",
+            "--k",
+            ".-k",
+            "o-k",
             "--k",
             "--b",
             "--r",
@@ -1146,6 +1153,8 @@ class DecisionTree:
             "-.r",
             "-.g",
         ]
+        ## markerfmts = []
+
         colors = ["black", "blue", "red", "green"] * 3
 
         self._compute_risk_profiles(idx)
@@ -1280,11 +1289,11 @@ class DecisionTree:
                 self._tree_nodes[successor].get("tag_branch")
                 for successor in successors
             ]
-            tag_values = [
-                self._tree_nodes[successor].get("tag_value") for successor in successors
-            ]
-            # for tag_value in tag_values:
-            #     results[tag_value] = []
+            ## tag_values = [
+            ##     self._tree_nodes[successor].get("tag_value") for successor in successors
+            ## ]
+            ## for tag_value in tag_values:
+            ##     results[tag_value] = []
 
             for tag_branch in tag_branches:
                 results[tag_branch] = []
@@ -1554,9 +1563,9 @@ class DecisionTree:
 
             results = {}
             successors = self._tree_nodes[0].get("successors")
-            tag_values = [
-                self._tree_nodes[successor].get("tag_value") for successor in successors
-            ]
+            ## tag_values = [
+            ##     self._tree_nodes[successor].get("tag_value") for successor in successors
+            ## ]
             tag_branches = [
                 self._tree_nodes[successor].get("tag_branch")
                 for successor in successors
@@ -1648,11 +1657,17 @@ class DecisionTree:
 
             results = {}
             successors = self._tree_nodes[0].get("successors")
-            tag_values = [
-                self._tree_nodes[successor].get("tag_value") for successor in successors
+            ## tag_values = [
+            ##     self._tree_nodes[successor].get("tag_value") for successor in successors
+            ## ]
+            ## for tag_value in tag_values:
+            ##     results[tag_value] = []
+            tag_branches = [
+                self._tree_nodes[successor].get("tag_branch")
+                for successor in successors
             ]
-            for tag_value in tag_values:
-                results[tag_value] = []
+            for tag_branch in tag_branches:
+                results[tag_branch] = []
 
             risk_aversions = np.linspace(
                 start=0, stop=1.0 / risk_tolerance, num=11
@@ -1677,13 +1692,15 @@ class DecisionTree:
                         for successor in successors
                     ]
 
-                for ceq, tag_value in zip(ceqs, tag_values):
-                    results[tag_value].append(ceq)
+                ## for ceq, tag_value in zip(ceqs, tag_values):
+                ##     results[tag_value].append(ceq)
+                for ceq, tag_branch in zip(ceqs, tag_branches):
+                    results[tag_branch].append(ceq)
 
             if plot is True:
-                for tag_value in tag_values:
+                for tag_branch in tag_branches:
                     plt.gca().plot(
-                        risk_aversions, results[tag_value], label=str(tag_value)
+                        risk_aversions, results[tag_branch], label=tag_branch
                     )
 
                 labels = [
@@ -1740,45 +1757,166 @@ class DecisionTree:
         """
 
         width = "0.25"
-        height = "0.15"
+        height = "0.1"
         arrowsize = "0.3"
         fontsize = "8.0"
 
-        def terminal(idx: int, dot, max_deep: int, deep: int):
+        def terminal(idx: int, main_dot, max_deep: int, deep: int):
+
             name = self._tree_nodes[idx].get("name")
-            if "ExpVal" in self._tree_nodes[idx].keys():
-                expval = self._tree_nodes[idx].get("ExpVal")
+            label = ""
+            if "EV" in self._tree_nodes[idx].keys():
+                expval = self._tree_nodes[idx].get("EV")
+                label += "{:.2f}".format(expval)
+            if "PathProb" in self._tree_nodes[idx].keys():
                 pathprob = self._tree_nodes[idx].get("PathProb")
-                label = "{}={}, {}%".format(name, round(expval, 2), round(pathprob, 2))
-            else:
+                if pathprob == np.float64(1.0):
+                    label += " 1.000%"
+                else:
+                    label += " " + "{:.4f}%".format(pathprob)[1:]
+            if label == "":
                 label = name
 
+            dot = Digraph(name="cluster_" + str(idx))
+            dot.attr(rankdir="LR", color="white")
             dot.node(
                 str(idx),
                 label,
-                shape="record",
-                orientation="90",
+                shape="paintext",
                 height=height,
+                width=width,
                 style="filled",
                 color="powderblue",
                 fontsize=fontsize,
                 fontname="Courier New",
             )
 
-            return dot
+            main_dot.subgraph(dot)
 
-        def chance(idx: int, dot, max_deep: int, deep: int):
+            ## return main_dot
+
+        def chance(idx: int, main_dot, max_deep: int, deep: int):
+
+            #
+            # It's the maximum deep
+            #
+            deep += 1
+            if max_deep is not None and deep >= max_deep:
+
+                label = self._tree_nodes[idx].get("name")
+                if "EV" in self._tree_nodes[idx].keys():
+                    expval = self._tree_nodes[idx].get("EV")
+                    label += r"\n{:0.2f}".format(expval)
+
+                main_dot.node(
+                    str(idx),
+                    label=label,
+                    shape="ellipse",
+                    width=width,
+                    height="0.05",
+                    color="darkseagreen",
+                    fontsize=fontsize,
+                    fontname="Courier New",
+                )
+                return
+
+            #
+            # Draws the node and branches
+            #
+            label = self._tree_nodes[idx].get("name")
+            dot = Digraph(name="cluster_" + str(idx))
+            dot.attr(rankdir="LR", style="rounded", color="darkseagreen")
+
+            if "EV" in self._tree_nodes[idx].keys():
+                expval = self._tree_nodes[idx].get("EV")
+                label += r"\n{:0.2f}".format(expval)
 
             dot.node(
                 str(idx),
-                label="#{}".format(idx),
-                shape="circle",
+                label=label,
+                shape="ellipse",
                 width=width,
-                style="filled",
-                color="yellowgreen",
+                height="0.05",
+                color="darkseagreen",
                 fontsize=fontsize,
                 fontname="Courier New",
-                fizedsize="shape",
+            )
+
+            successors = self._tree_nodes[idx].get("successors")
+            for successor in successors:
+                tag_branch = self._tree_nodes[successor].get("tag_branch")
+                dot.node(
+                    str(idx) + tag_branch,
+                    label=tag_branch,
+                    shape="box",
+                    height="0.1",
+                    style="rounded",
+                    color="darkseagreen",
+                    fontsize=fontsize,
+                    fontname="Courier New",
+                )
+
+                optimal_strategy = self._tree_nodes[successor].get("optimal_strategy")
+
+                penwidth = "2" if optimal_strategy is True else "1"
+
+                dot.edge(
+                    str(idx),
+                    str(idx) + tag_branch,
+                    arrowsize=arrowsize,
+                    penwidth=penwidth,
+                )
+
+            main_dot.subgraph(dot)
+
+            #
+            # Draw successors
+            #
+            if max_deep is None or (max_deep is not None and deep < max_deep):
+
+                for successor in successors:
+                    dispatch(
+                        idx=successor, main_dot=main_dot, max_deep=max_deep, deep=deep
+                    )
+
+                    tag_branch = self._tree_nodes[successor].get("tag_branch")
+
+                    optimal_strategy = self._tree_nodes[successor].get(
+                        "optimal_strategy"
+                    )
+
+                    penwidth = "2" if optimal_strategy is True else "1"
+
+                    main_dot.edge(
+                        str(idx) + tag_branch,
+                        str(successor),
+                        arrowsize=arrowsize,
+                        penwidth=penwidth,
+                    )
+
+            ## return main_dot
+
+        def decision(idx: int, main_dot, max_deep: int, deep: int):
+
+            name = self._tree_nodes[idx].get("name")
+
+            label = name
+            if "EV" in self._tree_nodes[idx].keys():
+                expval = self._tree_nodes[idx].get("EV")
+                label += r"\n{:0.2f}".format(expval)
+
+            dot = Digraph(name="cluster_" + str(idx))
+            dot.attr(rankdir="LR", style="rounded", color="peru")
+            dot.node(
+                str(idx),
+                label=label,
+                shape="paintext",
+                width=width,
+                height="0.05",
+                style="rounded",
+                color="peru",
+                fontsize=fontsize,
+                fontname="Courier New",
             )
 
             if max_deep is None or (max_deep is not None and deep < max_deep):
@@ -1786,74 +1924,43 @@ class DecisionTree:
                 deep += 1
 
                 successors = self._tree_nodes[idx].get("successors")
+
+                #
+                # Draws the branch
+                #
                 for successor in successors:
-                    dot = dispatch(idx=successor, dot=dot, max_deep=max_deep, deep=deep)
-                    tag_name = self._tree_nodes[successor].get("tag_name")
-                    tag_value = self._tree_nodes[successor].get("tag_value")
-                    tag_prob = self._tree_nodes[successor].get("tag_prob")
-                    type_ = self._tree_nodes[successor].get("type")
-                    selected_strategy = self._tree_nodes[successor].get(
-                        "selected_strategy"
-                    )
 
-                    if "ExpVal" in self._tree_nodes[successor].keys():
-                        expval = self._tree_nodes[successor].get("ExpVal")
+                    tag_branch = self._tree_nodes[successor].get("tag_branch")
 
-                        if type_ != "TERMINAL":
-                            label = "{}={}, {}%\nExpVal={}".format(
-                                tag_name,
-                                tag_value,
-                                round(tag_prob, 2),
-                                round(expval, 2),
-                            )
-                        else:
-                            label = "{}={}, {}%".format(
-                                tag_name, tag_value, round(tag_prob, 2)
-                            )
-
-                    else:
-                        label = "{}={}, {}%".format(
-                            tag_name, tag_value, round(tag_prob, 2)
-                        )
-
-                    if selected_strategy is True:
-                        penwidth = "2"
-                    else:
-                        penwidth = "1"
-
-                    dot.edge(
-                        str(idx),
-                        str(successor),
-                        arrowsize=arrowsize,
-                        label=label,
+                    dot.node(
+                        str(idx) + tag_branch,
+                        label=tag_branch,
+                        shape="box",
+                        style="rounded",
+                        height="0.05",
+                        color="chocolate",
                         fontsize=fontsize,
-                        penwidth=penwidth,
                         fontname="Courier New",
                     )
 
-                deep -= 1
+                    optimal_strategy = self._tree_nodes[successor].get(
+                        "optimal_strategy"
+                    )
 
-            return dot
+                    penwidth = "2" if optimal_strategy is True else "1"
 
-        def decision(idx: int, dot, max_deep: int, deep: int):
+                    dot.edge(
+                        str(idx),
+                        str(idx) + tag_branch,
+                        arrowsize=arrowsize,
+                        penwidth=penwidth,
+                    )
 
-            dot.node(
-                str(idx),
-                label="#{}".format(idx),
-                shape="square",
-                width=width,
-                style="filled",
-                color="brown",
-                fontsize=fontsize,
-                fontname="Courier New",
-                fizedsize="shape",
-            )
+                main_dot.subgraph(dot)
 
-            if max_deep is None or (max_deep is not None and deep < max_deep):
-
-                deep += 1
-
-                successors = self._tree_nodes[idx].get("successors")
+                #
+                # Draws successors
+                #
                 for successor in successors:
 
                     if "selected_strategy" in self._tree_nodes[successor].keys():
@@ -1866,63 +1973,89 @@ class DecisionTree:
                     if policy_suggestion is True and selected_strategy is False:
                         continue
 
-                    dot = dispatch(idx=successor, dot=dot, max_deep=max_deep, deep=deep)
-                    tag_name = self._tree_nodes[successor].get("tag_name")
-                    tag_value = self._tree_nodes[successor].get("tag_value")
-                    type_ = self._tree_nodes[successor].get("type")
+                    dispatch(
+                        idx=successor, main_dot=main_dot, max_deep=max_deep, deep=deep
+                    )
+                    ## dot.subgraph(branch_dot)
+
+                    #
+                    # Connection
+                    #
+                    tag_branch = self._tree_nodes[successor].get("tag_branch")
+
+                    optimal_strategy = self._tree_nodes[successor].get(
+                        "optimal_strategy"
+                    )
+
+                    penwidth = "2" if optimal_strategy is True else "1"
+
+                    main_dot.edge(
+                        str(idx) + tag_branch,
+                        str(successor),
+                        arrowsize=arrowsize,
+                        penwidth=penwidth,
+                    )
+
+                    # tag_name = self._tree_nodes[successor].get("tag_name")
+                    # tag_value = self._tree_nodes[successor].get("tag_value")
+                    # type_ = self._tree_nodes[successor].get("type")
                     selected_strategy = self._tree_nodes[successor].get(
                         "selected_strategy"
                     )
 
-                    if "ExpVal" in self._tree_nodes[successor].keys():
-                        expval = self._tree_nodes[successor].get("ExpVal")
+                    # if "ExpVal" in self._tree_nodes[successor].keys():
+                    #     expval = self._tree_nodes[successor].get("ExpVal")
 
-                        if type_ != "TERMINAL":
-                            label = "{}={}, ExpVal={}".format(
-                                tag_name, tag_value, round(expval, 2)
-                            )
-                        else:
-                            label = "{}={}".format(tag_name, tag_value)
-                    else:
-                        label = "{}={}".format(tag_name, tag_value)
+                    #     if type_ != "TERMINAL":
+                    #         label = "{}={}, ExpVal={}".format(
+                    #             tag_name, tag_value, round(expval, 2)
+                    #         )
+                    #     else:
+                    #         label = "{}={}".format(tag_name, tag_value)
+                    # else:
+                    #     label = "{}={}".format(tag_name, tag_value)
 
-                    if selected_strategy is True:
-                        penwidth = "2"
-                    else:
-                        penwidth = "1"
+                    # if selected_strategy is True:
+                    #     penwidth = "2"
+                    # else:
+                    #     penwidth = "1"
 
-                    dot.edge(
-                        str(idx),
-                        str(successor),
-                        arrowsize=arrowsize,
-                        label=label,
-                        fontsize=fontsize,
-                        penwidth=penwidth,
-                        fontname="Courier New",
-                    )
+                    # dot.edge(
+                    #     str(idx),
+                    #     str(successor),
+                    #     arrowsize=arrowsize,
+                    #     # label=label,
+                    #     fontsize=fontsize,
+                    #     penwidth=penwidth,
+                    #     fontname="Courier New",
+                    # )
 
                 deep -= 1
 
-            return dot
+            ## return main_dot
 
-        def dispatch(idx: int, dot, max_deep: int, deep: int):
+        def dispatch(idx: int, main_dot, max_deep: int, deep: int):
 
             type_ = self._tree_nodes[idx].get("type")
 
             if type_ == "TERMINAL":
-                dot = terminal(idx, dot, max_deep, deep)
+                ## main_dot = terminal(idx, main_dot, max_deep, deep)
+                terminal(idx, main_dot, max_deep, deep)
 
             if type_ == "DECISION":
-                dot = decision(idx, dot, max_deep, deep)
+                ## main_dot = decision(idx, main_dot, max_deep, deep)
+                decision(idx, main_dot, max_deep, deep)
 
             if type_ == "CHANCE":
-                dot = chance(idx, dot, max_deep, deep)
+                ## main_dot = chance(idx, main_dot, max_deep, deep)
+                chance(idx, main_dot, max_deep, deep)
 
-            return dot
+            ## return main_dot
 
         dot = Digraph()
         dot.attr(rankdir="LR")  # splines="compound"
-        dot = dispatch(idx=0, dot=dot, max_deep=max_deep, deep=0)
+        dispatch(idx=0, main_dot=dot, max_deep=max_deep, deep=0)
+        ## dot = dispatch(idx=0, main_dot=dot, max_deep=max_deep, deep=0)
         return dot
 
 

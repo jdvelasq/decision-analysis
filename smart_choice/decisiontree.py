@@ -1782,10 +1782,10 @@ class DecisionTree:
             dot.node(
                 str(idx),
                 label,
-                shape="ellipse",
+                shape="box",
                 height=height,
                 width=width,
-                style="filled",
+                style="filled;rounded",
                 color="powderblue",
                 fontsize=fontsize,
                 fontname="Courier New",

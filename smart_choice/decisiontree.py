@@ -1910,11 +1910,11 @@ class DecisionTree:
             dot.node(
                 str(idx),
                 label=label,
-                shape="ellipse",
+                shape="box",
                 width=width,
                 height="0.05",
                 style="rounded",
-                color="peru",
+                color="chocolate",
                 fontsize=fontsize,
                 fontname="Courier New",
             )

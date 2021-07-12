@@ -347,7 +347,7 @@ class DecisionTree:
         #
         # Shows the tree structure
         #
-        def adjust_width(column: list[str]) -> list:
+        def adjust_width(column: List[str]) -> list:
             maxwidth: int = max([len(txtline) for txtline in column]) + 2
             formatstr: str = "{:<" + str(maxwidth) + "s}"
             column: list = [formatstr.format(txtline) for txtline in column]

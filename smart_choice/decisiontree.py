@@ -1785,7 +1785,7 @@ class DecisionTree:
                 shape="box",
                 height=height,
                 width=width,
-                style="filled;rounded",
+                style="filled",
                 color="powderblue",
                 fontsize=fontsize,
                 fontname="Courier New",

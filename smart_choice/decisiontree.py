@@ -1782,7 +1782,7 @@ class DecisionTree:
             dot.node(
                 str(idx),
                 label,
-                shape="plaintext",
+                shape="ellipse",
                 height=height,
                 width=width,
                 style="filled",
@@ -1910,7 +1910,7 @@ class DecisionTree:
             dot.node(
                 str(idx),
                 label=label,
-                shape="plaintext",
+                shape="ellipse",
                 width=width,
                 height="0.05",
                 style="rounded",

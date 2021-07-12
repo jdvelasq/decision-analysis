@@ -22,6 +22,7 @@ setup(
     install_requires=[
         "numpy",
         "matplotlib",
+        "graphviz",
     ],
     packages=find_packages(),
     package_dir={"smart_choice": "smart_choice"},

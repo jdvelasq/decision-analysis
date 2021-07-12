@@ -1974,7 +1974,6 @@ class DecisionTree:
                     dispatch(
                         idx=successor, main_dot=main_dot, max_deep=max_deep, deep=deep
                     )
-                    ## dot.subgraph(branch_dot)
 
                     #
                     # Connection
@@ -1993,7 +1992,6 @@ class DecisionTree:
                         arrowsize=arrowsize,
                         penwidth=penwidth,
                     )
-
 
         def dispatch(idx: int, main_dot, max_deep: int, deep: int):
 

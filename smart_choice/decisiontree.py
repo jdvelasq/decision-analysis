@@ -1910,7 +1910,7 @@ class DecisionTree:
             dot.node(
                 str(idx),
                 label=label,
-                shape="paintext",
+                shape="plaintext",
                 width=width,
                 height="0.05",
                 style="rounded",

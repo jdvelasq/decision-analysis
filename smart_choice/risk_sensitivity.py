@@ -13,11 +13,14 @@ from .decisiontree import DecisionTree
 
 
 class RiskSensitivity:
-    def __init__(self, decisiontree: DecisionTree, utility_fn: str, risk_tolerance):
+    def __init__(
+        self, decisiontree: DecisionTree, utility_fn: str, risk_tolerance, idx: int = 0
+    ):
 
         self._decisiontree = decisiontree
         self._risk_tolerance = risk_tolerance
         self._utility_fn = utility_fn
+        self._idx = idx
 
         # computation
         self.type_ = decisiontree._tree_nodes[0].get("type")
@@ -59,7 +62,7 @@ class RiskSensitivity:
         for tag_branch in self.branch_names_:
             self.certainty_equivalents_[tag_branch] = []
 
-        successors = self._decisiontree._tree_nodes[0].get("successors")
+        successors = self._decisiontree._tree_nodes[self._idx].get("successors")
         for risk_aversion in self.risk_aversions_:
 
             if risk_aversion == np.float64(0):
@@ -100,10 +103,10 @@ class RiskSensitivity:
                 self._decisiontree.rollback(
                     utility_fn=self._utility_fn, risk_tolerance=1.0 / risk_aversion
                 )
-                ceq = self._decisiontree._tree_nodes[0].get("CE")
+                ceq = self._decisiontree._tree_nodes[self._idx].get("CE")
             self.certainty_equivalents_.append(ceq)
 
-        name = self._decisiontree._tree_nodes[0].name
+        name = self._decisiontree._tree_nodes[self._idx].name
         results = {name: self.certainty_equivalents_}
         results["Risk Tolerance"] = self.risk_tolerance_
         self.df_ = pd.DataFrame(results)

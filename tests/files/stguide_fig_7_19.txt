@@ -1,4 +1,4 @@
-          500        700 Risk Tolerance
+          low       high Risk Tolerance
 0   65.000000  45.000000       Infinity
 1   55.205969  36.620035            750
 2   46.192925  30.328977            375

@@ -1554,190 +1554,190 @@ class DecisionTree:
     #  R I S K    S E N S I T I V I T Y
     #
     #
-    def risk_sensitivity(
-        self, utility_fn: str, risk_tolerance: float, plot: bool = False
-    ) -> None:
-        """Plots a risk tolrecance plot."""
+    # def risk_sensitivity(
+    #     self, utility_fn: str, risk_tolerance: float, plot: bool = False
+    # ) -> None:
+    #     """Plots a risk tolrecance plot."""
 
-        def _risk_attitude_decision():
+    #     def _risk_attitude_decision():
 
-            results = {}
-            successors = self._tree_nodes[0].get("successors")
-            ## tag_values = [
-            ##     self._tree_nodes[successor].get("tag_value") for successor in successors
-            ## ]
-            tag_branches = [
-                self._tree_nodes[successor].get("tag_branch")
-                for successor in successors
-            ]
-            ## for tag_value in tag_values:
-            ##    results[tag_value] = []
-            for tag_branch in tag_branches:
-                results[tag_branch] = []
+    #         results = {}
+    #         successors = self._tree_nodes[0].get("successors")
+    #         ## tag_values = [
+    #         ##     self._tree_nodes[successor].get("tag_value") for successor in successors
+    #         ## ]
+    #         tag_branches = [
+    #             self._tree_nodes[successor].get("tag_branch")
+    #             for successor in successors
+    #         ]
+    #         ## for tag_value in tag_values:
+    #         ##    results[tag_value] = []
+    #         for tag_branch in tag_branches:
+    #             results[tag_branch] = []
 
-            risk_aversions = np.linspace(
-                start=0, stop=1.0 / risk_tolerance, num=11
-            ).tolist()
+    #         risk_aversions = np.linspace(
+    #             start=0, stop=1.0 / risk_tolerance, num=11
+    #         ).tolist()
 
-            for risk_aversion in risk_aversions:
+    #         for risk_aversion in risk_aversions:
 
-                if risk_aversion == np.float64(0):
-                    self.evaluate()
-                    self.rollback()
-                    ceqs = [
-                        self._tree_nodes[successor].get("EV")
-                        for successor in successors
-                    ]
-                else:
-                    self.evaluate()
-                    self.rollback(
-                        utility_fn=utility_fn, risk_tolerance=1.0 / risk_aversion
-                    )
-                    ceqs = [
-                        self._tree_nodes[successor].get("CE")
-                        for successor in successors
-                    ]
+    #             if risk_aversion == np.float64(0):
+    #                 self.evaluate()
+    #                 self.rollback()
+    #                 ceqs = [
+    #                     self._tree_nodes[successor].get("EV")
+    #                     for successor in successors
+    #                 ]
+    #             else:
+    #                 self.evaluate()
+    #                 self.rollback(
+    #                     utility_fn=utility_fn, risk_tolerance=1.0 / risk_aversion
+    #                 )
+    #                 ceqs = [
+    #                     self._tree_nodes[successor].get("CE")
+    #                     for successor in successors
+    #                 ]
 
-                for ceq, tag_branch in zip(ceqs, tag_branches):
-                    results[tag_branch].append(ceq)
-                ## for ceq, tag_value in zip(ceqs, tag_values):
-                ##    results[tag_value].append(ceq)
+    #             for ceq, tag_branch in zip(ceqs, tag_branches):
+    #                 results[tag_branch].append(ceq)
+    #             ## for ceq, tag_value in zip(ceqs, tag_values):
+    #             ##    results[tag_value].append(ceq)
 
-            if plot is True:
+    #         if plot is True:
 
-                linefmts = [
-                    "-k",
-                    "--k",
-                    ".-k",
-                    ":k",
-                    "-r",
-                    "--r",
-                    ".-r",
-                    ":r",
-                    "-g",
-                    "--g",
-                    ".-g",
-                    ":g",
-                ]
-                for linefmt, tag_branch in zip(linefmts, tag_branches):
-                    plt.gca().plot(
-                        risk_aversions,
-                        results[tag_branch],
-                        linefmt,
-                        label=tag_branch,
-                    )
+    #             linefmts = [
+    #                 "-k",
+    #                 "--k",
+    #                 ".-k",
+    #                 ":k",
+    #                 "-r",
+    #                 "--r",
+    #                 ".-r",
+    #                 ":r",
+    #                 "-g",
+    #                 "--g",
+    #                 ".-g",
+    #                 ":g",
+    #             ]
+    #             for linefmt, tag_branch in zip(linefmts, tag_branches):
+    #                 plt.gca().plot(
+    #                     risk_aversions,
+    #                     results[tag_branch],
+    #                     linefmt,
+    #                     label=tag_branch,
+    #                 )
 
-                labels = [
-                    "Infinity"
-                    if risk_aversion == np.float(0)
-                    else str(int(round(1 / risk_aversion, 0)))
-                    for risk_aversion in risk_aversions
-                ]
-                plt.xticks(risk_aversions, labels)
-                plt.gca().spines["bottom"].set_visible(False)
-                plt.gca().spines["left"].set_visible(False)
-                plt.gca().spines["right"].set_visible(False)
-                plt.gca().spines["top"].set_visible(False)
-                plt.gca().set_ylabel("Certainty equivalent")
-                plt.gca().set_xlabel("Risk tolerance")
-                plt.gca().legend()
-                plt.grid()
+    #             labels = [
+    #                 "Infinity"
+    #                 if risk_aversion == np.float(0)
+    #                 else str(int(round(1 / risk_aversion, 0)))
+    #                 for risk_aversion in risk_aversions
+    #             ]
+    #             plt.xticks(risk_aversions, labels)
+    #             plt.gca().spines["bottom"].set_visible(False)
+    #             plt.gca().spines["left"].set_visible(False)
+    #             plt.gca().spines["right"].set_visible(False)
+    #             plt.gca().spines["top"].set_visible(False)
+    #             plt.gca().set_ylabel("Certainty equivalent")
+    #             plt.gca().set_xlabel("Risk tolerance")
+    #             plt.gca().legend()
+    #             plt.grid()
 
-                return None
+    #             return None
 
-            results["Risk Tolerance"] = [
-                "Infinity"
-                if risk_aversion == np.float(0)
-                else int(round(1 / risk_aversion, 0))
-                for risk_aversion in risk_aversions
-            ]
-            return pd.DataFrame(results)
+    #         results["Risk Tolerance"] = [
+    #             "Infinity"
+    #             if risk_aversion == np.float(0)
+    #             else int(round(1 / risk_aversion, 0))
+    #             for risk_aversion in risk_aversions
+    #         ]
+    #         return pd.DataFrame(results)
 
-        def _risk_attitude_chance():
+    #     def _risk_attitude_chance():
 
-            results = {}
-            successors = self._tree_nodes[0].get("successors")
-            ## tag_values = [
-            ##     self._tree_nodes[successor].get("tag_value") for successor in successors
-            ## ]
-            ## for tag_value in tag_values:
-            ##     results[tag_value] = []
-            tag_branches = [
-                self._tree_nodes[successor].get("tag_branch")
-                for successor in successors
-            ]
-            for tag_branch in tag_branches:
-                results[tag_branch] = []
+    #         results = {}
+    #         successors = self._tree_nodes[0].get("successors")
+    #         ## tag_values = [
+    #         ##     self._tree_nodes[successor].get("tag_value") for successor in successors
+    #         ## ]
+    #         ## for tag_value in tag_values:
+    #         ##     results[tag_value] = []
+    #         tag_branches = [
+    #             self._tree_nodes[successor].get("tag_branch")
+    #             for successor in successors
+    #         ]
+    #         for tag_branch in tag_branches:
+    #             results[tag_branch] = []
 
-            risk_aversions = np.linspace(
-                start=0, stop=1.0 / risk_tolerance, num=11
-            ).tolist()
+    #         risk_aversions = np.linspace(
+    #             start=0, stop=1.0 / risk_tolerance, num=11
+    #         ).tolist()
 
-            for risk_aversion in risk_aversions:
+    #         for risk_aversion in risk_aversions:
 
-                if risk_aversion == np.float64(0):
-                    self.evaluate()
-                    self.rollback()
-                    ceqs = [
-                        self._tree_nodes[successor].get("EV")
-                        for successor in successors
-                    ]
-                else:
-                    self.evaluate()
-                    self.rollback(
-                        utility_fn=utility_fn, risk_tolerance=1.0 / risk_aversion
-                    )
-                    ceqs = [
-                        self._tree_nodes[successor].get("CE")
-                        for successor in successors
-                    ]
+    #             if risk_aversion == np.float64(0):
+    #                 self.evaluate()
+    #                 self.rollback()
+    #                 ceqs = [
+    #                     self._tree_nodes[successor].get("EV")
+    #                     for successor in successors
+    #                 ]
+    #             else:
+    #                 self.evaluate()
+    #                 self.rollback(
+    #                     utility_fn=utility_fn, risk_tolerance=1.0 / risk_aversion
+    #                 )
+    #                 ceqs = [
+    #                     self._tree_nodes[successor].get("CE")
+    #                     for successor in successors
+    #                 ]
 
-                ## for ceq, tag_value in zip(ceqs, tag_values):
-                ##     results[tag_value].append(ceq)
-                for ceq, tag_branch in zip(ceqs, tag_branches):
-                    results[tag_branch].append(ceq)
+    #             ## for ceq, tag_value in zip(ceqs, tag_values):
+    #             ##     results[tag_value].append(ceq)
+    #             for ceq, tag_branch in zip(ceqs, tag_branches):
+    #                 results[tag_branch].append(ceq)
 
-            if plot is True:
-                for tag_branch in tag_branches:
-                    plt.gca().plot(
-                        risk_aversions, results[tag_branch], label=tag_branch
-                    )
+    #         if plot is True:
+    #             for tag_branch in tag_branches:
+    #                 plt.gca().plot(
+    #                     risk_aversions, results[tag_branch], label=tag_branch
+    #                 )
 
-                labels = [
-                    "Infinity"
-                    if risk_aversion == np.float(0)
-                    else str(int(round(1 / risk_aversion, 0)))
-                    for risk_aversion in risk_aversions
-                ]
-                plt.xticks(risk_aversions, labels)
-                plt.gca().spines["bottom"].set_visible(False)
-                plt.gca().spines["left"].set_visible(False)
-                plt.gca().spines["right"].set_visible(False)
-                plt.gca().spines["top"].set_visible(False)
-                plt.gca().set_ylabel("Expected values")
-                plt.gca().set_xlabel("Risk tolerance")
-                plt.gca().invert_xaxis()
-                plt.gca().legend()
-                plt.grid()
-                return None
+    #             labels = [
+    #                 "Infinity"
+    #                 if risk_aversion == np.float(0)
+    #                 else str(int(round(1 / risk_aversion, 0)))
+    #                 for risk_aversion in risk_aversions
+    #             ]
+    #             plt.xticks(risk_aversions, labels)
+    #             plt.gca().spines["bottom"].set_visible(False)
+    #             plt.gca().spines["left"].set_visible(False)
+    #             plt.gca().spines["right"].set_visible(False)
+    #             plt.gca().spines["top"].set_visible(False)
+    #             plt.gca().set_ylabel("Expected values")
+    #             plt.gca().set_xlabel("Risk tolerance")
+    #             plt.gca().invert_xaxis()
+    #             plt.gca().legend()
+    #             plt.grid()
+    #             return None
 
-            results["Risk Tolerance"] = [
-                "Infinity"
-                if risk_aversion == np.float(0)
-                else int(round(1 / risk_aversion, 0))
-                for risk_aversion in risk_aversions
-            ]
-            return pd.DataFrame(results)
+    #         results["Risk Tolerance"] = [
+    #             "Infinity"
+    #             if risk_aversion == np.float(0)
+    #             else int(round(1 / risk_aversion, 0))
+    #             for risk_aversion in risk_aversions
+    #         ]
+    #         return pd.DataFrame(results)
 
-        type_ = self._tree_nodes[0].get("type")
-        if type_ == "DECISION":
-            result = _risk_attitude_decision()
-        if type_ == "CHANCE":
-            result = _risk_attitude_chance()
+    #     type_ = self._tree_nodes[0].get("type")
+    #     if type_ == "DECISION":
+    #         result = _risk_attitude_decision()
+    #     if type_ == "CHANCE":
+    #         result = _risk_attitude_chance()
 
-        self.rollback()
-        if plot is False:
-            return result
+    #     self.rollback()
+    #     if plot is False:
+    #         return result
 
     # -------------------------------------------------------------------------
     #

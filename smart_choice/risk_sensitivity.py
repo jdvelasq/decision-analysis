@@ -12,7 +12,7 @@ import pandas as pd
 from .decisiontree import DecisionTree
 
 
-class RiskSensitivity:
+class RiskAttitudeSensitivity:
     def __init__(
         self, decisiontree: DecisionTree, utility_fn: str, risk_tolerance, idx: int = 0
     ):

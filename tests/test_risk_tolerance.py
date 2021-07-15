@@ -5,7 +5,7 @@ Risk sensitivity tests
 
 from smart_choice.decisiontree import DecisionTree
 from smart_choice.examples import stguide
-from smart_choice.risk_sensitivity import RiskSensitivity
+from smart_choice.risk_sensitivity import RiskAttitudeSensitivity
 
 from tests.capsys import check_capsys
 
@@ -28,6 +28,8 @@ def test_fig_7_19(capsys):
     tree = DecisionTree(nodes=nodes)
     tree.evaluate()
     tree.rollback()
-    risk_sensitivity = RiskSensitivity(tree, utility_fn="exp", risk_tolerance=75)
+    risk_sensitivity = RiskAttitudeSensitivity(
+        tree, utility_fn="exp", risk_tolerance=75
+    )
     print(risk_sensitivity)
     check_capsys("./tests/files/stguide_fig_7_19.txt", capsys)

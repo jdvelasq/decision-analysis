@@ -22,6 +22,7 @@ sequence of use is the following:
 """
 import json
 from typing import Any, Union, List
+import copy
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -119,6 +120,18 @@ class DecisionTree:
         ## run flags
         self._is_evaluated = False
         self._with_rollback = False
+
+    # -------------------------------------------------------------------------
+    #
+    #
+    #  T R E E    D E E P C O P Y
+    #
+    #
+    def copy(self):
+        tree = DecisionTree(nodes=self._data_nodes.copy())
+        tree._tree_nodes = copy.deepcopy(self._tree_nodes)
+        tree._initial_variable = self._initial_variable
+        return tree
 
     # -------------------------------------------------------------------------
     #
@@ -1221,184 +1234,181 @@ class DecisionTree:
     #  P R O B A B I L I S T I C     S E N S I T I V I T Y
     #
     #
-    def probabilistic_sensitivity(self, varname: str, plot: bool = False) -> Any:
-        """Display a probabilistic sensitivity plot for a chance node.
+    # def probabilistic_sensitivity(self, varname: str, plot: bool = False) -> Any:
+    #     """Display a probabilistic sensitivity plot for a chance node.
 
-        :param varname:
-            Name of the probabilistic variable.
+    #     :param varname:
+    #         Name of the probabilistic variable.
 
-        """
+    #     """
 
-        def probabilistic_sensitivity_chance() -> Any:
+    #     def probabilistic_sensitivity_chance() -> Any:
 
-            top_branch, bottom_branch = self._data_nodes.get_top_bottom_branches(
-                varname
-            )
-            self._data_nodes.set_probabitlities_to_zero(varname)
+    #         top_branch, bottom_branch = self._data_nodes.get_top_bottom_branches(
+    #             varname
+    #         )
+    #         self._data_nodes.set_probabitlities_to_zero(varname)
 
-            results = []
-            probabilities = np.linspace(start=0, stop=1, num=21).tolist()
-            for top_probability in probabilities:
+    #         results = []
+    #         probabilities = np.linspace(start=0, stop=1, num=21).tolist()
+    #         for top_probability in probabilities:
 
-                branch = self._data_nodes[varname]["branches"][top_branch]
-                self._data_nodes[varname]["branches"][top_branch] = (
-                    branch[0],
-                    1 - top_probability,
-                    branch[2],
-                    branch[3],
-                )
+    #             branch = self._data_nodes[varname]["branches"][top_branch]
+    #             self._data_nodes[varname]["branches"][top_branch] = (
+    #                 branch[0],
+    #                 1 - top_probability,
+    #                 branch[2],
+    #                 branch[3],
+    #             )
 
-                branch = self._data_nodes[varname]["branches"][bottom_branch]
-                self._data_nodes[varname]["branches"][bottom_branch] = (
-                    branch[0],
-                    top_probability,
-                    branch[2],
-                    branch[3],
-                )
+    #             branch = self._data_nodes[varname]["branches"][bottom_branch]
+    #             self._data_nodes[varname]["branches"][bottom_branch] = (
+    #                 branch[0],
+    #                 top_probability,
+    #                 branch[2],
+    #                 branch[3],
+    #             )
 
-                self._build_skeleton()
-                self._set_tag_attributes()
-                self._set_payoff_fn()
-                self.evaluate()
-                self.rollback()
-                results.append(self._tree_nodes[0].get("EV"))
+    #             self._build_skeleton()
+    #             self._set_tag_attributes()
+    #             self._set_payoff_fn()
+    #             self.evaluate()
+    #             self.rollback()
+    #             results.append(self._tree_nodes[0].get("EV"))
 
-            if plot is True:
-                plt.gca().plot(probabilities, results, "-k")
-                plt.gca().spines["bottom"].set_visible(False)
-                plt.gca().spines["left"].set_visible(False)
-                plt.gca().spines["right"].set_visible(False)
-                plt.gca().spines["top"].set_visible(False)
-                plt.gca().set_ylabel("Expected values")
-                plt.gca().set_xlabel("Probability")
-                plt.grid()
-                return None
+    #         if plot is True:
+    #             plt.gca().plot(probabilities, results, "-k")
+    #             plt.gca().spines["bottom"].set_visible(False)
+    #             plt.gca().spines["left"].set_visible(False)
+    #             plt.gca().spines["right"].set_visible(False)
+    #             plt.gca().spines["top"].set_visible(False)
+    #             plt.gca().set_ylabel("Expected values")
+    #             plt.gca().set_xlabel("Probability")
+    #             plt.grid()
+    #             return None
 
-            return pd.DataFrame({"Probability": probabilities, "Values": results})
+    #         return pd.DataFrame({"Probability": probabilities, "Values": results})
 
-        def probabilistic_sensitivity_decision() -> None:
+    #     def probabilistic_sensitivity_decision() -> None:
 
-            top_branch, bottom_branch = self._data_nodes.get_top_bottom_branches(
-                varname
-            )
-            self._data_nodes.set_probabitlities_to_zero(varname)
+    #         top_branch, bottom_branch = self._data_nodes.get_top_bottom_branches(
+    #             varname
+    #         )
+    #         self._data_nodes.set_probabitlities_to_zero(varname)
 
-            results = {}
-            successors = self._tree_nodes[0].get("successors")
-            tag_branches = [
-                self._tree_nodes[successor].get("tag_branch")
-                for successor in successors
-            ]
-            ## tag_values = [
-            ##     self._tree_nodes[successor].get("tag_value") for successor in successors
-            ## ]
-            ## for tag_value in tag_values:
-            ##     results[tag_value] = []
+    #         results = {}
+    #         successors = self._tree_nodes[0].get("successors")
+    #         tag_branches = [
+    #             self._tree_nodes[successor].get("tag_branch")
+    #             for successor in successors
+    #         ]
+    #         ## tag_values = [
+    #         ##     self._tree_nodes[successor].get("tag_value") for successor in successors
+    #         ## ]
+    #         ## for tag_value in tag_values:
+    #         ##     results[tag_value] = []
 
-            for tag_branch in tag_branches:
-                results[tag_branch] = []
+    #         for tag_branch in tag_branches:
+    #             results[tag_branch] = []
 
-            probabilities = np.linspace(start=0, stop=1, num=21).tolist()
-            for probability in probabilities:
+    #         probabilities = np.linspace(start=0, stop=1, num=21).tolist()
+    #         for probability in probabilities:
 
-                branch = self._data_nodes[varname]["branches"][bottom_branch]
-                self._data_nodes[varname]["branches"][bottom_branch] = (
-                    branch[0],
-                    probability,
-                    branch[2],
-                    branch[3],
-                )
+    #             branch = self._data_nodes[varname]["branches"][bottom_branch]
+    #             self._data_nodes[varname]["branches"][bottom_branch] = (
+    #                 branch[0],
+    #                 probability,
+    #                 branch[2],
+    #                 branch[3],
+    #             )
 
-                branch = self._data_nodes[varname]["branches"][top_branch]
-                self._data_nodes[varname]["branches"][top_branch] = (
-                    branch[0],
-                    1.0 - probability,
-                    branch[2],
-                    branch[3],
-                )
+    #             branch = self._data_nodes[varname]["branches"][top_branch]
+    #             self._data_nodes[varname]["branches"][top_branch] = (
+    #                 branch[0],
+    #                 1.0 - probability,
+    #                 branch[2],
+    #                 branch[3],
+    #             )
 
-                self._build_skeleton()
-                self._set_tag_attributes()
-                self._set_payoff_fn()
-                self.evaluate()
-                self.rollback()
-                expvals = [
-                    self._tree_nodes[successor].get("EV") for successor in successors
-                ]
-                for expval, tag_branch in zip(expvals, tag_branches):
-                    results[tag_branch].append(expval)
-                ## for expval, tag_value in zip(expvals, tag_values):
-                ##    results[tag_value].append(expval)
+    #             self._build_skeleton()
+    #             self._set_tag_attributes()
+    #             self._set_payoff_fn()
+    #             self.evaluate()
+    #             self.rollback()
+    #             expvals = [
+    #                 self._tree_nodes[successor].get("EV") for successor in successors
+    #             ]
+    #             for expval, tag_branch in zip(expvals, tag_branches):
+    #                 results[tag_branch].append(expval)
+    #             ## for expval, tag_value in zip(expvals, tag_values):
+    #             ##    results[tag_value].append(expval)
 
-            if plot is True:
-                linefmts = [
-                    "-k",
-                    "--k",
-                    ".-k",
-                    ":k",
-                    "-r",
-                    "--r",
-                    ".-r",
-                    ":r",
-                    "-g",
-                    "--g",
-                    ".-g",
-                    ":g",
-                ]
-                for fmt, tag_branch in zip(linefmts, tag_branches):
-                    plt.gca().plot(
-                        probabilities, results[tag_branch], fmt, label=tag_branch
-                    )
-                ## for fmt, tag_value in zip(linefmts, tag_values):
-                ##    plt.gca().plot(
-                ##         probabilities, results[tag_value], fmt, label=str(tag_value)
-                ##    )
-                plt.gca().spines["bottom"].set_visible(False)
-                plt.gca().spines["left"].set_visible(False)
-                plt.gca().spines["right"].set_visible(False)
-                plt.gca().spines["top"].set_visible(False)
-                plt.gca().set_ylabel("Expected values")
-                plt.gca().set_xlabel("Probability")
-                plt.gca().legend()
-                plt.grid()
-                return None
+    #         if plot is True:
+    #             linefmts = [
+    #                 "-k",
+    #                 "--k",
+    #                 ".-k",
+    #                 ":k",
+    #                 "-r",
+    #                 "--r",
+    #                 ".-r",
+    #                 ":r",
+    #                 "-g",
+    #                 "--g",
+    #                 ".-g",
+    #                 ":g",
+    #             ]
+    #             for fmt, tag_branch in zip(linefmts, tag_branches):
+    #                 plt.gca().plot(
+    #                     probabilities, results[tag_branch], fmt, label=tag_branch
+    #                 )
 
-            return pd.concat(
-                [
-                    pd.DataFrame(
-                        {
-                            "Branch": [str(tag_branch)] * len(probabilities),
-                            "Probability": probabilities,
-                            "Value": results[tag_branch],
-                        }
-                    )
-                    for tag_branch in tag_branches
-                ]
-            )
+    #             plt.gca().spines["bottom"].set_visible(False)
+    #             plt.gca().spines["left"].set_visible(False)
+    #             plt.gca().spines["right"].set_visible(False)
+    #             plt.gca().spines["top"].set_visible(False)
+    #             plt.gca().set_ylabel("Expected values")
+    #             plt.gca().set_xlabel("Probability")
+    #             plt.gca().legend()
+    #             plt.grid()
+    #             return None
 
-        #
-        #
-        #
-        type_ = self._data_nodes[varname]["type"]
-        if type_ != "CHANCE":
-            raise ValueError('Variable {} is {} != "CHANCE"'.format(varname, type_))
+    #         return pd.concat(
+    #             [
+    #                 pd.DataFrame(
+    #                     {
+    #                         "Branch": [str(tag_branch)] * len(probabilities),
+    #                         "Probability": probabilities,
+    #                         "Value": results[tag_branch],
+    #                     }
+    #                 )
+    #                 for tag_branch in tag_branches
+    #             ]
+    #         )
 
-        orig_variables = self._data_nodes.copy()
-        type_root = self._tree_nodes[0].get("type")
-        if type_root == "CHANCE":
-            result = probabilistic_sensitivity_chance()
-        if type_root == "DECISION":
-            result = probabilistic_sensitivity_decision()
+    #     #
+    #     #
+    #     #
+    #     type_ = self._data_nodes[varname]["type"]
+    #     if type_ != "CHANCE":
+    #         raise ValueError('Variable {} is {} != "CHANCE"'.format(varname, type_))
 
-        self._data_nodes = orig_variables
-        self._build_skeleton()
-        self._set_tag_attributes()
-        self._set_payoff_fn()
-        self.evaluate()
-        self.rollback()
+    #     orig_variables = self._data_nodes.copy()
+    #     type_root = self._tree_nodes[0].get("type")
+    #     if type_root == "CHANCE":
+    #         result = probabilistic_sensitivity_chance()
+    #     if type_root == "DECISION":
+    #         result = probabilistic_sensitivity_decision()
 
-        if plot is False:
-            return result
+    #     self._data_nodes = orig_variables
+    #     self._build_skeleton()
+    #     self._set_tag_attributes()
+    #     self._set_payoff_fn()
+    #     self.evaluate()
+    #     self.rollback()
+
+    #     if plot is False:
+    #         return result
 
     # -------------------------------------------------------------------------
     #
@@ -1547,197 +1557,6 @@ class DecisionTree:
 
         restore_original_value(original_value)
         return result
-
-    # -------------------------------------------------------------------------
-    #
-    #
-    #  R I S K    S E N S I T I V I T Y
-    #
-    #
-    # def risk_sensitivity(
-    #     self, utility_fn: str, risk_tolerance: float, plot: bool = False
-    # ) -> None:
-    #     """Plots a risk tolrecance plot."""
-
-    #     def _risk_attitude_decision():
-
-    #         results = {}
-    #         successors = self._tree_nodes[0].get("successors")
-    #         ## tag_values = [
-    #         ##     self._tree_nodes[successor].get("tag_value") for successor in successors
-    #         ## ]
-    #         tag_branches = [
-    #             self._tree_nodes[successor].get("tag_branch")
-    #             for successor in successors
-    #         ]
-    #         ## for tag_value in tag_values:
-    #         ##    results[tag_value] = []
-    #         for tag_branch in tag_branches:
-    #             results[tag_branch] = []
-
-    #         risk_aversions = np.linspace(
-    #             start=0, stop=1.0 / risk_tolerance, num=11
-    #         ).tolist()
-
-    #         for risk_aversion in risk_aversions:
-
-    #             if risk_aversion == np.float64(0):
-    #                 self.evaluate()
-    #                 self.rollback()
-    #                 ceqs = [
-    #                     self._tree_nodes[successor].get("EV")
-    #                     for successor in successors
-    #                 ]
-    #             else:
-    #                 self.evaluate()
-    #                 self.rollback(
-    #                     utility_fn=utility_fn, risk_tolerance=1.0 / risk_aversion
-    #                 )
-    #                 ceqs = [
-    #                     self._tree_nodes[successor].get("CE")
-    #                     for successor in successors
-    #                 ]
-
-    #             for ceq, tag_branch in zip(ceqs, tag_branches):
-    #                 results[tag_branch].append(ceq)
-    #             ## for ceq, tag_value in zip(ceqs, tag_values):
-    #             ##    results[tag_value].append(ceq)
-
-    #         if plot is True:
-
-    #             linefmts = [
-    #                 "-k",
-    #                 "--k",
-    #                 ".-k",
-    #                 ":k",
-    #                 "-r",
-    #                 "--r",
-    #                 ".-r",
-    #                 ":r",
-    #                 "-g",
-    #                 "--g",
-    #                 ".-g",
-    #                 ":g",
-    #             ]
-    #             for linefmt, tag_branch in zip(linefmts, tag_branches):
-    #                 plt.gca().plot(
-    #                     risk_aversions,
-    #                     results[tag_branch],
-    #                     linefmt,
-    #                     label=tag_branch,
-    #                 )
-
-    #             labels = [
-    #                 "Infinity"
-    #                 if risk_aversion == np.float(0)
-    #                 else str(int(round(1 / risk_aversion, 0)))
-    #                 for risk_aversion in risk_aversions
-    #             ]
-    #             plt.xticks(risk_aversions, labels)
-    #             plt.gca().spines["bottom"].set_visible(False)
-    #             plt.gca().spines["left"].set_visible(False)
-    #             plt.gca().spines["right"].set_visible(False)
-    #             plt.gca().spines["top"].set_visible(False)
-    #             plt.gca().set_ylabel("Certainty equivalent")
-    #             plt.gca().set_xlabel("Risk tolerance")
-    #             plt.gca().legend()
-    #             plt.grid()
-
-    #             return None
-
-    #         results["Risk Tolerance"] = [
-    #             "Infinity"
-    #             if risk_aversion == np.float(0)
-    #             else int(round(1 / risk_aversion, 0))
-    #             for risk_aversion in risk_aversions
-    #         ]
-    #         return pd.DataFrame(results)
-
-    #     def _risk_attitude_chance():
-
-    #         results = {}
-    #         successors = self._tree_nodes[0].get("successors")
-    #         ## tag_values = [
-    #         ##     self._tree_nodes[successor].get("tag_value") for successor in successors
-    #         ## ]
-    #         ## for tag_value in tag_values:
-    #         ##     results[tag_value] = []
-    #         tag_branches = [
-    #             self._tree_nodes[successor].get("tag_branch")
-    #             for successor in successors
-    #         ]
-    #         for tag_branch in tag_branches:
-    #             results[tag_branch] = []
-
-    #         risk_aversions = np.linspace(
-    #             start=0, stop=1.0 / risk_tolerance, num=11
-    #         ).tolist()
-
-    #         for risk_aversion in risk_aversions:
-
-    #             if risk_aversion == np.float64(0):
-    #                 self.evaluate()
-    #                 self.rollback()
-    #                 ceqs = [
-    #                     self._tree_nodes[successor].get("EV")
-    #                     for successor in successors
-    #                 ]
-    #             else:
-    #                 self.evaluate()
-    #                 self.rollback(
-    #                     utility_fn=utility_fn, risk_tolerance=1.0 / risk_aversion
-    #                 )
-    #                 ceqs = [
-    #                     self._tree_nodes[successor].get("CE")
-    #                     for successor in successors
-    #                 ]
-
-    #             ## for ceq, tag_value in zip(ceqs, tag_values):
-    #             ##     results[tag_value].append(ceq)
-    #             for ceq, tag_branch in zip(ceqs, tag_branches):
-    #                 results[tag_branch].append(ceq)
-
-    #         if plot is True:
-    #             for tag_branch in tag_branches:
-    #                 plt.gca().plot(
-    #                     risk_aversions, results[tag_branch], label=tag_branch
-    #                 )
-
-    #             labels = [
-    #                 "Infinity"
-    #                 if risk_aversion == np.float(0)
-    #                 else str(int(round(1 / risk_aversion, 0)))
-    #                 for risk_aversion in risk_aversions
-    #             ]
-    #             plt.xticks(risk_aversions, labels)
-    #             plt.gca().spines["bottom"].set_visible(False)
-    #             plt.gca().spines["left"].set_visible(False)
-    #             plt.gca().spines["right"].set_visible(False)
-    #             plt.gca().spines["top"].set_visible(False)
-    #             plt.gca().set_ylabel("Expected values")
-    #             plt.gca().set_xlabel("Risk tolerance")
-    #             plt.gca().invert_xaxis()
-    #             plt.gca().legend()
-    #             plt.grid()
-    #             return None
-
-    #         results["Risk Tolerance"] = [
-    #             "Infinity"
-    #             if risk_aversion == np.float(0)
-    #             else int(round(1 / risk_aversion, 0))
-    #             for risk_aversion in risk_aversions
-    #         ]
-    #         return pd.DataFrame(results)
-
-    #     type_ = self._tree_nodes[0].get("type")
-    #     if type_ == "DECISION":
-    #         result = _risk_attitude_decision()
-    #     if type_ == "CHANCE":
-    #         result = _risk_attitude_chance()
-
-    #     self.rollback()
-    #     if plot is False:
-    #         return result
 
     # -------------------------------------------------------------------------
     #

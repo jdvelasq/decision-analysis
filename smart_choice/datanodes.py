@@ -295,7 +295,7 @@ class DataNodes:
             values = [branch[2] for branch in branches]
         top_branch = values.index(max(values))
         bottom_branch = values.index(min(values))
-        return top_branch, bottom_branch
+        return branches[top_branch][0], branches[bottom_branch][0]
 
     def set_probabitlities_to_zero(self, name):
         """Set to zero the probabilities of the all branchs of variable."""

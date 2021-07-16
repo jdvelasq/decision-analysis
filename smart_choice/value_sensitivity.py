@@ -35,25 +35,36 @@ class ValueSensitivity:
         varname: str,
         branch_name: str,
         values: tuple,
+        single: bool = False,
         idx: int = 0,
         n_points=11,
     ) -> None:
 
-        self._decisiontree = decisiontree
+        self._decisiontree = decisiontree.copy()
         self._varname = varname
         self._branch_name = branch_name
         self._values = values
+        self._single = single
         self._idx = idx
         self._n_points = n_points
 
-        type_ = self._decisiontree._tree_nodes[self._idx]["type"]
-        if type_ == "CHANCE":
-            self._chance()
-        if type_ == "DECISION":
-            self._decision()
+        if self._single is True:
+            self._compute_sensitivity_single()
+        else:
+            self._compute_sensitivity_multiple()
 
     def __repr__(self):
-        return self.df_.__repr__()
+        if isinstance(self.df_, dict):
+            text = ""
+            for key in self.df_.keys():
+                if key != list(self.df_.keys())[0]:
+                    text += "\n"
+                text += key + "\n"
+                text += self.df_[key].__repr__()
+                # text += "\n"
+            return text
+        else:
+            return self.df_.__repr__()
 
     def _set_branch_value(self, value):
 
@@ -63,7 +74,7 @@ class ValueSensitivity:
             if tag_name == self._varname and tag_branch == self._branch_name:
                 self._decisiontree._tree_nodes[i_node]["tag_value"] = value
 
-    def _chance(self):
+    def _compute_sensitivity_single(self):
 
         min_value, max_value = self._values
         self.branch_values_ = np.linspace(
@@ -85,7 +96,7 @@ class ValueSensitivity:
             }
         )
 
-    def _decision(self):
+    def _compute_sensitivity_multiple(self):
 
         min_value, max_value = self._values
         self.branch_values_ = np.linspace(
@@ -113,18 +124,14 @@ class ValueSensitivity:
             for expval, branch_name in zip(expvals, branch_names):
                 self.expected_values_[branch_name].append(expval)
 
-        self.df_ = pd.concat(
-            [
-                pd.DataFrame(
-                    {
-                        "Branch": [branch_name] * len(self.branch_values_),
-                        "Value": self.branch_values_,
-                        "ExpVal": self.expected_values_[branch_name],
-                    }
-                )
-                for branch_name in branch_names
-            ]
-        )
+        self.df_ = {}
+        for branch_name in self.expected_values_:
+            self.df_[branch_name] = pd.DataFrame(
+                {
+                    "Value": self.branch_values_,
+                    "ExpVal": self.expected_values_[branch_name],
+                }
+            )
 
     def plot(self):
 

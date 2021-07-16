@@ -19,7 +19,6 @@ def test_oilexample_pag_34a(capsys):
         branch_name="large-well",
         values=(2500, 5000),
     )
-
     print(sensitivity)
     check_capsys("./tests/files/oilexample_pag_34a.txt", capsys)
 

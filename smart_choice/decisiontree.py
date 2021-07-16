@@ -1231,332 +1231,151 @@ class DecisionTree:
 
     # -------------------------------------------------------------------------
     #
-    #  P R O B A B I L I S T I C     S E N S I T I V I T Y
+    #
+    #  V A L U E     S E N S I T I V I T Y
     #
     #
-    # def probabilistic_sensitivity(self, varname: str, plot: bool = False) -> Any:
-    #     """Display a probabilistic sensitivity plot for a chance node.
+    # def value_sensitivity(
+    #     self, name: str, branch: str, values: tuple, n_points=11, plot: bool = False
+    # ):
+    #     def get_original_value():
+    #         for node in self._tree_nodes:
+    #             tag_name = node.get("tag_name")
+    #             tag_branch = node.get("tag_branch")
+    #             if tag_name == name and tag_branch == branch:
+    #                 return node.get("tag_value")
 
-    #     :param varname:
-    #         Name of the probabilistic variable.
+    #     def restore_original_value(original_value):
+    #         for i_node, node in enumerate(self._tree_nodes):
+    #             tag_name = node.get("tag_name")
+    #             tag_branch = node.get("tag_branch")
+    #             if tag_name == name and tag_branch == branch:
+    #                 self._tree_nodes[i_node]["tag_value"] = original_value
 
-    #     """
+    #     def value_sensitivity_chance(
+    #         name: str, branch: str, values: tuple, n_points=11, plot: bool = False
+    #     ):
 
-    #     def probabilistic_sensitivity_chance() -> Any:
+    #         min_value, max_value = values
+    #         values = np.linspace(start=min_value, stop=max_value, num=n_points)
 
-    #         top_branch, bottom_branch = self._data_nodes.get_top_bottom_branches(
-    #             varname
-    #         )
-    #         self._data_nodes.set_probabitlities_to_zero(varname)
-
-    #         results = []
-    #         probabilities = np.linspace(start=0, stop=1, num=21).tolist()
-    #         for top_probability in probabilities:
-
-    #             branch = self._data_nodes[varname]["branches"][top_branch]
-    #             self._data_nodes[varname]["branches"][top_branch] = (
-    #                 branch[0],
-    #                 1 - top_probability,
-    #                 branch[2],
-    #                 branch[3],
-    #             )
-
-    #             branch = self._data_nodes[varname]["branches"][bottom_branch]
-    #             self._data_nodes[varname]["branches"][bottom_branch] = (
-    #                 branch[0],
-    #                 top_probability,
-    #                 branch[2],
-    #                 branch[3],
-    #             )
-
-    #             self._build_skeleton()
-    #             self._set_tag_attributes()
-    #             self._set_payoff_fn()
+    #         expvals = []
+    #         for value in values:
+    #             for i_node, node in enumerate(self._tree_nodes):
+    #                 tag_name = node.get("tag_name")
+    #                 tag_branch = node.get("tag_branch")
+    #                 if tag_name == name and tag_branch == branch:
+    #                     self._tree_nodes[i_node]["tag_value"] = value
     #             self.evaluate()
-    #             self.rollback()
-    #             results.append(self._tree_nodes[0].get("EV"))
+    #             expvals.append(round(self.rollback(), 2))
 
-    #         if plot is True:
-    #             plt.gca().plot(probabilities, results, "-k")
-    #             plt.gca().spines["bottom"].set_visible(False)
-    #             plt.gca().spines["left"].set_visible(False)
-    #             plt.gca().spines["right"].set_visible(False)
-    #             plt.gca().spines["top"].set_visible(False)
-    #             plt.gca().set_ylabel("Expected values")
-    #             plt.gca().set_xlabel("Probability")
-    #             plt.grid()
-    #             return None
+    #         if plot is False:
+    #             return pd.DataFrame(
+    #                 {
+    #                     "value": values,
+    #                     "ExpVal": expvals,
+    #                 }
+    #             )
 
-    #         return pd.DataFrame({"Probability": probabilities, "Values": results})
+    #         plt.gca().plot(values, expvals, "-k")
+    #         plt.gca().spines["bottom"].set_visible(False)
+    #         plt.gca().spines["left"].set_visible(False)
+    #         plt.gca().spines["right"].set_visible(False)
+    #         plt.gca().spines["top"].set_visible(False)
+    #         plt.gca().set_ylabel("Expected values")
+    #         plt.gca().set_xlabel("Values")
+    #         # plt.gca().legend()
+    #         plt.grid()
 
-    #     def probabilistic_sensitivity_decision() -> None:
+    #         return None
 
-    #         top_branch, bottom_branch = self._data_nodes.get_top_bottom_branches(
-    #             varname
-    #         )
-    #         self._data_nodes.set_probabitlities_to_zero(varname)
+    #     def value_sensitivity_decision(
+    #         name: str, branch: str, values: tuple, n_points=11, plot: bool = False
+    #     ):
 
     #         results = {}
     #         successors = self._tree_nodes[0].get("successors")
-    #         tag_branches = [
+    #         tag_branches_root = [
     #             self._tree_nodes[successor].get("tag_branch")
     #             for successor in successors
     #         ]
-    #         ## tag_values = [
-    #         ##     self._tree_nodes[successor].get("tag_value") for successor in successors
-    #         ## ]
-    #         ## for tag_value in tag_values:
-    #         ##     results[tag_value] = []
+    #         for tag_branch_root in tag_branches_root:
+    #             results[tag_branch_root] = []
 
-    #         for tag_branch in tag_branches:
-    #             results[tag_branch] = []
+    #         min_value, max_value = values
+    #         values = np.linspace(start=min_value, stop=max_value, num=n_points)
 
-    #         probabilities = np.linspace(start=0, stop=1, num=21).tolist()
-    #         for probability in probabilities:
-
-    #             branch = self._data_nodes[varname]["branches"][bottom_branch]
-    #             self._data_nodes[varname]["branches"][bottom_branch] = (
-    #                 branch[0],
-    #                 probability,
-    #                 branch[2],
-    #                 branch[3],
-    #             )
-
-    #             branch = self._data_nodes[varname]["branches"][top_branch]
-    #             self._data_nodes[varname]["branches"][top_branch] = (
-    #                 branch[0],
-    #                 1.0 - probability,
-    #                 branch[2],
-    #                 branch[3],
-    #             )
-
-    #             self._build_skeleton()
-    #             self._set_tag_attributes()
-    #             self._set_payoff_fn()
+    #         for value in values:
+    #             for i_node, node in enumerate(self._tree_nodes):
+    #                 tag_name = node.get("tag_name")
+    #                 tag_branch = node.get("tag_branch")
+    #                 if tag_name == name and tag_branch == branch:
+    #                     self._tree_nodes[i_node]["tag_value"] = value
     #             self.evaluate()
     #             self.rollback()
     #             expvals = [
     #                 self._tree_nodes[successor].get("EV") for successor in successors
     #             ]
-    #             for expval, tag_branch in zip(expvals, tag_branches):
-    #                 results[tag_branch].append(expval)
-    #             ## for expval, tag_value in zip(expvals, tag_values):
-    #             ##    results[tag_value].append(expval)
+    #             for expval, tag_branch_root in zip(expvals, tag_branches_root):
+    #                 results[tag_branch_root].append(expval)
 
-    #         if plot is True:
-    #             linefmts = [
-    #                 "-k",
-    #                 "--k",
-    #                 ".-k",
-    #                 ":k",
-    #                 "-r",
-    #                 "--r",
-    #                 ".-r",
-    #                 ":r",
-    #                 "-g",
-    #                 "--g",
-    #                 ".-g",
-    #                 ":g",
-    #             ]
-    #             for fmt, tag_branch in zip(linefmts, tag_branches):
-    #                 plt.gca().plot(
-    #                     probabilities, results[tag_branch], fmt, label=tag_branch
-    #                 )
+    #         if plot is False:
+    #             return pd.concat(
+    #                 [
+    #                     pd.DataFrame(
+    #                         {
+    #                             "Branch": [tag_branch_root] * len(values),
+    #                             "Value": values,
+    #                             "ExpVal": results[tag_branch_root],
+    #                         }
+    #                     )
+    #                     for tag_branch_root in tag_branches_root
+    #                 ]
+    #             )
 
-    #             plt.gca().spines["bottom"].set_visible(False)
-    #             plt.gca().spines["left"].set_visible(False)
-    #             plt.gca().spines["right"].set_visible(False)
-    #             plt.gca().spines["top"].set_visible(False)
-    #             plt.gca().set_ylabel("Expected values")
-    #             plt.gca().set_xlabel("Probability")
-    #             plt.gca().legend()
-    #             plt.grid()
-    #             return None
+    #         linefmts = [
+    #             "-k",
+    #             "--k",
+    #             ".-k",
+    #             ":k",
+    #             "-r",
+    #             "--r",
+    #             ".-r",
+    #             ":r",
+    #             "-g",
+    #             "--g",
+    #             ".-g",
+    #             ":g",
+    #         ]
+    #         for fmt, tag_branch_root in zip(linefmts, tag_branches_root):
+    #             plt.gca().plot(
+    #                 values, results[tag_branch_root], fmt, label=tag_branch_root
+    #             )
 
-    #         return pd.concat(
-    #             [
-    #                 pd.DataFrame(
-    #                     {
-    #                         "Branch": [str(tag_branch)] * len(probabilities),
-    #                         "Probability": probabilities,
-    #                         "Value": results[tag_branch],
-    #                     }
-    #                 )
-    #                 for tag_branch in tag_branches
-    #             ]
+    #         plt.gca().spines["bottom"].set_visible(False)
+    #         plt.gca().spines["left"].set_visible(False)
+    #         plt.gca().spines["right"].set_visible(False)
+    #         plt.gca().spines["top"].set_visible(False)
+    #         plt.gca().set_ylabel("Expected values")
+    #         plt.gca().set_xlabel("Values")
+    #         plt.gca().legend()
+    #         plt.grid()
+
+    #         return None
+
+    #     original_value = get_original_value()
+    #     type_ = self._tree_nodes[0]["type"]
+    #     if type_ == "CHANCE":
+    #         result = value_sensitivity_chance(
+    #             name=name, branch=branch, values=values, n_points=n_points, plot=plot
+    #         )
+    #     if type_ == "DECISION":
+    #         result = value_sensitivity_decision(
+    #             name=name, branch=branch, values=values, n_points=n_points, plot=plot
     #         )
 
-    #     #
-    #     #
-    #     #
-    #     type_ = self._data_nodes[varname]["type"]
-    #     if type_ != "CHANCE":
-    #         raise ValueError('Variable {} is {} != "CHANCE"'.format(varname, type_))
-
-    #     orig_variables = self._data_nodes.copy()
-    #     type_root = self._tree_nodes[0].get("type")
-    #     if type_root == "CHANCE":
-    #         result = probabilistic_sensitivity_chance()
-    #     if type_root == "DECISION":
-    #         result = probabilistic_sensitivity_decision()
-
-    #     self._data_nodes = orig_variables
-    #     self._build_skeleton()
-    #     self._set_tag_attributes()
-    #     self._set_payoff_fn()
-    #     self.evaluate()
-    #     self.rollback()
-
-    #     if plot is False:
-    #         return result
-
-    # -------------------------------------------------------------------------
-    #
-    #
-    #  V A L U E     S E N S I T I V I T Y
-    #
-    #
-    def value_sensitivity(
-        self, name: str, branch: str, values: tuple, n_points=11, plot: bool = False
-    ):
-        def get_original_value():
-            for node in self._tree_nodes:
-                tag_name = node.get("tag_name")
-                tag_branch = node.get("tag_branch")
-                if tag_name == name and tag_branch == branch:
-                    return node.get("tag_value")
-
-        def restore_original_value(original_value):
-            for i_node, node in enumerate(self._tree_nodes):
-                tag_name = node.get("tag_name")
-                tag_branch = node.get("tag_branch")
-                if tag_name == name and tag_branch == branch:
-                    self._tree_nodes[i_node]["tag_value"] = original_value
-
-        def value_sensitivity_chance(
-            name: str, branch: str, values: tuple, n_points=11, plot: bool = False
-        ):
-
-            min_value, max_value = values
-            values = np.linspace(start=min_value, stop=max_value, num=n_points)
-
-            expvals = []
-            for value in values:
-                for i_node, node in enumerate(self._tree_nodes):
-                    tag_name = node.get("tag_name")
-                    tag_branch = node.get("tag_branch")
-                    if tag_name == name and tag_branch == branch:
-                        self._tree_nodes[i_node]["tag_value"] = value
-                self.evaluate()
-                expvals.append(round(self.rollback(), 2))
-
-            if plot is False:
-                return pd.DataFrame(
-                    {
-                        "value": values,
-                        "ExpVal": expvals,
-                    }
-                )
-
-            plt.gca().plot(values, expvals, "-k")
-            plt.gca().spines["bottom"].set_visible(False)
-            plt.gca().spines["left"].set_visible(False)
-            plt.gca().spines["right"].set_visible(False)
-            plt.gca().spines["top"].set_visible(False)
-            plt.gca().set_ylabel("Expected values")
-            plt.gca().set_xlabel("Values")
-            # plt.gca().legend()
-            plt.grid()
-
-            return None
-
-        def value_sensitivity_decision(
-            name: str, branch: str, values: tuple, n_points=11, plot: bool = False
-        ):
-
-            results = {}
-            successors = self._tree_nodes[0].get("successors")
-            tag_branches_root = [
-                self._tree_nodes[successor].get("tag_branch")
-                for successor in successors
-            ]
-            for tag_branch_root in tag_branches_root:
-                results[tag_branch_root] = []
-
-            min_value, max_value = values
-            values = np.linspace(start=min_value, stop=max_value, num=n_points)
-
-            for value in values:
-                for i_node, node in enumerate(self._tree_nodes):
-                    tag_name = node.get("tag_name")
-                    tag_branch = node.get("tag_branch")
-                    if tag_name == name and tag_branch == branch:
-                        self._tree_nodes[i_node]["tag_value"] = value
-                self.evaluate()
-                self.rollback()
-                expvals = [
-                    self._tree_nodes[successor].get("EV") for successor in successors
-                ]
-                for expval, tag_branch_root in zip(expvals, tag_branches_root):
-                    results[tag_branch_root].append(expval)
-
-            if plot is False:
-                return pd.concat(
-                    [
-                        pd.DataFrame(
-                            {
-                                "Branch": [tag_branch_root] * len(values),
-                                "Value": values,
-                                "ExpVal": results[tag_branch_root],
-                            }
-                        )
-                        for tag_branch_root in tag_branches_root
-                    ]
-                )
-
-            linefmts = [
-                "-k",
-                "--k",
-                ".-k",
-                ":k",
-                "-r",
-                "--r",
-                ".-r",
-                ":r",
-                "-g",
-                "--g",
-                ".-g",
-                ":g",
-            ]
-            for fmt, tag_branch_root in zip(linefmts, tag_branches_root):
-                plt.gca().plot(
-                    values, results[tag_branch_root], fmt, label=tag_branch_root
-                )
-
-            plt.gca().spines["bottom"].set_visible(False)
-            plt.gca().spines["left"].set_visible(False)
-            plt.gca().spines["right"].set_visible(False)
-            plt.gca().spines["top"].set_visible(False)
-            plt.gca().set_ylabel("Expected values")
-            plt.gca().set_xlabel("Values")
-            plt.gca().legend()
-            plt.grid()
-
-            return None
-
-        original_value = get_original_value()
-        type_ = self._tree_nodes[0]["type"]
-        if type_ == "CHANCE":
-            result = value_sensitivity_chance(
-                name=name, branch=branch, values=values, n_points=n_points, plot=plot
-            )
-        if type_ == "DECISION":
-            result = value_sensitivity_decision(
-                name=name, branch=branch, values=values, n_points=n_points, plot=plot
-            )
-
-        restore_original_value(original_value)
-        return result
+    #     restore_original_value(original_value)
+    #     return result
 
     # -------------------------------------------------------------------------
     #

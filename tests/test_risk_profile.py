@@ -4,6 +4,7 @@ Risk profile
 """
 from smart_choice.decisiontree import DecisionTree
 from smart_choice.examples import stguide, oil_tree_example
+from smart_choice.risk_profile import RiskProfile
 
 from tests.capsys import check_capsys
 
@@ -15,8 +16,8 @@ def test_stguide_fig_5_8a(capsys):
     tree = DecisionTree(nodes=nodes)
     tree.evaluate()
     tree.rollback()
-    tree.risk_profile(idx=0, cumulative=False, single=True)
-
+    risk_profile = RiskProfile(decisiontree=tree, idx=0, cumulative=False, single=True)
+    print(risk_profile)
     check_capsys("./tests/files/stguide_fig_5_8a.txt", capsys)
 
 
@@ -27,8 +28,8 @@ def test_stguide_fig_5_8b(capsys):
     tree = DecisionTree(nodes=nodes)
     tree.evaluate()
     tree.rollback()
-    tree.risk_profile(idx=0, cumulative=True, single=True)
-
+    risk_profile = RiskProfile(decisiontree=tree, idx=0, cumulative=True, single=True)
+    print(risk_profile)
     check_capsys("./tests/files/stguide_fig_5_8b.txt", capsys)
 
 
@@ -39,8 +40,8 @@ def test_stguide_fig_5_8c(capsys):
     tree = DecisionTree(nodes=nodes)
     tree.evaluate()
     tree.rollback()
-    tree.risk_profile(idx=0, cumulative=False, single=False)
-
+    risk_profile = RiskProfile(decisiontree=tree, idx=0, cumulative=False, single=False)
+    print(risk_profile)
     check_capsys("./tests/files/stguide_fig_5_8c.txt", capsys)
 
 
@@ -51,7 +52,8 @@ def test_stguide_fig_5_10(capsys):
     tree = DecisionTree(nodes=nodes)
     tree.evaluate()
     tree.rollback()
-    tree.risk_profile(idx=0, cumulative=True, single=False)
+    risk_profile = RiskProfile(decisiontree=tree, idx=0, cumulative=True, single=False)
+    print(risk_profile)
     check_capsys("./tests/files/stguide_fig_5_10.txt", capsys)
 
 
@@ -62,7 +64,8 @@ def test_stguide_fig_7_15(capsys):
     tree = DecisionTree(nodes=nodes)
     tree.evaluate()
     tree.rollback()
-    tree.risk_profile(idx=23, cumulative=True, single=True)
+    risk_profile = RiskProfile(decisiontree=tree, idx=23, cumulative=True, single=True)
+    print(risk_profile)
     check_capsys("./tests/files/stguide_fig_7_15.txt", capsys)
 
 
@@ -72,7 +75,8 @@ def test_oilexample_pag_32(capsys):
     tree = DecisionTree(nodes=nodes)
     tree.evaluate()
     tree.rollback()
-    tree.risk_profile(idx=0, cumulative=False, single=False)
+    risk_profile = RiskProfile(decisiontree=tree, idx=0, cumulative=False, single=False)
+    print(risk_profile)
     check_capsys("./tests/files/oilexample_pag_32.txt", capsys)
 
 

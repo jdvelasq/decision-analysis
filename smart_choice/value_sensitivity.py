@@ -66,6 +66,14 @@ class ValueSensitivity:
         else:
             return self.df_.__repr__()
 
+    def _get_base_value(self) -> None:
+
+        for i_node, node in enumerate(self._decisiontree._tree_nodes):
+            tag_name = node.get("tag_name")
+            tag_branch = node.get("tag_branch")
+            if tag_name == self._varname and tag_branch == self._branch_name:
+                self._base_value = self._decisiontree._tree_nodes[i_node]["tag_value"]
+
     def _set_branch_value(self, value):
 
         for i_node, node in enumerate(self._decisiontree._tree_nodes):
@@ -75,6 +83,8 @@ class ValueSensitivity:
                 self._decisiontree._tree_nodes[i_node]["tag_value"] = value
 
     def _compute_sensitivity_single(self):
+
+        self._get_base_value()
 
         min_value, max_value = self._values
         self.branch_values_ = np.linspace(

@@ -42,7 +42,11 @@ class RiskProfile:
     """
 
     def __init__(
-        self, decisiontree: DecisionTree, idx: int, cumulative: bool, single: bool
+        self,
+        decisiontree: DecisionTree,
+        idx: int = 0,
+        cumulative: bool = False,
+        single: bool = True,
     ):
         self._decisiontree = decisiontree.copy()
         self._idx = idx

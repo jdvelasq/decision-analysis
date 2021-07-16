@@ -1042,340 +1042,190 @@ class DecisionTree:
     #  R I S K    P R O F I L E
     #
     #
-    def risk_profile(
-        self, idx: int, cumulative: bool, single: bool, plot: bool = False
-    ) -> None:
-        """Plots a probability distribution of the tree results computed in a designed node.
+    # def risk_profile(
+    #     self, idx: int, cumulative: bool, single: bool, plot: bool = False
+    # ) -> None:
+    #     """Plots a probability distribution of the tree results computed in a designed node.
 
-        :param idx:
+    #     :param idx:
 
-        :param cumulative:
+    #     :param cumulative:
 
-        :param single:
+    #     :param single:
 
+    #     """
 
-        """
+    #     def stem_single(idx: int, linefmt: str = "-k", color: str = "black"):
 
-        def stem_single(idx: int, linefmt: str = "-k", color: str = "black"):
+    #         risk_profile = self._tree_nodes[idx].get("RiskProfile").copy()
+    #         values = sorted(risk_profile.keys())
+    #         probs = [round(risk_profile[value], 2) for value in values]
 
-            risk_profile = self._tree_nodes[idx].get("RiskProfile").copy()
-            values = sorted(risk_profile.keys())
-            probs = [round(risk_profile[value], 2) for value in values]
-
-            expval = self._tree_nodes[idx].get("EV")
-            tag_branch = self._tree_nodes[idx].get("tag_branch")
-            if tag_branch is not None:
-                label = "{}; EV={:.2f}".format(tag_branch, expval)
-            else:
-                label = "EV={:.2f}".format(expval)
-
-            if plot is False:
-                labels = [label] * len(probs)
-                return pd.DataFrame(
-                    {"Label": labels, "Value": values, "Probability": probs}
-                )
-            else:
-                markerline, _, _ = plt.gca().stem(
-                    values, probs, linefmt=linefmt, basefmt="gray", label=label
-                )
-
-                markerline.set_markerfacecolor(color)
-                markerline.set_markeredgecolor(color)
-
-                plt.gca().spines["bottom"].set_visible(False)
-                plt.gca().spines["left"].set_visible(False)
-                plt.gca().spines["right"].set_visible(False)
-                plt.gca().spines["top"].set_visible(False)
-
-                plt.gca().set_xlabel("Expected values")
-                plt.gca().set_ylabel("Probability")
-                plt.gca().legend()
-
-            return None
-
-        def step_single(idx: int, linefmt: str = "-k"):
-
-            risk_profile = self._tree_nodes[idx].get("RiskProfile").copy()
-            values = sorted(risk_profile.keys())
-            probs = [round(risk_profile[value], 4) for value in values]
-            cumprobs = np.cumsum(probs).tolist()
-
-            expval = self._tree_nodes[idx].get("EV")
-            tag_value = self._tree_nodes[idx].get("tag_value")
-            tag_branch = self._tree_nodes[idx].get("tag_branch")
-            if tag_value is not None:
-                label = "{};EV={:.2f}".format(tag_branch, expval)
-            else:
-                label = "EV={:.2f}".format(expval)
-
-            if plot is False:
-                labels = [label] * len(probs)
-                return pd.DataFrame(
-                    {
-                        "Label": labels,
-                        "Value": values,
-                        "Cumulative Probability": cumprobs,
-                    }
-                )
-            else:
-                cumprobs = [0] + cumprobs
-                values = values + [values[-1]]
-
-                plt.gca().step(values, cumprobs, linefmt, label=label)
-
-                plt.gca().spines["bottom"].set_visible(False)
-                plt.gca().spines["left"].set_visible(False)
-                plt.gca().spines["right"].set_visible(False)
-                plt.gca().spines["top"].set_visible(False)
-
-                plt.gca().set_xlabel("Expected values")
-                plt.gca().set_ylabel("Cumulative probability")
-                plt.gca().legend()
-
-            return None
-
-        def stem_multiple(idx: int):
-            successors = self._tree_nodes[idx].get("successors")
-            if plot is True:
-                for i_successor, successor in enumerate(successors):
-                    stem_single(successor, linefmts[i_successor], colors[i_successor])
-            else:
-                return pd.concat([stem_single(successor) for successor in successors])
-            return None
-
-        def step_multiple(idx: int):
-            successors = self._tree_nodes[idx].get("successors")
-            if plot is True:
-                for i_successor, successor in enumerate(successors):
-                    step_single(successor, linefmts[i_successor])
-            else:
-                return pd.concat([step_single(successor) for successor in successors])
-            return None
-
-        linefmts = [
-            "-k",
-            "--k",
-            ".-k",
-            "o-k",
-            "--k",
-            "--b",
-            "--r",
-            "--g",
-            "-.k",
-            "-.b",
-            "-.r",
-            "-.g",
-        ]
-        ## markerfmts = []
-
-        colors = ["black", "blue", "red", "green"] * 3
-
-        self._compute_risk_profiles(idx)
-
-        if cumulative is False and single is True:
-            result = stem_single(idx)
-        if cumulative is True and single is True:
-            result = step_single(idx)
-        if cumulative is False and single is False:
-            result = stem_multiple(idx)
-        if cumulative is True and single is False:
-            result = step_multiple(idx)
-        if plot is False:
-            return result
-
-    def _compute_risk_profiles(self, idx: int) -> None:
-        #
-        def terminal(idx: int) -> None:
-            value: float = self._tree_nodes[idx].get("EV")
-            self._tree_nodes[idx]["RiskProfile"] = {value: 1.0}
-
-        def chance(idx: int) -> None:
-            successors = self._tree_nodes[idx].get("successors")
-            for successor in successors:
-                dispatch(idx=successor)
-            self._tree_nodes[idx]["RiskProfile"] = {}
-            for successor in successors:
-                prob = self._tree_nodes[successor].get("tag_prob")
-
-                for value_successor, prob_successor in self._tree_nodes[successor][
-                    "RiskProfile"
-                ].items():
-                    if value_successor in self._tree_nodes[idx]["RiskProfile"].keys():
-                        self._tree_nodes[idx]["RiskProfile"][value_successor] += (
-                            prob * prob_successor
-                        )
-                    else:
-                        self._tree_nodes[idx]["RiskProfile"][value_successor] = (
-                            prob * prob_successor
-                        )
-
-        def decision(idx: int) -> None:
-            successors = self._tree_nodes[idx].get("successors")
-            for successor in successors:
-                dispatch(idx=successor)
-            optimal_successor = self._tree_nodes[idx].get("optimal_successor")
-            self._tree_nodes[idx]["RiskProfile"] = self._tree_nodes[optimal_successor][
-                "RiskProfile"
-            ]
-
-        def dispatch(idx: int) -> None:
-            type_ = self._tree_nodes[idx].get("type")
-            if type_ == "TERMINAL":
-                terminal(idx=idx)
-            if type_ == "CHANCE":
-                chance(idx=idx)
-            if type_ == "DECISION":
-                decision(idx=idx)
-
-        dispatch(idx=idx)
-
-    # -------------------------------------------------------------------------
-    #
-    #
-    #  V A L U E     S E N S I T I V I T Y
-    #
-    #
-    # def value_sensitivity(
-    #     self, name: str, branch: str, values: tuple, n_points=11, plot: bool = False
-    # ):
-    #     def get_original_value():
-    #         for node in self._tree_nodes:
-    #             tag_name = node.get("tag_name")
-    #             tag_branch = node.get("tag_branch")
-    #             if tag_name == name and tag_branch == branch:
-    #                 return node.get("tag_value")
-
-    #     def restore_original_value(original_value):
-    #         for i_node, node in enumerate(self._tree_nodes):
-    #             tag_name = node.get("tag_name")
-    #             tag_branch = node.get("tag_branch")
-    #             if tag_name == name and tag_branch == branch:
-    #                 self._tree_nodes[i_node]["tag_value"] = original_value
-
-    #     def value_sensitivity_chance(
-    #         name: str, branch: str, values: tuple, n_points=11, plot: bool = False
-    #     ):
-
-    #         min_value, max_value = values
-    #         values = np.linspace(start=min_value, stop=max_value, num=n_points)
-
-    #         expvals = []
-    #         for value in values:
-    #             for i_node, node in enumerate(self._tree_nodes):
-    #                 tag_name = node.get("tag_name")
-    #                 tag_branch = node.get("tag_branch")
-    #                 if tag_name == name and tag_branch == branch:
-    #                     self._tree_nodes[i_node]["tag_value"] = value
-    #             self.evaluate()
-    #             expvals.append(round(self.rollback(), 2))
+    #         expval = self._tree_nodes[idx].get("EV")
+    #         tag_branch = self._tree_nodes[idx].get("tag_branch")
+    #         if tag_branch is not None:
+    #             label = "{}; EV={:.2f}".format(tag_branch, expval)
+    #         else:
+    #             label = "EV={:.2f}".format(expval)
 
     #         if plot is False:
+    #             labels = [label] * len(probs)
+    #             return pd.DataFrame(
+    #                 {"Label": labels, "Value": values, "Probability": probs}
+    #             )
+    #         else:
+    #             markerline, _, _ = plt.gca().stem(
+    #                 values, probs, linefmt=linefmt, basefmt="gray", label=label
+    #             )
+
+    #             markerline.set_markerfacecolor(color)
+    #             markerline.set_markeredgecolor(color)
+
+    #             plt.gca().spines["bottom"].set_visible(False)
+    #             plt.gca().spines["left"].set_visible(False)
+    #             plt.gca().spines["right"].set_visible(False)
+    #             plt.gca().spines["top"].set_visible(False)
+
+    #             plt.gca().set_xlabel("Expected values")
+    #             plt.gca().set_ylabel("Probability")
+    #             plt.gca().legend()
+
+    #         return None
+
+    #     def step_single(idx: int, linefmt: str = "-k"):
+
+    #         risk_profile = self._tree_nodes[idx].get("RiskProfile").copy()
+    #         values = sorted(risk_profile.keys())
+    #         probs = [round(risk_profile[value], 4) for value in values]
+    #         cumprobs = np.cumsum(probs).tolist()
+
+    #         expval = self._tree_nodes[idx].get("EV")
+    #         tag_value = self._tree_nodes[idx].get("tag_value")
+    #         tag_branch = self._tree_nodes[idx].get("tag_branch")
+    #         if tag_value is not None:
+    #             label = "{};EV={:.2f}".format(tag_branch, expval)
+    #         else:
+    #             label = "EV={:.2f}".format(expval)
+
+    #         if plot is False:
+    #             labels = [label] * len(probs)
     #             return pd.DataFrame(
     #                 {
-    #                     "value": values,
-    #                     "ExpVal": expvals,
+    #                     "Label": labels,
+    #                     "Value": values,
+    #                     "Cumulative Probability": cumprobs,
     #                 }
     #             )
+    #         else:
+    #             cumprobs = [0] + cumprobs
+    #             values = values + [values[-1]]
 
-    #         plt.gca().plot(values, expvals, "-k")
-    #         plt.gca().spines["bottom"].set_visible(False)
-    #         plt.gca().spines["left"].set_visible(False)
-    #         plt.gca().spines["right"].set_visible(False)
-    #         plt.gca().spines["top"].set_visible(False)
-    #         plt.gca().set_ylabel("Expected values")
-    #         plt.gca().set_xlabel("Values")
-    #         # plt.gca().legend()
-    #         plt.grid()
+    #             plt.gca().step(values, cumprobs, linefmt, label=label)
+
+    #             plt.gca().spines["bottom"].set_visible(False)
+    #             plt.gca().spines["left"].set_visible(False)
+    #             plt.gca().spines["right"].set_visible(False)
+    #             plt.gca().spines["top"].set_visible(False)
+
+    #             plt.gca().set_xlabel("Expected values")
+    #             plt.gca().set_ylabel("Cumulative probability")
+    #             plt.gca().legend()
 
     #         return None
 
-    #     def value_sensitivity_decision(
-    #         name: str, branch: str, values: tuple, n_points=11, plot: bool = False
-    #     ):
+    #     def stem_multiple(idx: int):
+    #         successors = self._tree_nodes[idx].get("successors")
+    #         if plot is True:
+    #             for i_successor, successor in enumerate(successors):
+    #                 stem_single(successor, linefmts[i_successor], colors[i_successor])
+    #         else:
+    #             return pd.concat([stem_single(successor) for successor in successors])
+    #         return None
 
-    #         results = {}
-    #         successors = self._tree_nodes[0].get("successors")
-    #         tag_branches_root = [
-    #             self._tree_nodes[successor].get("tag_branch")
-    #             for successor in successors
-    #         ]
-    #         for tag_branch_root in tag_branches_root:
-    #             results[tag_branch_root] = []
+    #     def step_multiple(idx: int):
+    #         successors = self._tree_nodes[idx].get("successors")
+    #         if plot is True:
+    #             for i_successor, successor in enumerate(successors):
+    #                 step_single(successor, linefmts[i_successor])
+    #         else:
+    #             return pd.concat([step_single(successor) for successor in successors])
+    #         return None
 
-    #         min_value, max_value = values
-    #         values = np.linspace(start=min_value, stop=max_value, num=n_points)
+    #     linefmts = [
+    #         "-k",
+    #         "--k",
+    #         ".-k",
+    #         "o-k",
+    #         "--k",
+    #         "--b",
+    #         "--r",
+    #         "--g",
+    #         "-.k",
+    #         "-.b",
+    #         "-.r",
+    #         "-.g",
+    #     ]
 
-    #         for value in values:
-    #             for i_node, node in enumerate(self._tree_nodes):
-    #                 tag_name = node.get("tag_name")
-    #                 tag_branch = node.get("tag_branch")
-    #                 if tag_name == name and tag_branch == branch:
-    #                     self._tree_nodes[i_node]["tag_value"] = value
-    #             self.evaluate()
-    #             self.rollback()
-    #             expvals = [
-    #                 self._tree_nodes[successor].get("EV") for successor in successors
-    #             ]
-    #             for expval, tag_branch_root in zip(expvals, tag_branches_root):
-    #                 results[tag_branch_root].append(expval)
+    #     colors = ["black", "blue", "red", "green"] * 3
 
-    #         if plot is False:
-    #             return pd.concat(
-    #                 [
-    #                     pd.DataFrame(
-    #                         {
-    #                             "Branch": [tag_branch_root] * len(values),
-    #                             "Value": values,
-    #                             "ExpVal": results[tag_branch_root],
-    #                         }
+    #     self._compute_risk_profiles(idx)
+
+    #     if cumulative is False and single is True:
+    #         result = stem_single(idx)
+    #     if cumulative is True and single is True:
+    #         result = step_single(idx)
+    #     if cumulative is False and single is False:
+    #         result = stem_multiple(idx)
+    #     if cumulative is True and single is False:
+    #         result = step_multiple(idx)
+    #     if plot is False:
+    #         return result
+
+    # def _compute_risk_profiles(self, idx: int) -> None:
+    #     #
+    #     def terminal(idx: int) -> None:
+    #         value: float = self._tree_nodes[idx].get("EV")
+    #         self._tree_nodes[idx]["RiskProfile"] = {value: 1.0}
+
+    #     def chance(idx: int) -> None:
+    #         successors = self._tree_nodes[idx].get("successors")
+    #         for successor in successors:
+    #             dispatch(idx=successor)
+    #         self._tree_nodes[idx]["RiskProfile"] = {}
+    #         for successor in successors:
+    #             prob = self._tree_nodes[successor].get("tag_prob")
+
+    #             for value_successor, prob_successor in self._tree_nodes[successor][
+    #                 "RiskProfile"
+    #             ].items():
+    #                 if value_successor in self._tree_nodes[idx]["RiskProfile"].keys():
+    #                     self._tree_nodes[idx]["RiskProfile"][value_successor] += (
+    #                         prob * prob_successor
     #                     )
-    #                     for tag_branch_root in tag_branches_root
-    #                 ]
-    #             )
+    #                 else:
+    #                     self._tree_nodes[idx]["RiskProfile"][value_successor] = (
+    #                         prob * prob_successor
+    #                     )
 
-    #         linefmts = [
-    #             "-k",
-    #             "--k",
-    #             ".-k",
-    #             ":k",
-    #             "-r",
-    #             "--r",
-    #             ".-r",
-    #             ":r",
-    #             "-g",
-    #             "--g",
-    #             ".-g",
-    #             ":g",
+    #     def decision(idx: int) -> None:
+    #         successors = self._tree_nodes[idx].get("successors")
+    #         for successor in successors:
+    #             dispatch(idx=successor)
+    #         optimal_successor = self._tree_nodes[idx].get("optimal_successor")
+    #         self._tree_nodes[idx]["RiskProfile"] = self._tree_nodes[optimal_successor][
+    #             "RiskProfile"
     #         ]
-    #         for fmt, tag_branch_root in zip(linefmts, tag_branches_root):
-    #             plt.gca().plot(
-    #                 values, results[tag_branch_root], fmt, label=tag_branch_root
-    #             )
 
-    #         plt.gca().spines["bottom"].set_visible(False)
-    #         plt.gca().spines["left"].set_visible(False)
-    #         plt.gca().spines["right"].set_visible(False)
-    #         plt.gca().spines["top"].set_visible(False)
-    #         plt.gca().set_ylabel("Expected values")
-    #         plt.gca().set_xlabel("Values")
-    #         plt.gca().legend()
-    #         plt.grid()
+    #     def dispatch(idx: int) -> None:
+    #         type_ = self._tree_nodes[idx].get("type")
+    #         if type_ == "TERMINAL":
+    #             terminal(idx=idx)
+    #         if type_ == "CHANCE":
+    #             chance(idx=idx)
+    #         if type_ == "DECISION":
+    #             decision(idx=idx)
 
-    #         return None
-
-    #     original_value = get_original_value()
-    #     type_ = self._tree_nodes[0]["type"]
-    #     if type_ == "CHANCE":
-    #         result = value_sensitivity_chance(
-    #             name=name, branch=branch, values=values, n_points=n_points, plot=plot
-    #         )
-    #     if type_ == "DECISION":
-    #         result = value_sensitivity_decision(
-    #             name=name, branch=branch, values=values, n_points=n_points, plot=plot
-    #         )
-
-    #     restore_original_value(original_value)
-    #     return result
+    #     dispatch(idx=idx)
 
     # -------------------------------------------------------------------------
     #

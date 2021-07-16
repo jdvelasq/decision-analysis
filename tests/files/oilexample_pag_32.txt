@@ -1,5 +1,11 @@
-       Label  Value  Probability
-0  EV=544.92   -655         0.20
-1  EV=544.92    -55         0.38
-2  EV=544.92    845         0.24
-3  EV=544.92   2745         0.18
+test; EV=544.92
+   Value  Probability  Cumulative Probability
+0   -655     0.199996                0.199996
+1    -55     0.380000                0.579996
+2    845     0.239992                0.819988
+3   2745     0.179973                0.999961
+dont-test; EV=530.00
+   Value  Probability  Cumulative Probability
+0   -600          0.5                     0.5
+1    900          0.3                     0.8
+2   2800          0.2                     1.0

@@ -1,4 +1,5 @@
-          Label  Value  Cumulative Probability
-0  800;EV=300.0    100                    0.25
-1  800;EV=300.0    300                    0.75
-2  800;EV=300.0    500                    1.00
+high; EV=300.00
+   Value  Probability  Cumulative Probability
+0    100         0.25                    0.25
+1    300         0.50                    0.75
+2    500         0.25                    1.00

@@ -4,14 +4,12 @@ Risk Profile Analysis
 
 """
 
-from typing import Any
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-
 from .decisiontree import DecisionTree
-
 
 LINEFMTS = [
     "-k",

@@ -3,7 +3,7 @@ Risk profile
 
 """
 from smart_choice.decisiontree import DecisionTree
-from smart_choice.examples import stguide, oil_tree_example
+from smart_choice.examples import oil_tree_example, stguide
 from smart_choice.risk_profile import RiskProfile
 
 from tests.capsys import check_capsys

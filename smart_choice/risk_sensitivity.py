@@ -143,6 +143,7 @@ class RiskAttitudeSensitivity:
                 self.certainty_equivalents_[tag_branch],
                 label=tag_branch,
             )
+        self._format_plot()
 
     def _plot_decision(self):
 

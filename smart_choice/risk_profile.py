@@ -13,6 +13,13 @@ from .decisiontree import DecisionTree
 
 LINEFMTS = [
     "-k",
+    "-b",
+    "-r",
+    "-g",
+    ".-k",
+    ".-b",
+    ".-r",
+    ".-g",
     "--k",
     ".-k",
     "o-k",
@@ -159,11 +166,6 @@ class RiskProfile:
 
         def multiple(idx):
             successors = self._decisiontree._tree_nodes[idx].get("successors")
-            # branch_names = [
-            #     self._decisiontree._tree_nodes[successor].get("tag_branch")
-            #     for successor in successors
-            # ]
-            # results = {}
             for successor in successors:
                 label, df_ = compute(idx=successor)
                 self.df_[label] = df_
@@ -189,6 +191,7 @@ class RiskProfile:
             plt.gca().set_xlabel("Expected values")
             plt.gca().set_ylabel("Probability")
             plt.gca().legend()
+            plt.grid()
 
         def stem_plot():
 
@@ -212,10 +215,12 @@ class RiskProfile:
 
             for i_key, key in enumerate(self.df_.keys()):
                 df_ = self.df_[key]
-                x_points = df_["Value"]
+                x_points = df_["Value"].tolist()
                 x_points += [x_points[-1]]
-                y_points = [0] + df_["Cumulative Probability"]
-                plt.gca().step(x_points, y_points, LINEFMTS[i_key], label=key)
+                y_points = [0] + df_["Cumulative Probability"].tolist()
+                plt.gca().step(
+                    x_points, y_points, LINEFMTS[i_key], label=key, alpha=0.8
+                )
 
             format_plot()
 

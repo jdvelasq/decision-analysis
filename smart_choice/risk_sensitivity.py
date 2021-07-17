@@ -119,7 +119,7 @@ class RiskAttitudeSensitivity:
         plt.gca().spines["top"].set_visible(False)
         plt.gca().set_ylabel("Expected values")
         plt.gca().set_xlabel("Risk tolerance")
-        plt.gca().invert_xaxis()
+        # plt.gca().invert_xaxis()
         plt.gca().legend()
         plt.grid()
 

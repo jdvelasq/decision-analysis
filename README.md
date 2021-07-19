@@ -1,10 +1,10 @@
-# DMAK: Decision Making Analysis Toolkit
+# Smart-Choice: Decision Making Analysis Toolkit
 
 
 What is it?
 ------------------------------------------------------------------------------------
 
-**DMAK** is a Python package for Decision-Making Analysis using decision trees. 
+**Smart-Choice** is a Python package for Decision-Making Analysis using decision trees. 
 **DMAK** allows the user to represent decision-making scenarios using different types
 of nodes in a decision tree.
 
@@ -28,8 +28,6 @@ following utility functions can be used to represent risk adversion:
 
 * Logarithmic.
 
-* Squared root.
-
 Different types of analysis can be conducted easily, including:
 
 * Decision analysis.
@@ -43,7 +41,7 @@ value of the node. This feature allows the user to use all capacity of Python
 programming language. It is possibe to write functions to run a complete Monte Carlo 
 simulation using other packages as scipy. In other scenarios, it is possible to 
 build complex predictive models that feed the decision model using, for example, 
-scikit-learn. Other great adventage of the **DMAK** is velocity where it is compared
+scikit-learn. Other great adventage of the **Smart-Choice** is velocity where it is compared
 with spreadsheets; in this sense, it is possible to run complex models in a 
 fraction of the time required when a spreadsheet is used. 
 
@@ -55,7 +53,7 @@ Installation
 The current stable version can be installed from the command line using:
 
 ```bash
-$ pip install dmak
+$ pip install smart_choice
 ``` 
 
 at the command prompt.
@@ -64,6 +62,6 @@ at the command prompt.
 Documentation
 ------------------------------------------------------------------------------------
 
-Available at: https://jdvelasq.github.io/dmak
+Available at: https://jdvelasq.github.io/smart-choice
 
 

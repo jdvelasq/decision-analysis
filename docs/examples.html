@@ -1,0 +1,313 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Decision tree examples &mdash; dmak: Decision Tree Analysis Toolkit 0.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Value Sensitivity Analysis" href="value_sensitivity.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> dmak: Decision Tree Analysis Toolkit
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="reference.html">Library reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="datanodes.html">Node types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="decisiontree.html">Decision Tree Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="probabilistic_sensitivity.html">Probabilistic Sensitivity Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="risk_profile.html">Risk Profile Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="risk_sensitivity.html">Risk Sensitivity Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spyder_graph.html">Spyder Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tornado_graph.html">Tornado Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="value_sensitivity.html">Value Sensitivity Analysis</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Decision tree examples</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">dmak: Decision Tree Analysis Toolkit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="reference.html">Library reference</a> &raquo;</li>
+        
+      <li>Decision tree examples</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/examples.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<span class="target" id="module-smart_choice.examples"></span><div class="section" id="decision-tree-examples">
+<h1>Decision tree examples<a class="headerlink" href="#decision-tree-examples" title="Permalink to this headline">¶</a></h1>
+<p>The functions in this module returns the data node structures for several
+examples in the literature.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="smart_choice.examples.oil_tree_example">
+<span class="sig-prename descclassname"><span class="pre">smart_choice.examples.</span></span><span class="sig-name descname"><span class="pre">oil_tree_example</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/smart_choice/examples.html#oil_tree_example"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smart_choice.examples.oil_tree_example" title="Permalink to this definition">¶</a></dt>
+<dd><p>PrecisionTree Oil Example.</p>
+<p>This function returns the data nodes structure for the oil example in
+discuted in the PrecisionTree user guide.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="smart_choice.examples.stbook">
+<span class="sig-prename descclassname"><span class="pre">smart_choice.examples.</span></span><span class="sig-name descname"><span class="pre">stbook</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/smart_choice/examples.html#stbook"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smart_choice.examples.stbook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bid example from “Decision Analysis for the professional.</p>
+<p>Bidding tree with four possible options:</p>
+<ul class="simple">
+<li><p>Bid $ 300.</p></li>
+<li><p>Bid $ 500.</p></li>
+<li><p>Bid $ 700.</p></li>
+<li><p>No bid.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="smart_choice.examples.stbook_dependent_outcomes">
+<span class="sig-prename descclassname"><span class="pre">smart_choice.examples.</span></span><span class="sig-name descname"><span class="pre">stbook_dependent_outcomes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/smart_choice/examples.html#stbook_dependent_outcomes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smart_choice.examples.stbook_dependent_outcomes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dependent outcomes example.</p>
+<p>This function returns the data nodes for the tree in the Fig. 4.5 (pag. 81)
+of the book “Decision Analysis for the Professional”.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="smart_choice.examples.stguide">
+<span class="sig-prename descclassname"><span class="pre">smart_choice.examples.</span></span><span class="sig-name descname"><span class="pre">stguide</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/smart_choice/examples.html#stguide"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smart_choice.examples.stguide" title="Permalink to this definition">¶</a></dt>
+<dd><p>Supertree userguide bid example (2 branches).</p>
+<p>This function returns the data nodes for a bid problem with two possible
+decisiions:</p>
+<ul class="simple">
+<li><p>Bid $ 500.</p></li>
+<li><p>Bid $ 700.</p></li>
+</ul>
+<p>This example is used in the documentation available in the web site of
+the software.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="smart_choice.examples.stguide_dependent_outcomes">
+<span class="sig-prename descclassname"><span class="pre">smart_choice.examples.</span></span><span class="sig-name descname"><span class="pre">stguide_dependent_outcomes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/smart_choice/examples.html#stguide_dependent_outcomes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smart_choice.examples.stguide_dependent_outcomes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Supertree dependent outcomes example.</p>
+<p>This function returns the data nodes for the example in the Fig. 7.6
+of the documentation available in the web site.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="smart_choice.examples.stguide_dependent_probabilities">
+<span class="sig-prename descclassname"><span class="pre">smart_choice.examples.</span></span><span class="sig-name descname"><span class="pre">stguide_dependent_probabilities</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/smart_choice/examples.html#stguide_dependent_probabilities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smart_choice.examples.stguide_dependent_probabilities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Supertree dependent probabilities example.</p>
+<p>This function returns the data node structure for the bid problem with
+dependent probabilities presented in Fig 7.3 of the documentation
+available in the web site.</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="value_sensitivity.html" class="btn btn-neutral float-left" title="Value Sensitivity Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

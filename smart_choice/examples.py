@@ -2,13 +2,29 @@
 Decision tree examples
 ===============================================================================
 
+The functions in this module returns the data node structures for several 
+examples in the literature.
+
 """
 
 from .datanodes import DataNodes
 
 
 def stguide():
-    """Supertree userguide bid example (2 branches)"""
+    """Supertree userguide bid example (2 branches).
+
+    This function returns the data nodes for a bid problem with two possible
+    decisiions:
+
+    * Bid $ 500.
+
+    * Bid $ 700.
+
+    This example is used in the documentation available in the web site of
+    the software.
+
+
+    """
 
     def payoff_fn(**kwargs):
         values = kwargs["values"]
@@ -50,7 +66,14 @@ def stguide():
 
 
 def stguide_dependent_probabilities():
-    """Supertree dependent probabilities example"""
+    """Supertree dependent probabilities example.
+
+    This function returns the data node structure for the bid problem with
+    dependent probabilities presented in Fig 7.3 of the documentation
+    available in the web site.
+
+
+    """
 
     def payoff_fn(**kwargs):
         values = kwargs["values"]
@@ -104,7 +127,13 @@ def stguide_dependent_probabilities():
 
 
 def stguide_dependent_outcomes():
-    """Supertree dependent outcomes example"""
+    """Supertree dependent outcomes example.
+
+    This function returns the data nodes for the example in the Fig. 7.6
+    of the documentation available in the web site.
+
+
+    """
 
     def payoff_fn(**kwargs):
         values = kwargs["values"]
@@ -170,7 +199,20 @@ def stguide_dependent_outcomes():
 
 
 def stbook():
-    """Bid example from "Decision Analysis for the professional."""
+    """Bid example from "Decision Analysis for the professional.
+
+
+    Bidding tree with four possible options:
+
+    * Bid $ 300.
+
+    * Bid $ 500.
+
+    * Bid $ 700.
+
+    * No bid.
+
+    """
 
     def payoff_fn(**kwargs):
         values = kwargs["values"]
@@ -214,7 +256,13 @@ def stbook():
 
 
 def stbook_dependent_outcomes():
-    """Dependent outcomes"""
+    """Dependent outcomes example.
+
+
+    This function returns the data nodes for the tree in the Fig. 4.5 (pag. 81)
+    of the book "Decision Analysis for the Professional".
+
+    """
 
     def payoff_fn(**kwargs):
         values = kwargs["values"]
@@ -271,7 +319,13 @@ def stbook_dependent_outcomes():
 
 
 def oil_tree_example():
-    """PrecisionTree Oil Example"""
+    """PrecisionTree Oil Example.
+
+
+    This function returns the data nodes structure for the oil example in
+    discuted in the PrecisionTree user guide.
+
+    """
 
     def payoff_fn(**kwargs):
         values = kwargs["values"]

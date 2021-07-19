@@ -1,5 +1,6 @@
 """
-Risk Sensitivity Analysis
+Probabilistic Sensitivity Analysis
+===============================================================================
 
 
 """
@@ -31,8 +32,16 @@ LINEFMTS = [
 class ProbabilisticSensitivity:
     """Display a probabilistic sensitivity plot for a chance node.
 
+
+    :param tree:
+        Decision tree to be analized.
+
     :param varname:
-        Name of the probabilistic variable.
+        Name of the variable.
+
+    :param idx:
+        Identification number of the node of the tree used to collect the
+        results. The identifier of the root node is `0` .
 
     """
 
@@ -146,6 +155,7 @@ class ProbabilisticSensitivity:
         )
 
     def plot(self):
+        """Plots the sensitivty to probability."""
 
         if isinstance(self.expected_values_, dict):
             for fmt, tag_branch in zip(LINEFMTS, self.expected_values_.keys()):

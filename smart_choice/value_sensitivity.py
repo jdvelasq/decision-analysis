@@ -1,6 +1,6 @@
 """
 Value Sensitivity Analysis
-
+===============================================================================
 
 """
 
@@ -29,6 +29,33 @@ LINEFMTS = [
 
 
 class ValueSensitivity:
+    """Displays sensitivity results to values in the decision tree.
+
+    :param decisiontree:
+        The decision tree to be analyzed.
+
+    :param varname:
+        Variable to be analyzed.
+
+    :param branch_name:
+        Name of the branch.
+
+    :param values:
+        Tuple with the minimal and maximum values to be analyzed.
+
+    :param single:
+        When `True`, returns the expected value for chance nodes, and the
+        optimal decision for event nodes. When `False` return the values for
+        all branches of the node.
+
+    :param idx:
+        Identification number of the node to be analyzed.
+
+    :param n_points:
+        Number of points used to create the plot.
+
+    """
+
     def __init__(
         self,
         decisiontree: DecisionTree,
@@ -144,6 +171,7 @@ class ValueSensitivity:
             )
 
     def plot(self):
+        """Plots the sensitivity to values"""
 
         if isinstance(self.expected_values_, dict):
             for fmt, branch_name in zip(LINEFMTS, self.expected_values_.keys()):

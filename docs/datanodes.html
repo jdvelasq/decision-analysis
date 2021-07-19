@@ -1,0 +1,385 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Node types &mdash; dmak: Decision Tree Analysis Toolkit 0.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Decision Tree Model" href="decisiontree.html" />
+    <link rel="prev" title="Library reference" href="reference.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> dmak: Decision Tree Analysis Toolkit
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="reference.html">Library reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Node types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="decisiontree.html">Decision Tree Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="probabilistic_sensitivity.html">Probabilistic Sensitivity Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="risk_profile.html">Risk Profile Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="risk_sensitivity.html">Risk Sensitivity Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spyder_graph.html">Spyder Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tornado_graph.html">Tornado Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="value_sensitivity.html">Value Sensitivity Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html">Decision tree examples</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">dmak: Decision Tree Analysis Toolkit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="reference.html">Library reference</a> &raquo;</li>
+        
+      <li>Node types</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/datanodes.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<span class="target" id="module-smart_choice.datanodes"></span><div class="section" id="node-types">
+<h1>Node types<a class="headerlink" href="#node-types" title="Permalink to this headline">¶</a></h1>
+<p>This module is used to create and characterize the nodes of the tree. The
+package implements three types of nodes:</p>
+<ul class="simple">
+<li><p>Terminal nodes.</p></li>
+<li><p>Decision nodes.</p></li>
+<li><p>Chance nodes.</p></li>
+</ul>
+<dl class="py class">
+<dt class="sig sig-object py" id="smart_choice.datanodes.DataNodes">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">smart_choice.datanodes.</span></span><span class="sig-name descname"><span class="pre">DataNodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chance_probabilities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'must_100%'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smart_choice/datanodes.html#DataNodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smart_choice.datanodes.DataNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This is a bag used to create and contain the different types of the
+tree nodes. The functions <cite>terminal</cite>, <cite>chance</cite>, and <cite>decision</cite> are used
+to create the nodes.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="smart_choice.datanodes.DataNodes.add_chance">
+<span class="sig-name descname"><span class="pre">add_chance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smart_choice/datanodes.html#DataNodes.add_chance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smart_choice.datanodes.DataNodes.add_chance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a chance node to the bag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name assigned to the node.</p></li>
+<li><p><strong>branches</strong> (<em>List</em><em>[</em><em>tuple</em><em>]</em>) – <p>A list of tuples, where each tuple contains the following information:</p>
+<ul>
+<li><p>Name of the branch.</p></li>
+<li><p>Probability.</p></li>
+<li><p>Associated value to the branch.</p></li>
+<li><p>Name of the successor node.</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smart_choice.datanodes.DataNodes.add_decision">
+<span class="sig-name descname"><span class="pre">add_decision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smart_choice/datanodes.html#DataNodes.add_decision"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smart_choice.datanodes.DataNodes.add_decision" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a decision node to the bag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name assigned to the node.</p></li>
+<li><p><strong>branches</strong> (<em>List</em><em>[</em><em>tuple</em><em>]</em>) – <p>A list of tuples, where each tuple contains the following information:</p>
+<ul>
+<li><p>Name of the branch.</p></li>
+<li><p>Associated value to the branch.</p></li>
+<li><p>Name of the successor node.</p></li>
+</ul>
+</p></li>
+<li><p><strong>maximize</strong> (<em>bool</em>) – When it is <cite>True</cite>, selects the branch with the maximum expected value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smart_choice.datanodes.DataNodes.add_terminal">
+<span class="sig-name descname"><span class="pre">add_terminal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payoff_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smart_choice/datanodes.html#DataNodes.add_terminal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smart_choice.datanodes.DataNodes.add_terminal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a decision node to the bag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name assigned to the node.</p></li>
+<li><p><strong>payoff_fn</strong> (<em>Optional</em><em>[</em><em>Any</em><em>]</em>) – It is a valid python function used for computing the value
+of the terminal node in the tree. The names of the created
+nodes must be used as the parameters of the function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smart_choice.datanodes.DataNodes.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/smart_choice/datanodes.html#DataNodes.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smart_choice.datanodes.DataNodes.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a deep copy of the bag. This function is used internally
+by the package.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smart_choice.datanodes.DataNodes.get_top_bottom_branches">
+<span class="sig-name descname"><span class="pre">get_top_bottom_branches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smart_choice/datanodes.html#DataNodes.get_top_bottom_branches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smart_choice.datanodes.DataNodes.get_top_bottom_branches" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the position of the branches with top and bottom values.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smart_choice.datanodes.DataNodes.set_outcome">
+<span class="sig-name descname"><span class="pre">set_outcome</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outcome</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smart_choice/datanodes.html#DataNodes.set_outcome"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smart_choice.datanodes.DataNodes.set_outcome" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a dependent outcome for a branch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>outcome</strong> – value assigned to the branch.</p></li>
+<li><p><strong>conditions</strong> – pairs of variables and values specifying the required conditions
+to assign the outcome to a branch.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smart_choice.datanodes.DataNodes.set_probability">
+<span class="sig-name descname"><span class="pre">set_probability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">probability</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smart_choice/datanodes.html#DataNodes.set_probability"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smart_choice.datanodes.DataNodes.set_probability" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a dependent probability for a branch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>probability</strong> – probability assigned to the branch.</p></li>
+<li><p><strong>conditions</strong> – pairs of variables and values specifying the required conditions
+to assign the probability to a branch.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smart_choice.datanodes.DataNodes.set_probabitlities_to_zero">
+<span class="sig-name descname"><span class="pre">set_probabitlities_to_zero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smart_choice/datanodes.html#DataNodes.set_probabitlities_to_zero"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smart_choice.datanodes.DataNodes.set_probabitlities_to_zero" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set to zero the probabilities of the all branchs of variable.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="decisiontree.html" class="btn btn-neutral float-right" title="Decision Tree Model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="reference.html" class="btn btn-neutral float-left" title="Library reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

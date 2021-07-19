@@ -1,4 +1,4 @@
-.. automodule:: dmak.tutorial_1
+.. automodule:: smart_choice.spyder_graph
     :members:
     :undoc-members:
     :show-inheritance:

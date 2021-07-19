@@ -1,0 +1,384 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>smart_choice.probabilistic_sensitivity &mdash; dmak: Decision Tree Analysis Toolkit 0.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> dmak: Decision Tree Analysis Toolkit
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Library reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">dmak: Decision Tree Analysis Toolkit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>smart_choice.probabilistic_sensitivity</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for smart_choice.probabilistic_sensitivity</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Probabilistic Sensitivity Analysis</span>
+<span class="sd">===============================================================================</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+
+<span class="kn">from</span> <span class="nn">.decisiontree</span> <span class="kn">import</span> <span class="n">DecisionTree</span>
+
+
+<span class="n">LINEFMTS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;-k&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;--k&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;.-k&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;:k&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;-r&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;--r&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;.-r&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;:r&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;-g&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;--g&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;.-g&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;:g&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="ProbabilisticSensitivity"><a class="viewcode-back" href="../../probabilistic_sensitivity.html#smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity">[docs]</a><span class="k">class</span> <span class="nc">ProbabilisticSensitivity</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Display a probabilistic sensitivity plot for a chance node.</span>
+
+
+<span class="sd">    :param tree:</span>
+<span class="sd">        Decision tree to be analized.</span>
+
+<span class="sd">    :param varname:</span>
+<span class="sd">        Name of the variable.</span>
+
+<span class="sd">    :param idx:</span>
+<span class="sd">        Identification number of the node of the tree used to collect the</span>
+<span class="sd">        results. The identifier of the root node is `0` .</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decisiontree</span><span class="p">:</span> <span class="n">DecisionTree</span><span class="p">,</span> <span class="n">varname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_decisiontree</span> <span class="o">=</span> <span class="n">decisiontree</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_varname</span> <span class="o">=</span> <span class="n">varname</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_idx</span> <span class="o">=</span> <span class="n">idx</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># Algorithm</span>
+        <span class="c1">#</span>
+        <span class="n">type_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decisiontree</span><span class="o">.</span><span class="n">_data_nodes</span><span class="p">[</span><span class="n">varname</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">type_</span> <span class="o">!=</span> <span class="s2">&quot;CHANCE&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Variable </span><span class="si">{}</span><span class="s1"> is </span><span class="si">{}</span><span class="s1"> != &quot;CHANCE&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">varname</span><span class="p">,</span> <span class="n">type_</span><span class="p">))</span>
+
+        <span class="n">type_root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decisiontree</span><span class="o">.</span><span class="n">_tree_nodes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_idx</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">type_root</span> <span class="o">==</span> <span class="s2">&quot;CHANCE&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">probabilistic_sensitivity_chance</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">type_root</span> <span class="o">==</span> <span class="s2">&quot;DECISION&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">probabilistic_sensitivity_decision</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_get_top_bottom_branches</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_top_branch</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_bottom_branch</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decisiontree</span><span class="o">.</span><span class="n">_data_nodes</span><span class="o">.</span><span class="n">get_top_bottom_branches</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_varname</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_branch_probabilities_to_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i_node</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_decisiontree</span><span class="o">.</span><span class="n">_tree_nodes</span><span class="p">):</span>
+            <span class="n">tag_name</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tag_name&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">tag_name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_varname</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_decisiontree</span><span class="o">.</span><span class="n">_tree_nodes</span><span class="p">[</span><span class="n">i_node</span><span class="p">][</span><span class="s2">&quot;tag_prob&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">_set_branch_probabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_probability</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">i_node</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_decisiontree</span><span class="o">.</span><span class="n">_tree_nodes</span><span class="p">):</span>
+            <span class="n">tag_name</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tag_name&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">tag_name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_varname</span><span class="p">:</span>
+                <span class="n">tag_branch</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tag_branch&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">tag_branch</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_branch</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_decisiontree</span><span class="o">.</span><span class="n">_tree_nodes</span><span class="p">[</span><span class="n">i_node</span><span class="p">][</span><span class="s2">&quot;tag_prob&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="mi">1</span> <span class="o">-</span> <span class="n">top_probability</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="n">tag_branch</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bottom_branch</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_decisiontree</span><span class="o">.</span><span class="n">_tree_nodes</span><span class="p">[</span><span class="n">i_node</span><span class="p">][</span><span class="s2">&quot;tag_prob&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">top_probability</span>
+
+<div class="viewcode-block" id="ProbabilisticSensitivity.probabilistic_sensitivity_chance"><a class="viewcode-back" href="../../probabilistic_sensitivity.html#smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity.probabilistic_sensitivity_chance">[docs]</a>    <span class="k">def</span> <span class="nf">probabilistic_sensitivity_chance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_top_bottom_branches</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_branch_probabilities_to_zero</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">probabilities_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">21</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expected_values_</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">top_probability</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">probabilities_</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_branch_probabilities</span><span class="p">(</span><span class="n">top_probability</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_decisiontree</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+            <span class="n">expval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decisiontree</span><span class="o">.</span><span class="n">_tree_nodes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_idx</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;EV&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">expected_values_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">expval</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;Probability&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">probabilities_</span><span class="p">,</span>
+                <span class="s2">&quot;Expected Value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_values_</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ProbabilisticSensitivity.probabilistic_sensitivity_decision"><a class="viewcode-back" href="../../probabilistic_sensitivity.html#smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity.probabilistic_sensitivity_decision">[docs]</a>    <span class="k">def</span> <span class="nf">probabilistic_sensitivity_decision</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_top_bottom_branches</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_branch_probabilities_to_zero</span><span class="p">()</span>
+
+        <span class="n">successors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decisiontree</span><span class="o">.</span><span class="n">_tree_nodes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_idx</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;successors&quot;</span><span class="p">)</span>
+        <span class="n">tag_branches</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_decisiontree</span><span class="o">.</span><span class="n">_tree_nodes</span><span class="p">[</span><span class="n">successor</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tag_branch&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">successor</span> <span class="ow">in</span> <span class="n">successors</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">expected_values_</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">tag_branch</span> <span class="ow">in</span> <span class="n">tag_branches</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">expected_values_</span><span class="p">[</span><span class="n">tag_branch</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">probabilities_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">21</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">top_probability</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">probabilities_</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_branch_probabilities</span><span class="p">(</span><span class="n">top_probability</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_decisiontree</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+
+            <span class="n">expvals</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_decisiontree</span><span class="o">.</span><span class="n">_tree_nodes</span><span class="p">[</span><span class="n">successor</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;EV&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">successor</span> <span class="ow">in</span> <span class="n">successors</span>
+            <span class="p">]</span>
+            <span class="k">for</span> <span class="n">expval</span><span class="p">,</span> <span class="n">tag_branch</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">expvals</span><span class="p">,</span> <span class="n">tag_branches</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">expected_values_</span><span class="p">[</span><span class="n">tag_branch</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">expval</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;Branch&quot;</span><span class="p">:</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">tag_branch</span><span class="p">)]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">probabilities_</span><span class="p">),</span>
+                        <span class="s2">&quot;Probability&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">probabilities_</span><span class="p">,</span>
+                        <span class="s2">&quot;Value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_values_</span><span class="p">[</span><span class="n">tag_branch</span><span class="p">],</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">tag_branch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_values_</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="p">]</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ProbabilisticSensitivity.plot"><a class="viewcode-back" href="../../probabilistic_sensitivity.html#smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plots the sensitivty to probability.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expected_values_</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">tag_branch</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">LINEFMTS</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_values_</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">probabilities_</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">expected_values_</span><span class="p">[</span><span class="n">tag_branch</span><span class="p">],</span>
+                    <span class="n">fmt</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="n">tag_branch</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">probabilities_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_values_</span><span class="p">,</span> <span class="s2">&quot;-k&quot;</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s2">&quot;bottom&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s2">&quot;left&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s2">&quot;right&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Expected values&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Probability&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

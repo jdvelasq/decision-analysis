@@ -1,0 +1,595 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>smart_choice.examples &mdash; dmak: Decision Tree Analysis Toolkit 0.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> dmak: Decision Tree Analysis Toolkit
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Library reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">dmak: Decision Tree Analysis Toolkit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>smart_choice.examples</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for smart_choice.examples</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Decision tree examples</span>
+<span class="sd">===============================================================================</span>
+
+<span class="sd">The functions in this module returns the data node structures for several </span>
+<span class="sd">examples in the literature.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">.datanodes</span> <span class="kn">import</span> <span class="n">DataNodes</span>
+
+
+<div class="viewcode-block" id="stguide"><a class="viewcode-back" href="../../examples.html#smart_choice.examples.stguide">[docs]</a><span class="k">def</span> <span class="nf">stguide</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Supertree userguide bid example (2 branches).</span>
+
+<span class="sd">    This function returns the data nodes for a bid problem with two possible</span>
+<span class="sd">    decisiions:</span>
+
+<span class="sd">    * Bid $ 500.</span>
+
+<span class="sd">    * Bid $ 700.</span>
+
+<span class="sd">    This example is used in the documentation available in the web site of</span>
+<span class="sd">    the software.</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">payoff_fn</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">]</span>
+        <span class="n">bid</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;bid&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;bid&quot;</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">competitor_bid</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">values</span><span class="p">[</span><span class="s2">&quot;competitor_bid&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;competitor_bid&quot;</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="p">)</span>
+        <span class="n">cost</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;cost&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;cost&quot;</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">bid</span> <span class="o">-</span> <span class="n">cost</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="k">if</span> <span class="n">bid</span> <span class="o">&lt;</span> <span class="n">competitor_bid</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">DataNodes</span><span class="p">()</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_decision</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bid&quot;</span><span class="p">,</span>
+        <span class="n">branches</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="s2">&quot;competitor_bid&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="mi">700</span><span class="p">,</span> <span class="s2">&quot;competitor_bid&quot;</span><span class="p">),</span>
+        <span class="p">],</span>
+        <span class="n">maximize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_chance</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;competitor_bid&quot;</span><span class="p">,</span>
+        <span class="n">branches</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="s2">&quot;cost&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="s2">&quot;cost&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mi">800</span><span class="p">,</span> <span class="s2">&quot;cost&quot;</span><span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_chance</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cost&quot;</span><span class="p">,</span>
+        <span class="n">branches</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;profit&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="s2">&quot;profit&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="s2">&quot;profit&quot;</span><span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_terminal</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;profit&quot;</span><span class="p">,</span> <span class="n">payoff_fn</span><span class="o">=</span><span class="n">payoff_fn</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">nodes</span></div>
+
+
+<div class="viewcode-block" id="stguide_dependent_probabilities"><a class="viewcode-back" href="../../examples.html#smart_choice.examples.stguide_dependent_probabilities">[docs]</a><span class="k">def</span> <span class="nf">stguide_dependent_probabilities</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Supertree dependent probabilities example.</span>
+
+<span class="sd">    This function returns the data node structure for the bid problem with</span>
+<span class="sd">    dependent probabilities presented in Fig 7.3 of the documentation</span>
+<span class="sd">    available in the web site.</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">payoff_fn</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">]</span>
+        <span class="n">bid</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;bid&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;bid&quot;</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">competitor_bid</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">values</span><span class="p">[</span><span class="s2">&quot;competitor_bid&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;competitor_bid&quot;</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="p">)</span>
+        <span class="n">cost</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;cost&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;cost&quot;</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">bid</span> <span class="o">-</span> <span class="n">cost</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="k">if</span> <span class="n">bid</span> <span class="o">&lt;</span> <span class="n">competitor_bid</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">DataNodes</span><span class="p">()</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_decision</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bid&quot;</span><span class="p">,</span>
+        <span class="n">branches</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="s2">&quot;competitor_bid&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="mi">700</span><span class="p">,</span> <span class="s2">&quot;competitor_bid&quot;</span><span class="p">),</span>
+        <span class="p">],</span>
+        <span class="n">maximize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_chance</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;competitor_bid&quot;</span><span class="p">,</span>
+        <span class="n">branches</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="s2">&quot;cost&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="s2">&quot;cost&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mi">800</span><span class="p">,</span> <span class="s2">&quot;cost&quot;</span><span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_chance</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cost&quot;</span><span class="p">,</span>
+        <span class="n">branches</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;profit&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="s2">&quot;profit&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="s2">&quot;profit&quot;</span><span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_terminal</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;profit&quot;</span><span class="p">,</span> <span class="n">payoff_fn</span><span class="o">=</span><span class="n">payoff_fn</span><span class="p">)</span>
+
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_probability</span><span class="p">(</span><span class="mf">0.4000</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_probability</span><span class="p">(</span><span class="mf">0.4000</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_probability</span><span class="p">(</span><span class="mf">0.2000</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">)</span>
+
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_probability</span><span class="p">(</span><span class="mf">0.2500</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_probability</span><span class="p">(</span><span class="mf">0.5000</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_probability</span><span class="p">(</span><span class="mf">0.2500</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">)</span>
+
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_probability</span><span class="p">(</span><span class="mf">0.1000</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_probability</span><span class="p">(</span><span class="mf">0.4500</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_probability</span><span class="p">(</span><span class="mf">0.4500</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">nodes</span></div>
+
+
+<div class="viewcode-block" id="stguide_dependent_outcomes"><a class="viewcode-back" href="../../examples.html#smart_choice.examples.stguide_dependent_outcomes">[docs]</a><span class="k">def</span> <span class="nf">stguide_dependent_outcomes</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Supertree dependent outcomes example.</span>
+
+<span class="sd">    This function returns the data nodes for the example in the Fig. 7.6</span>
+<span class="sd">    of the documentation available in the web site.</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">payoff_fn</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">]</span>
+        <span class="n">bid</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;bid&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;bid&quot;</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">competitor_bid</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">values</span><span class="p">[</span><span class="s2">&quot;competitor_bid&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;competitor_bid&quot;</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="p">)</span>
+        <span class="n">cost</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;cost&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;cost&quot;</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">bid</span> <span class="o">-</span> <span class="n">cost</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="k">if</span> <span class="n">bid</span> <span class="o">&lt;</span> <span class="n">competitor_bid</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">DataNodes</span><span class="p">()</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_decision</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bid&quot;</span><span class="p">,</span>
+        <span class="n">branches</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="s2">&quot;competitor_bid&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="mi">700</span><span class="p">,</span> <span class="s2">&quot;competitor_bid&quot;</span><span class="p">),</span>
+        <span class="p">],</span>
+        <span class="n">maximize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_chance</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;competitor_bid&quot;</span><span class="p">,</span>
+        <span class="n">branches</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="s2">&quot;cost&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="s2">&quot;cost&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mi">800</span><span class="p">,</span> <span class="s2">&quot;cost&quot;</span><span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_chance</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cost&quot;</span><span class="p">,</span>
+        <span class="n">branches</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;profit&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="s2">&quot;profit&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="s2">&quot;profit&quot;</span><span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_terminal</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;profit&quot;</span><span class="p">,</span> <span class="n">payoff_fn</span><span class="o">=</span><span class="n">payoff_fn</span><span class="p">)</span>
+
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">170</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">350</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">350</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">)</span>
+
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">190</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">380</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">570</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">)</span>
+
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">)</span>
+
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">220</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">420</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">610</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">)</span>
+
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">280</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">450</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">650</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">)</span>
+
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">480</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">680</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">nodes</span></div>
+
+
+<div class="viewcode-block" id="stbook"><a class="viewcode-back" href="../../examples.html#smart_choice.examples.stbook">[docs]</a><span class="k">def</span> <span class="nf">stbook</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Bid example from &quot;Decision Analysis for the professional.</span>
+
+
+<span class="sd">    Bidding tree with four possible options:</span>
+
+<span class="sd">    * Bid $ 300.</span>
+
+<span class="sd">    * Bid $ 500.</span>
+
+<span class="sd">    * Bid $ 700.</span>
+
+<span class="sd">    * No bid.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">payoff_fn</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">]</span>
+        <span class="n">bid</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;bid&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;bid&quot;</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">competitor_bid</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">values</span><span class="p">[</span><span class="s2">&quot;competitor_bid&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;competitor_bid&quot;</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="p">)</span>
+        <span class="n">cost</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;cost&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;cost&quot;</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">bid</span> <span class="o">-</span> <span class="n">cost</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="k">if</span> <span class="n">bid</span> <span class="o">&lt;</span> <span class="n">competitor_bid</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">DataNodes</span><span class="p">()</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_decision</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bid&quot;</span><span class="p">,</span>
+        <span class="n">branches</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="s2">&quot;competitor_bid&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="s2">&quot;competitor_bid&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="mi">700</span><span class="p">,</span> <span class="s2">&quot;competitor_bid&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;no-bid&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;profit&quot;</span><span class="p">),</span>
+        <span class="p">],</span>
+        <span class="n">maximize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_chance</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;competitor_bid&quot;</span><span class="p">,</span>
+        <span class="n">branches</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="s2">&quot;cost&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="s2">&quot;cost&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mi">800</span><span class="p">,</span> <span class="s2">&quot;cost&quot;</span><span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_chance</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cost&quot;</span><span class="p">,</span>
+        <span class="n">branches</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;profit&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="s2">&quot;profit&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="s2">&quot;profit&quot;</span><span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_terminal</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;profit&quot;</span><span class="p">,</span> <span class="n">payoff_fn</span><span class="o">=</span><span class="n">payoff_fn</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">nodes</span></div>
+
+
+<div class="viewcode-block" id="stbook_dependent_outcomes"><a class="viewcode-back" href="../../examples.html#smart_choice.examples.stbook_dependent_outcomes">[docs]</a><span class="k">def</span> <span class="nf">stbook_dependent_outcomes</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Dependent outcomes example.</span>
+
+
+<span class="sd">    This function returns the data nodes for the tree in the Fig. 4.5 (pag. 81)</span>
+<span class="sd">    of the book &quot;Decision Analysis for the Professional&quot;.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">payoff_fn</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">]</span>
+        <span class="n">bid</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;bid&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;bid&quot;</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">competitor_bid</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">values</span><span class="p">[</span><span class="s2">&quot;competitor_bid&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;competitor_bid&quot;</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="p">)</span>
+        <span class="n">cost</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;cost&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;cost&quot;</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">bid</span> <span class="o">-</span> <span class="n">cost</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="k">if</span> <span class="n">bid</span> <span class="o">&lt;</span> <span class="n">competitor_bid</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">DataNodes</span><span class="p">()</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_decision</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bid&quot;</span><span class="p">,</span>
+        <span class="n">branches</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="s2">&quot;cost&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="s2">&quot;cost&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="mi">700</span><span class="p">,</span> <span class="s2">&quot;cost&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;no-bid&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;profit&quot;</span><span class="p">),</span>
+        <span class="p">],</span>
+        <span class="n">maximize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_chance</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cost&quot;</span><span class="p">,</span>
+        <span class="n">branches</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="s2">&quot;competitor_bid&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="s2">&quot;competitor_bid&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="s2">&quot;competitor_bid&quot;</span><span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_chance</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;competitor_bid&quot;</span><span class="p">,</span>
+        <span class="n">branches</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="s2">&quot;profit&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="s2">&quot;profit&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mi">800</span><span class="p">,</span> <span class="s2">&quot;profit&quot;</span><span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_terminal</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;profit&quot;</span><span class="p">,</span> <span class="n">payoff_fn</span><span class="o">=</span><span class="n">payoff_fn</span><span class="p">)</span>
+
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">)</span>
+
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">)</span>
+
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_outcome</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">competitor_bid</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">nodes</span></div>
+
+
+<div class="viewcode-block" id="oil_tree_example"><a class="viewcode-back" href="../../examples.html#smart_choice.examples.oil_tree_example">[docs]</a><span class="k">def</span> <span class="nf">oil_tree_example</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;PrecisionTree Oil Example.</span>
+
+
+<span class="sd">    This function returns the data nodes structure for the oil example in</span>
+<span class="sd">    discuted in the PrecisionTree user guide.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">payoff_fn</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">]</span>
+        <span class="n">test_decision</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;test_decision&quot;</span><span class="p">]</span>
+        <span class="n">drill_decision</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;drill_decision&quot;</span><span class="p">]</span>
+        <span class="n">oil_found</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;oil_found&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;oil_found&quot;</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">oil_found</span> <span class="o">-</span> <span class="n">drill_decision</span> <span class="o">-</span> <span class="n">test_decision</span>
+
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">DataNodes</span><span class="p">()</span>
+
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_decision</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;test_decision&quot;</span><span class="p">,</span>
+        <span class="n">branches</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="mi">55</span><span class="p">,</span> <span class="s2">&quot;test_results&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;dont-test&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;drill_decision&quot;</span><span class="p">),</span>
+        <span class="p">],</span>
+        <span class="n">maximize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_chance</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;test_results&quot;</span><span class="p">,</span>
+        <span class="n">branches</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;dry&quot;</span><span class="p">,</span> <span class="mf">0.38</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;drill_decision&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;small&quot;</span><span class="p">,</span> <span class="mf">0.39</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;drill_decision&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;large&quot;</span><span class="p">,</span> <span class="mf">0.23</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;drill_decision&quot;</span><span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_decision</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;drill_decision&quot;</span><span class="p">,</span>
+        <span class="n">branches</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;drill&quot;</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="s2">&quot;oil_found&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;dont-drill&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;profit&quot;</span><span class="p">),</span>
+        <span class="p">],</span>
+        <span class="n">maximize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_chance</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;oil_found&quot;</span><span class="p">,</span>
+        <span class="n">branches</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;dry-well&quot;</span><span class="p">,</span> <span class="mf">0.7895</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;profit&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;small-well&quot;</span><span class="p">,</span> <span class="mf">0.1579</span><span class="p">,</span> <span class="mi">1500</span><span class="p">,</span> <span class="s2">&quot;profit&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;large-well&quot;</span><span class="p">,</span> <span class="mf">0.0526</span><span class="p">,</span> <span class="mi">3400</span><span class="p">,</span> <span class="s2">&quot;profit&quot;</span><span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="n">nodes</span><span class="o">.</span><span class="n">add_terminal</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;profit&quot;</span><span class="p">,</span> <span class="n">payoff_fn</span><span class="o">=</span><span class="n">payoff_fn</span><span class="p">)</span>
+
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_probability</span><span class="p">(</span><span class="mf">0.5000</span><span class="p">,</span> <span class="n">test_decision</span><span class="o">=</span><span class="s2">&quot;dont-test&quot;</span><span class="p">,</span> <span class="n">oil_found</span><span class="o">=</span><span class="s2">&quot;dry-well&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_probability</span><span class="p">(</span><span class="mf">0.3000</span><span class="p">,</span> <span class="n">test_decision</span><span class="o">=</span><span class="s2">&quot;dont-test&quot;</span><span class="p">,</span> <span class="n">oil_found</span><span class="o">=</span><span class="s2">&quot;small-well&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_probability</span><span class="p">(</span><span class="mf">0.2000</span><span class="p">,</span> <span class="n">test_decision</span><span class="o">=</span><span class="s2">&quot;dont-test&quot;</span><span class="p">,</span> <span class="n">oil_found</span><span class="o">=</span><span class="s2">&quot;large-well&quot;</span><span class="p">)</span>
+
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_probability</span><span class="p">(</span><span class="mf">0.3846</span><span class="p">,</span> <span class="n">test_results</span><span class="o">=</span><span class="s2">&quot;small&quot;</span><span class="p">,</span> <span class="n">oil_found</span><span class="o">=</span><span class="s2">&quot;dry-well&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_probability</span><span class="p">(</span><span class="mf">0.4615</span><span class="p">,</span> <span class="n">test_results</span><span class="o">=</span><span class="s2">&quot;small&quot;</span><span class="p">,</span> <span class="n">oil_found</span><span class="o">=</span><span class="s2">&quot;small-well&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_probability</span><span class="p">(</span><span class="mf">0.1538</span><span class="p">,</span> <span class="n">test_results</span><span class="o">=</span><span class="s2">&quot;small&quot;</span><span class="p">,</span> <span class="n">oil_found</span><span class="o">=</span><span class="s2">&quot;large-well&quot;</span><span class="p">)</span>
+
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_probability</span><span class="p">(</span><span class="mf">0.2174</span><span class="p">,</span> <span class="n">test_results</span><span class="o">=</span><span class="s2">&quot;large&quot;</span><span class="p">,</span> <span class="n">oil_found</span><span class="o">=</span><span class="s2">&quot;dry-well&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_probability</span><span class="p">(</span><span class="mf">0.2609</span><span class="p">,</span> <span class="n">test_results</span><span class="o">=</span><span class="s2">&quot;large&quot;</span><span class="p">,</span> <span class="n">oil_found</span><span class="o">=</span><span class="s2">&quot;small-well&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">set_probability</span><span class="p">(</span><span class="mf">0.5217</span><span class="p">,</span> <span class="n">test_results</span><span class="o">=</span><span class="s2">&quot;large&quot;</span><span class="p">,</span> <span class="n">oil_found</span><span class="o">=</span><span class="s2">&quot;large-well&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">nodes</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

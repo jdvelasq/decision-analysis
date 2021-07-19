@@ -1,5 +1,7 @@
 """
 Spyder Graph
+===============================================================================
+
 
 """
 
@@ -28,7 +30,13 @@ LINEFMTS = [
 ]
 
 
-def spyder_graph(sensitivities: dict):
+def spider_graph(sensitivities: dict):
+    """Creates a spider graph of value sensitivities for the analyzed tree.
+
+    :param sensitivities:
+        dictionary contains ValueSensitivity results for individual values in the tree.
+
+    """
 
     for i_key, key in enumerate(sensitivities.keys()):
         values = sensitivities[key].branch_values_

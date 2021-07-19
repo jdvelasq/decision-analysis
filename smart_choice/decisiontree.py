@@ -77,28 +77,9 @@ def _eval_inv_utility_fn(value: float, utility_fn: str, risk_tolerance: float) -
 class DecisionTree:
     """Decision tree representation.
 
-
-    :param variables:
+    :param nodes:
         Types of nodes used in the tree. This parameter is created using the
         module `Nodes`.
-
-    :param initial_variable:
-        Name of the initial variable of the tree. Usually, the first variable
-        in variables.
-
-    :param utility:
-        Utility function to be used. When is `None` the computed values of
-        terminal nodes are used as the expected utility in the internal
-        nodes of the tree. The module implements the following utility
-        functions:
-
-        * `exp`: Exponential utility function `U(x): 1 - exp(-x / param)`.
-
-        * `log`: Logarithmic utility function `U(x) = log(x + param)`.
-
-
-    :param param:
-        Value of the parameter `param` in the utility function.
 
     """
 
@@ -128,6 +109,7 @@ class DecisionTree:
     #
     #
     def copy(self):
+        """Creates a copy of the decision tree."""
         tree = DecisionTree(nodes=self._data_nodes.copy())
         tree._tree_nodes = copy.deepcopy(self._tree_nodes)
         tree._initial_variable = self._initial_variable
@@ -140,6 +122,7 @@ class DecisionTree:
     #
     #
     def rebuild(self):
+        """Build  the tree using the structure information in the data nodes."""
         self._build_skeleton()
         self._set_tag_attributes()
         self._set_payoff_fn()
@@ -494,7 +477,7 @@ class DecisionTree:
         policy_suggestion: bool = False,
         view: str = "ev",
     ) -> None:
-        """Exports the tree as text diagram.
+        """Prints the tree as text diagram.
 
         :param idx:
             Id number of the root of the tree to be exported. When it is zero, the
@@ -506,6 +489,10 @@ class DecisionTree:
         :param policy_suggestion:
             When `True` exports only the subtree showing the nodes and branches
             relevants to the optimal decision (optimal strategy).
+
+        :param view:
+            Presented values in the tree: `"ev"` is the expected value; `"eu"` is
+            the expected utility. `"ce"` is the certain equivalent.
 
 
         """
@@ -797,9 +784,26 @@ class DecisionTree:
         the corresponding node. For decision nodes, the expected value is
         the maximum (or minimum) value of its branches.
 
-        :param utilitiy_fn:
+        :param view:
+            Value returned by the function:
 
-        :param risk_attitude:
+            * `"ev"`: expected value.
+
+            * `"eu"`: expected utility.
+
+            * `"ce"`: certainty equivalent.
+
+        :param utilitiy_fn:
+            Utility function used for the computations:
+
+            * None: expected utility.
+
+            * `"exp"`: exponential utility function.
+
+            * `"log"`: logarithmic utility function.
+
+        :param risk_tolerance:
+            Risk tolerance of the decision-maker.
 
 
         """

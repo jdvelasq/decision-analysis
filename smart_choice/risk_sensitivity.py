@@ -1,6 +1,6 @@
 """
 Risk Sensitivity Analysis
-
+===============================================================================
 
 """
 
@@ -13,6 +13,26 @@ from .decisiontree import DecisionTree
 
 
 class RiskAttitudeSensitivity:
+    """Displays the sensitivity to risk attitude.
+
+    :param decisiontree:
+        The decision tree to be analyzed.
+
+    :param utility_fn:
+        Utility function to be used.
+
+        * `"exp"`: exponential utility function.
+
+        * `"log"`: logarithmic utility function.
+
+    :param risk_tolerance:
+        Risk tolerance of the decision-maker.
+
+    :param idx:
+        Identification number of the node to be analyzed.
+
+    """
+
     def __init__(
         self, decisiontree: DecisionTree, utility_fn: str, risk_tolerance, idx: int = 0
     ):
@@ -128,6 +148,7 @@ class RiskAttitudeSensitivity:
     #
 
     def plot(self):
+        """Plots the sensibility to risk attitude."""
 
         if self.type_ == "DECISION":
             self._plot_decision()

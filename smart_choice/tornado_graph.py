@@ -1,5 +1,7 @@
 """
 Tornado Graph
+===============================================================================
+
 
 """
 
@@ -8,7 +10,12 @@ from operator import itemgetter
 
 
 def tornado_graph(sensitivities: dict):
+    """Creates a tornado graph of value sensitivities for the analyzed tree.
 
+    :param sensitivities:
+        dictionary contains ValueSensitivity results for individual values in the tree.
+
+    """
     data = [
         (
             key,

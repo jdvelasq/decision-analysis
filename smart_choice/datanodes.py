@@ -62,13 +62,6 @@ class DataNodes:
 
             * Name of the successor node.
 
-        :param forced_branch:
-            When used, this parameter uses the only the indicated branch in the
-            computations. It is equivalent to know with certainty what state of
-            ther world will occurrs. It is used to analyze the impact of the
-            occurrence of a certain event on the decision.
-
-
         """
         #
         # Checks branch information.
@@ -123,19 +116,8 @@ class DataNodes:
 
             * Name of the successor node.
 
-        :param max_:
+        :param maximize:
             When it is `True`, selects the branch with the maximum expected value.
-
-        :param forced_branch:
-            When used, this parameter forces the seleccion of the indicated branch
-            in the computations. It is equivalent to know with certainty what state of
-            ther world will occurrs. It is used to analyze the impact of the
-            occurrence of a certain event on the decision.
-
-        **Example**
-
-        The following code a decision node with four branches.
-
 
 
 
@@ -160,7 +142,7 @@ class DataNodes:
         :param name:
             Name assigned to the node.
 
-        :param user_fn:
+        :param payoff_fn:
             It is a valid python function used for computing the value
             of the terminal node in the tree. The names of the created
             nodes must be used as the parameters of the function.
@@ -173,11 +155,31 @@ class DataNodes:
         }
 
     def set_outcome(self, outcome, **conditions):
+        """Creates a dependent outcome for a branch.
+
+        :param outcome:
+            value assigned to the branch.
+
+        :param conditions:
+            pairs of variables and values specifying the required conditions
+            to assign the outcome to a branch.
+
+        """
         if self.dependent_outcomes is None:
             self.dependent_outcomes = []
         self.dependent_outcomes.append((outcome, conditions))
 
     def set_probability(self, probability, **conditions):
+        """Creates a dependent probability for a branch.
+
+        :param probability:
+            probability assigned to the branch.
+
+        :param conditions:
+            pairs of variables and values specifying the required conditions
+            to assign the probability to a branch.
+
+        """
         if self.dependent_probabilities is None:
             self.dependent_probabilities = []
         self.dependent_probabilities.append((probability, conditions))

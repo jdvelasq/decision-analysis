@@ -1,5 +1,7 @@
 """
 Risk Profile Analysis
+===============================================================================
+
 
 
 """
@@ -39,11 +41,18 @@ COLORS = ["black", "blue", "red", "green"] * 3
 class RiskProfile:
     """Plots a probability distribution of the tree results computed in a designed node.
 
+    :param tree:
+        The decision tree to be analyzed.
+
     :param idx:
+        The identification number of the tree node to be analyzed.
 
     :param cumulative:
+        When `True`, displays the cumulative distribution at the analized node.
 
     :param single:
+        When `True`, displays the value for the optimal branch in decision nodes.
+        When `False` display the value for all branches of the analyzed node.
 
 
     """
@@ -181,6 +190,7 @@ class RiskProfile:
     #
     #
     def plot(self):
+        """Risk profile plot."""
         #
         def format_plot():
             plt.gca().spines["bottom"].set_visible(False)

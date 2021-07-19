@@ -164,4 +164,5 @@ class ProbabilisticSensitivity:
         plt.gca().spines["top"].set_visible(False)
         plt.gca().set_ylabel("Expected values")
         plt.gca().set_xlabel("Probability")
+        plt.legend()
         plt.grid()

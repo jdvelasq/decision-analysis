@@ -5,7 +5,7 @@ What is it?
 ------------------------------------------------------------------------------------
 
 **Smart-Choice** is a Python package for Decision-Making Analysis using decision trees. 
-**DMAK** allows the user to represent decision-making scenarios using different types
+**Smart-Choice** allows the user to represent decision-making scenarios using different types
 of nodes in a decision tree.
 
 

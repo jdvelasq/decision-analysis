@@ -4,7 +4,7 @@ Installation
 Requeriments
 -------------------------------------------------------------------------------
 
-**DMAK** was developed in Python 3.9, and it depends on the following packages:
+**Smart-Choice** was developed in Python 3.9, and it depends on the following packages:
 
 * `Numpy`. 
 

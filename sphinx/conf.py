@@ -55,7 +55,7 @@ source_suffix = [".rst", ".md"]
 master_doc = "index"
 
 # General information about the project.
-project = "dmak: Decision Tree Analysis Toolkit"
+project = "Smart-Choice: Decision Tree Analysis Toolkit"
 copyright = "2021, Juan D. Velasquez"
 author = "Juan D. Velasquez"
 
@@ -232,8 +232,8 @@ latex_elements = {
 latex_documents = [
     (
         master_doc,
-        "dmak.tex",
-        "DMAK User Guide",
+        "smartchoice.tex",
+        "Smart-Choice: Decision Analysis in Python",
         "Juan D. Velasquez",
         "manual",
     ),
@@ -278,10 +278,10 @@ man_pages = [(master_doc, "DMAK", "DMAK Documentation", [author], 1)]
 texinfo_documents = [
     (
         master_doc,
-        "DMAK",
-        "DMAK User Guide",
+        "Smart-Choice",
+        "Smart-Choice User Guide",
         author,
-        "DMAK",
+        "Smart-Choice",
         "Decision-Making Analysis Toolkit",
         "Miscellaneous",
     ),

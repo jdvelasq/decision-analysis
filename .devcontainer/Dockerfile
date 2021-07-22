@@ -38,6 +38,8 @@ RUN pip3 --disable-pip-version-check --no-cache-dir install \
     wheel 
 
 RUN pip3 --disable-pip-version-check --no-cache-dir install \
+    sphinx==4.0.3 \
+    sphinx-intl \
     nbsphinx \
     sphinx-rtd-theme \ 
     sphinx_copybutton \    

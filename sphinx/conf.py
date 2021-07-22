@@ -39,6 +39,9 @@ extensions = [
     "sphinx.ext.imgmath",
 ]
 
+locale_dirs = ["locale/"]  #
+gettext_compact = False
+
 autodoc_typehints = "description"
 
 # Add any paths that contain templates here, relative to this directory.

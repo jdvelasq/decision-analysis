@@ -1,0 +1,70 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, Juan D. Velasquez
+# This file is distributed under the same license as the Smart-Choice:
+# Decision Tree Analysis Toolkit package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Smart-Choice: Decision Tree Analysis Toolkit 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-07-22 13:28+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: of smart_choice.risk_sensitivity:2
+msgid "Risk Sensitivity Analysis"
+msgstr ""
+
+#: of smart_choice.risk_sensitivity.RiskAttitudeSensitivity:1
+msgid "Bases: :class:`object`"
+msgstr ""
+
+#: of smart_choice.risk_sensitivity.RiskAttitudeSensitivity:1
+msgid "Displays the sensitivity to risk attitude."
+msgstr ""
+
+#: of smart_choice.risk_sensitivity.RiskAttitudeSensitivity
+msgid "Parameters"
+msgstr ""
+
+#: of smart_choice.risk_sensitivity.RiskAttitudeSensitivity:3
+msgid "The decision tree to be analyzed."
+msgstr ""
+
+#: of smart_choice.risk_sensitivity.RiskAttitudeSensitivity:6
+msgid ""
+"Utility function to be used.  * `\"exp\"`: exponential utility function."
+"  * `\"log\"`: logarithmic utility function."
+msgstr ""
+
+#: of smart_choice.risk_sensitivity.RiskAttitudeSensitivity:7
+msgid "Utility function to be used."
+msgstr ""
+
+#: of smart_choice.risk_sensitivity.RiskAttitudeSensitivity:9
+msgid "`\"exp\"`: exponential utility function."
+msgstr ""
+
+#: of smart_choice.risk_sensitivity.RiskAttitudeSensitivity:11
+msgid "`\"log\"`: logarithmic utility function."
+msgstr ""
+
+#: of smart_choice.risk_sensitivity.RiskAttitudeSensitivity:13
+msgid "Risk tolerance of the decision-maker."
+msgstr ""
+
+#: of smart_choice.risk_sensitivity.RiskAttitudeSensitivity:16
+msgid "Identification number of the node to be analyzed."
+msgstr ""
+
+#: of smart_choice.risk_sensitivity.RiskAttitudeSensitivity.plot:1
+msgid "Plots the sensibility to risk attitude."
+msgstr ""
+

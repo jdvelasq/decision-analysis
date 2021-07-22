@@ -1,0 +1,38 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, Juan D. Velasquez
+# This file is distributed under the same license as the Smart-Choice:
+# Decision Tree Analysis Toolkit package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Smart-Choice: Decision Tree Analysis Toolkit 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-07-22 13:28+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: of smart_choice.tornado_graph:2
+msgid "Tornado Graph"
+msgstr ""
+
+#: of smart_choice.tornado_graph.tornado_graph:1
+msgid "Creates a tornado graph of value sensitivities for the analyzed tree."
+msgstr ""
+
+#: of smart_choice.tornado_graph.tornado_graph
+msgid "Parameters"
+msgstr ""
+
+#: of smart_choice.tornado_graph.tornado_graph:3
+msgid ""
+"dictionary contains ValueSensitivity results for individual values in the"
+" tree."
+msgstr ""
+

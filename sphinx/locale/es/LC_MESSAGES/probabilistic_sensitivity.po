@@ -1,0 +1,60 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, Juan D. Velasquez
+# This file is distributed under the same license as the Smart-Choice:
+# Decision Tree Analysis Toolkit package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Smart-Choice: Decision Tree Analysis Toolkit 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-07-22 13:28+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: of smart_choice.probabilistic_sensitivity:2
+msgid "Probabilistic Sensitivity Analysis"
+msgstr ""
+
+#: of smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity:1
+msgid "Bases: :class:`object`"
+msgstr ""
+
+#: of smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity:1
+msgid "Display a probabilistic sensitivity plot for a chance node."
+msgstr ""
+
+#: of smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity
+msgid "Parameters"
+msgstr ""
+
+#: of smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity:4
+msgid "Decision tree to be analized."
+msgstr ""
+
+#: of smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity:7
+msgid "Name of the variable."
+msgstr ""
+
+#: of smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity:10
+msgid ""
+"Identification number of the node of the tree used to collect the "
+"results. The identifier of the root node is `0` ."
+msgstr ""
+
+#: of smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity
+#: smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity.probabilistic_sensitivity_chance
+#: smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity.probabilistic_sensitivity_decision
+msgid "Return type"
+msgstr ""
+
+#: of smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity.plot:1
+msgid "Plots the sensitivty to probability."
+msgstr ""
+

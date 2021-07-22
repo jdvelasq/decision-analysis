@@ -1,0 +1,205 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, Juan D. Velasquez
+# This file is distributed under the same license as the Smart-Choice:
+# Decision Tree Analysis Toolkit package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Smart-Choice: Decision Tree Analysis Toolkit 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-07-22 13:28+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: of smart_choice.decisiontree:2
+msgid "Decision Tree Model"
+msgstr ""
+
+#: of smart_choice.decisiontree:4
+msgid ""
+"The **DecisionTree** is the object used to represent the decision tree "
+"model. This module is responsible for all functionality of the package. A"
+" typical sequence of use is the following:"
+msgstr ""
+
+#: of smart_choice.decisiontree:8
+msgid "Create the nodes used to feed the tree (Module `nodes`)."
+msgstr ""
+
+#: of smart_choice.decisiontree:10
+msgid "Create the tree."
+msgstr ""
+
+#: of smart_choice.decisiontree:12
+msgid "Build the internal structure of the tree."
+msgstr ""
+
+#: of smart_choice.decisiontree:14
+msgid "Evaluate the tree."
+msgstr ""
+
+#: of smart_choice.decisiontree:16
+msgid "Analyze plots and other results."
+msgstr ""
+
+#: of smart_choice.decisiontree:18
+msgid "Modify the structure of the tree and repeat the analysis."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree:1
+msgid "Bases: :class:`object`"
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree:1
+msgid "Decision tree representation."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree
+#: smart_choice.decisiontree.DecisionTree.display
+#: smart_choice.decisiontree.DecisionTree.plot
+#: smart_choice.decisiontree.DecisionTree.rollback
+msgid "Parameters"
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree:3
+msgid ""
+"Types of nodes used in the tree. This parameter is created using the "
+"module `Nodes`."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree
+#: smart_choice.decisiontree.DecisionTree.display
+#: smart_choice.decisiontree.DecisionTree.evaluate
+#: smart_choice.decisiontree.DecisionTree.nodes
+#: smart_choice.decisiontree.DecisionTree.rollback
+msgid "Return type"
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.copy:1
+msgid "Creates a copy of the decision tree."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.display:1
+msgid "Prints the tree as text diagram."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.display:3
+msgid ""
+"Id number of the root of the tree to be exported. When it is zero, the "
+"entire tree is exported."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.display:7
+msgid "Controls the maximum deep of the nodes in the tree exported as text."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.display:10
+msgid ""
+"When `True` exports only the subtree showing the nodes and branches "
+"relevants to the optimal decision (optimal strategy)."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.display:14
+msgid ""
+"Presented values in the tree: `\"ev\"` is the expected value; `\"eu\"` is"
+" the expected utility. `\"ce\"` is the certain equivalent."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.evaluate:1
+msgid "Calculates the values at the end of the tree (terminal nodes)."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.nodes:1
+msgid "Prints the internal structure of the tree as a list of nodes."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.plot:1
+msgid "Plots the tree."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.plot:3
+msgid "maximum deep of the tree nodes to be plotted."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.plot:5
+msgid ""
+"When `True`, it plots only the subtree showing the nodes and branches "
+"relevants to the optimal decision (optimal strategy)."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.rebuild:1
+msgid "Build  the tree using the structure information in the data nodes."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.rollback:1
+msgid ""
+"Computes the preferred decision by calculating the expected values at "
+"each internal node, and returns the expected value of the preferred "
+"decision."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.rollback:6
+msgid ""
+"Computation begins at the terminal nodes towards the root node. In each "
+"chance node, the expected values are calculated as the sum of "
+"probabilities in each branch  multiplied by the expected value in the "
+"corresponding node. For decision nodes, the expected value is the maximum"
+" (or minimum) value of its branches."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.rollback:12
+msgid ""
+"Value returned by the function:  * `\"ev\"`: expected value.  * `\"eu\"`:"
+" expected utility.  * `\"ce\"`: certainty equivalent."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.rollback:13
+msgid "Value returned by the function:"
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.rollback:15
+msgid "`\"ev\"`: expected value."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.rollback:17
+msgid "`\"eu\"`: expected utility."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.rollback:19
+msgid "`\"ce\"`: certainty equivalent."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.rollback:21
+msgid ""
+"Utility function used for the computations:  * None: expected utility.  *"
+" `\"exp\"`: exponential utility function.  * `\"log\"`: logarithmic "
+"utility function."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.rollback:22
+msgid "Utility function used for the computations:"
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.rollback:24
+msgid "None: expected utility."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.rollback:26
+msgid "`\"exp\"`: exponential utility function."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.rollback:28
+msgid "`\"log\"`: logarithmic utility function."
+msgstr ""
+
+#: of smart_choice.decisiontree.DecisionTree.rollback:30
+msgid "Risk tolerance of the decision-maker."
+msgstr ""
+

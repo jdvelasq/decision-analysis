@@ -1,0 +1,75 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, Juan D. Velasquez
+# This file is distributed under the same license as the Smart-Choice:
+# Decision Tree Analysis Toolkit package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Smart-Choice: Decision Tree Analysis Toolkit 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-07-22 13:28+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: of smart_choice.value_sensitivity:2
+msgid "Value Sensitivity Analysis"
+msgstr ""
+
+#: of smart_choice.value_sensitivity.ValueSensitivity:1
+msgid "Bases: :class:`object`"
+msgstr ""
+
+#: of smart_choice.value_sensitivity.ValueSensitivity:1
+msgid "Displays sensitivity results to values in the decision tree."
+msgstr ""
+
+#: of smart_choice.value_sensitivity.ValueSensitivity
+msgid "Parameters"
+msgstr ""
+
+#: of smart_choice.value_sensitivity.ValueSensitivity:3
+msgid "The decision tree to be analyzed."
+msgstr ""
+
+#: of smart_choice.value_sensitivity.ValueSensitivity:6
+msgid "Variable to be analyzed."
+msgstr ""
+
+#: of smart_choice.value_sensitivity.ValueSensitivity:9
+msgid "Name of the branch."
+msgstr ""
+
+#: of smart_choice.value_sensitivity.ValueSensitivity:12
+msgid "Tuple with the minimal and maximum values to be analyzed."
+msgstr ""
+
+#: of smart_choice.value_sensitivity.ValueSensitivity:15
+msgid ""
+"When `True`, returns the expected value for chance nodes, and the optimal"
+" decision for event nodes. When `False` return the values for all "
+"branches of the node."
+msgstr ""
+
+#: of smart_choice.value_sensitivity.ValueSensitivity:20
+msgid "Identification number of the node to be analyzed."
+msgstr ""
+
+#: of smart_choice.value_sensitivity.ValueSensitivity:23
+msgid "Number of points used to create the plot."
+msgstr ""
+
+#: of smart_choice.value_sensitivity.ValueSensitivity
+msgid "Return type"
+msgstr ""
+
+#: of smart_choice.value_sensitivity.ValueSensitivity.plot:1
+msgid "Plots the sensitivity to values"
+msgstr ""
+

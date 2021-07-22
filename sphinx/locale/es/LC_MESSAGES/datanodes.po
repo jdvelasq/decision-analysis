@@ -1,0 +1,173 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, Juan D. Velasquez
+# This file is distributed under the same license as the Smart-Choice:
+# Decision Tree Analysis Toolkit package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Smart-Choice: Decision Tree Analysis Toolkit 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-07-22 13:28+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: of smart_choice.datanodes:2
+msgid "Node types"
+msgstr ""
+
+#: of smart_choice.datanodes:4
+msgid ""
+"This module is used to create and characterize the nodes of the tree. The"
+" package implements three types of nodes:"
+msgstr ""
+
+#: of smart_choice.datanodes:7
+msgid "Terminal nodes."
+msgstr ""
+
+#: of smart_choice.datanodes:9
+msgid "Decision nodes."
+msgstr ""
+
+#: of smart_choice.datanodes:11
+msgid "Chance nodes."
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes:1
+msgid "Bases: :class:`object`"
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes:1
+msgid ""
+"This is a bag used to create and contain the different types of the tree "
+"nodes. The functions `terminal`, `chance`, and `decision` are used to "
+"create the nodes."
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes.add_chance:1
+msgid "Adds a chance node to the bag."
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes.add_chance
+#: smart_choice.datanodes.DataNodes.add_decision
+#: smart_choice.datanodes.DataNodes.add_terminal
+#: smart_choice.datanodes.DataNodes.set_outcome
+#: smart_choice.datanodes.DataNodes.set_probability
+msgid "Parameters"
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes.add_chance:3
+#: smart_choice.datanodes.DataNodes.add_decision:3
+#: smart_choice.datanodes.DataNodes.add_terminal:3
+msgid "Name assigned to the node."
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes.add_chance:6
+msgid ""
+"A list of tuples, where each tuple contains the following information:  *"
+" Name of the branch.  * Probability.  * Associated value to the branch.  "
+"* Name of the successor node."
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes.add_chance:7
+#: smart_choice.datanodes.DataNodes.add_decision:7
+msgid "A list of tuples, where each tuple contains the following information:"
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes.add_chance:9
+#: smart_choice.datanodes.DataNodes.add_decision:9
+msgid "Name of the branch."
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes.add_chance:11
+msgid "Probability."
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes.add_chance:13
+#: smart_choice.datanodes.DataNodes.add_decision:11
+msgid "Associated value to the branch."
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes.add_chance:15
+#: smart_choice.datanodes.DataNodes.add_decision:13
+msgid "Name of the successor node."
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes.add_chance
+#: smart_choice.datanodes.DataNodes.add_decision
+#: smart_choice.datanodes.DataNodes.add_terminal
+msgid "Return type"
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes.add_decision:1
+#: smart_choice.datanodes.DataNodes.add_terminal:1
+msgid "Adds a decision node to the bag."
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes.add_decision:6
+msgid ""
+"A list of tuples, where each tuple contains the following information:  *"
+" Name of the branch.  * Associated value to the branch.  * Name of the "
+"successor node."
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes.add_decision:15
+msgid "When it is `True`, selects the branch with the maximum expected value."
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes.add_terminal:6
+msgid ""
+"It is a valid python function used for computing the value of the "
+"terminal node in the tree. The names of the created nodes must be used as"
+" the parameters of the function."
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes.copy:1
+msgid ""
+"Creates a deep copy of the bag. This function is used internally by the "
+"package."
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes.get_top_bottom_branches:1
+msgid "Gets the position of the branches with top and bottom values."
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes.set_outcome:1
+msgid "Creates a dependent outcome for a branch."
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes.set_outcome:3
+msgid "value assigned to the branch."
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes.set_outcome:6
+msgid ""
+"pairs of variables and values specifying the required conditions to "
+"assign the outcome to a branch."
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes.set_probability:1
+msgid "Creates a dependent probability for a branch."
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes.set_probability:3
+msgid "probability assigned to the branch."
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes.set_probability:6
+msgid ""
+"pairs of variables and values specifying the required conditions to "
+"assign the probability to a branch."
+msgstr ""
+
+#: of smart_choice.datanodes.DataNodes.set_probabitlities_to_zero:1
+msgid "Set to zero the probabilities of the all branchs of variable."
+msgstr ""
+

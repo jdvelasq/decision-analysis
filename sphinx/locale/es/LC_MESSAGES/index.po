@@ -1,0 +1,149 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, Juan D. Velasquez
+# This file is distributed under the same license as the Smart-Choice:
+# Decision Tree Analysis Toolkit package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Smart-Choice: Decision Tree Analysis Toolkit 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-07-22 13:28+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../index.rst:2
+msgid "Smart-Choice: Decision-Making Analysis Toolkit"
+msgstr ""
+
+#: ../../index.rst:5
+msgid "**Author**"
+msgstr ""
+
+#: ../../index.rst:7
+msgid "Prof. Juan David Velásquez-Henao, MSc, PhD"
+msgstr ""
+
+#: ../../index.rst:8
+msgid "Universidad Nacional de Colombia, Sede Medellín."
+msgstr ""
+
+#: ../../index.rst:9
+msgid "jdvelasq@unal.edu.co"
+msgstr ""
+
+#: ../../index.rst:13
+msgid "**What is it?**"
+msgstr ""
+
+#: ../../index.rst:15
+msgid ""
+"**Smart-Choice** is a Python package for Decision-Making Analysis using "
+"decision trees. **Smart-Choice** allows the user to define a decision "
+"tree directly in Python. The best experience can be obtained when the "
+"package is used in a notebook inside of Jupyter Lab or Google Colab. "
+"**Smart-Choice** has no limits in the size of the decision tree created, "
+"and it can efficiently run large trees. Different reports are available "
+"to facilitate tree analysis."
+msgstr ""
+
+#: ../../index.rst:23
+msgid "**Main Features**"
+msgstr ""
+
+#: ../../index.rst:26
+msgid ""
+"The package allows the user to define the following types of nodes in a "
+"decision tree:"
+msgstr ""
+
+#: ../../index.rst:29
+msgid "Chance nodes."
+msgstr ""
+
+#: ../../index.rst:31
+msgid "Decision nodes."
+msgstr ""
+
+#: ../../index.rst:33
+msgid "End or Terminal nodes."
+msgstr ""
+
+#: ../../index.rst:35
+msgid ""
+"In the package, all model values and probabilities are entered directly "
+"as node properties using typical data structures in Python. Thus, an user"
+" with a basic knowledge of the programming language can use effectively "
+"the package."
+msgstr ""
+
+#: ../../index.rst:40
+msgid ""
+"A run of the decision tree can be used using monetary expected values, "
+"but, the following utility functions can be used to represent risk "
+"adversion:"
+msgstr ""
+
+#: ../../index.rst:43
+msgid "Exponential."
+msgstr ""
+
+#: ../../index.rst:45
+msgid "Logarithmic."
+msgstr ""
+
+#: ../../index.rst:48
+msgid "Different types of analysis can be conducted easily, including:"
+msgstr ""
+
+#: ../../index.rst:50
+msgid "Decision analysis."
+msgstr ""
+
+#: ../../index.rst:52
+msgid "Sensitivity analysis."
+msgstr ""
+
+#: ../../index.rst:54
+msgid "Risk analysis."
+msgstr ""
+
+#: ../../index.rst:56
+msgid ""
+"For the terminal of end nodes, the user must supply Python functions to "
+"evaluate the value of the node. This feature allows the user to use all "
+"capacity of Python programming language. It is possibe to write functions"
+" to run a complete Monte Carlo simulation using other packages as scipy. "
+"In other scenarios, it is possible to build complex predictive models "
+"that feed the decision model using, for example, scikit-learn. Other "
+"great adventage of the **Smart-Choice** is velocity where it is compared "
+"with spreadsheets; it is possible to run complex models in a fraction of "
+"the time required when a spreadsheet is used."
+msgstr ""
+
+#: ../../index.rst:66
+msgid "**Release Information**"
+msgstr ""
+
+#: ../../index.rst:69
+msgid "Date:   July 21, 2021  **Version**: 0.1.0"
+msgstr ""
+
+#: ../../index.rst:72
+msgid "Binary Installers:  `<https://pypi.org/project/smart-choice>`_"
+msgstr ""
+
+#: ../../index.rst:75
+msgid "Source Repository:  `<https://github.com/jdvelasq/smart-choice>`_"
+msgstr ""
+
+#: ../../index.rst:78
+msgid "Documentation:  `<https://jdvelasq.github.io/smart-choice/>`_"
+msgstr ""
+

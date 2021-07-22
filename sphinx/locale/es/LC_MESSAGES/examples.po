@@ -1,0 +1,111 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, Juan D. Velasquez
+# This file is distributed under the same license as the Smart-Choice:
+# Decision Tree Analysis Toolkit package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Smart-Choice: Decision Tree Analysis Toolkit 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-07-22 13:28+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: of smart_choice.examples:2
+msgid "Decision tree examples"
+msgstr ""
+
+#: of smart_choice.examples:4
+msgid ""
+"The functions in this module returns the data node structures for several"
+" examples in the literature."
+msgstr ""
+
+#: of smart_choice.examples.oil_tree_example:1
+msgid "PrecisionTree Oil Example."
+msgstr ""
+
+#: of smart_choice.examples.oil_tree_example:4
+msgid ""
+"This function returns the data nodes structure for the oil example in "
+"discuted in the PrecisionTree user guide."
+msgstr ""
+
+#: of smart_choice.examples.stbook:1
+msgid "Bid example from \"Decision Analysis for the professional."
+msgstr ""
+
+#: of smart_choice.examples.stbook:4
+msgid "Bidding tree with four possible options:"
+msgstr ""
+
+#: of smart_choice.examples.stbook:6
+msgid "Bid $ 300."
+msgstr ""
+
+#: of smart_choice.examples.stbook:8 smart_choice.examples.stguide:6
+msgid "Bid $ 500."
+msgstr ""
+
+#: of smart_choice.examples.stbook:10 smart_choice.examples.stguide:8
+msgid "Bid $ 700."
+msgstr ""
+
+#: of smart_choice.examples.stbook:12
+msgid "No bid."
+msgstr ""
+
+#: of smart_choice.examples.stbook_dependent_outcomes:1
+msgid "Dependent outcomes example."
+msgstr ""
+
+#: of smart_choice.examples.stbook_dependent_outcomes:4
+msgid ""
+"This function returns the data nodes for the tree in the Fig. 4.5 (pag. "
+"81) of the book \"Decision Analysis for the Professional\"."
+msgstr ""
+
+#: of smart_choice.examples.stguide:1
+msgid "Supertree userguide bid example (2 branches)."
+msgstr ""
+
+#: of smart_choice.examples.stguide:3
+msgid ""
+"This function returns the data nodes for a bid problem with two possible "
+"decisiions:"
+msgstr ""
+
+#: of smart_choice.examples.stguide:10
+msgid ""
+"This example is used in the documentation available in the web site of "
+"the software."
+msgstr ""
+
+#: of smart_choice.examples.stguide_dependent_outcomes:1
+msgid "Supertree dependent outcomes example."
+msgstr ""
+
+#: of smart_choice.examples.stguide_dependent_outcomes:3
+msgid ""
+"This function returns the data nodes for the example in the Fig. 7.6 of "
+"the documentation available in the web site."
+msgstr ""
+
+#: of smart_choice.examples.stguide_dependent_probabilities:1
+msgid "Supertree dependent probabilities example."
+msgstr ""
+
+#: of smart_choice.examples.stguide_dependent_probabilities:3
+msgid ""
+"This function returns the data node structure for the bid problem with "
+"dependent probabilities presented in Fig 7.3 of the documentation "
+"available in the web site."
+msgstr ""
+

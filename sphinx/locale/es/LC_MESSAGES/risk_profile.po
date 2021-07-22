@@ -1,0 +1,60 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, Juan D. Velasquez
+# This file is distributed under the same license as the Smart-Choice:
+# Decision Tree Analysis Toolkit package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Smart-Choice: Decision Tree Analysis Toolkit 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-07-22 13:28+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: of smart_choice.risk_profile:2
+msgid "Risk Profile Analysis"
+msgstr ""
+
+#: of smart_choice.risk_profile.RiskProfile:1
+msgid "Bases: :class:`object`"
+msgstr ""
+
+#: of smart_choice.risk_profile.RiskProfile:1
+msgid ""
+"Plots a probability distribution of the tree results computed in a "
+"designed node."
+msgstr ""
+
+#: of smart_choice.risk_profile.RiskProfile
+msgid "Parameters"
+msgstr ""
+
+#: of smart_choice.risk_profile.RiskProfile:3
+msgid "The decision tree to be analyzed."
+msgstr ""
+
+#: of smart_choice.risk_profile.RiskProfile:6
+msgid "The identification number of the tree node to be analyzed."
+msgstr ""
+
+#: of smart_choice.risk_profile.RiskProfile:9
+msgid "When `True`, displays the cumulative distribution at the analized node."
+msgstr ""
+
+#: of smart_choice.risk_profile.RiskProfile:12
+msgid ""
+"When `True`, displays the value for the optimal branch in decision nodes."
+" When `False` display the value for all branches of the analyzed node."
+msgstr ""
+
+#: of smart_choice.risk_profile.RiskProfile.plot:1
+msgid "Risk profile plot."
+msgstr ""
+

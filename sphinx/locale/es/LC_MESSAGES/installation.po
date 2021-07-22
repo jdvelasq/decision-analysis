@@ -1,0 +1,64 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, Juan D. Velasquez
+# This file is distributed under the same license as the Smart-Choice:
+# Decision Tree Analysis Toolkit package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Smart-Choice: Decision Tree Analysis Toolkit 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-07-22 13:28+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../installation.rst:2
+msgid "Installation"
+msgstr ""
+
+#: ../../installation.rst:5
+msgid "Requeriments"
+msgstr ""
+
+#: ../../installation.rst:7
+msgid ""
+"**Smart-Choice** was developed in Python 3.9, and it depends on the "
+"following packages:"
+msgstr ""
+
+#: ../../installation.rst:9
+msgid "`Numpy`."
+msgstr ""
+
+#: ../../installation.rst:11
+msgid "`Matplotlib`."
+msgstr ""
+
+#: ../../installation.rst:13
+msgid "`Graphviz`."
+msgstr ""
+
+#: ../../installation.rst:17
+msgid "How to install"
+msgstr ""
+
+#: ../../installation.rst:19
+msgid "The current stable version can be installed from the command line using:"
+msgstr ""
+
+#: ../../installation.rst:26
+msgid ""
+"The current development version can be installed by clonning the GitHub "
+"repo `<https://github.com/jdvelasq/smart-choice>`_ and executing"
+msgstr ""
+
+#: ../../installation.rst:33
+msgid "at the command prompt."
+msgstr ""
+

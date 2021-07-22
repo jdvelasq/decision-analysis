@@ -20,7 +20,7 @@ msgstr ""
 
 #: of smart_choice.probabilistic_sensitivity:2
 msgid "Probabilistic Sensitivity Analysis"
-msgstr ""
+msgstr "Análisis de la Sensibilidad a la Probabilidad"
 
 #: of smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity:1
 msgid "Bases: :class:`object`"
@@ -28,33 +28,35 @@ msgstr ""
 
 #: of smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity:1
 msgid "Display a probabilistic sensitivity plot for a chance node."
-msgstr ""
+msgstr "Presenta un gráfica de sensibilidad a la probabilidad para un nodo aleatorio."
 
 #: of smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity
 msgid "Parameters"
-msgstr ""
+msgstr "Parámetros"
 
 #: of smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity:4
 msgid "Decision tree to be analized."
-msgstr ""
+msgstr "Árbol de decisión a ser analizado."
 
 #: of smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity:7
 msgid "Name of the variable."
-msgstr ""
+msgstr "Nombre de la variable."
 
 #: of smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity:10
 msgid ""
 "Identification number of the node of the tree used to collect the "
 "results. The identifier of the root node is `0` ."
 msgstr ""
+"Número de identificación de los nodos del árbol usados para recolectar los resultados. "
+"La identificación del nodo raíz es `0`."
 
 #: of smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity
 #: smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity.probabilistic_sensitivity_chance
 #: smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity.probabilistic_sensitivity_decision
 msgid "Return type"
-msgstr ""
+msgstr "Tipo retornado."
 
 #: of smart_choice.probabilistic_sensitivity.ProbabilisticSensitivity.plot:1
 msgid "Plots the sensitivty to probability."
-msgstr ""
+msgstr "Gráfica la sensibilidad a la probabilidad."
 

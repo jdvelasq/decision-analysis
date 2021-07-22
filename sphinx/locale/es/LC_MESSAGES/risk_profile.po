@@ -20,7 +20,7 @@ msgstr ""
 
 #: of smart_choice.risk_profile:2
 msgid "Risk Profile Analysis"
-msgstr ""
+msgstr "Análisis del Perfil de Riesgo"
 
 #: of smart_choice.risk_profile.RiskProfile:1
 msgid "Bases: :class:`object`"
@@ -30,31 +30,33 @@ msgstr ""
 msgid ""
 "Plots a probability distribution of the tree results computed in a "
 "designed node."
-msgstr ""
+msgstr "Grafica la distribución de probabilidades de los resultados del árbol calculados en el nodo especificado."
 
 #: of smart_choice.risk_profile.RiskProfile
 msgid "Parameters"
-msgstr ""
+msgstr "Parámetros"
 
 #: of smart_choice.risk_profile.RiskProfile:3
 msgid "The decision tree to be analyzed."
-msgstr ""
+msgstr "El árbol de decisión a ser analizado."
 
 #: of smart_choice.risk_profile.RiskProfile:6
 msgid "The identification number of the tree node to be analyzed."
-msgstr ""
+msgstr "El número de identificación del nodo del árbol a ser analizado."
 
 #: of smart_choice.risk_profile.RiskProfile:9
 msgid "When `True`, displays the cumulative distribution at the analized node."
-msgstr ""
+msgstr "Cuando es `True`, muestra la distribución acumulada en el nodo analizado."
 
 #: of smart_choice.risk_profile.RiskProfile:12
 msgid ""
 "When `True`, displays the value for the optimal branch in decision nodes."
 " When `False` display the value for all branches of the analyzed node."
 msgstr ""
+"Cuando es `True`, muestra el valor de la rama óptima en los nodos de decisión."
+" Cuando es `False` muestra el valor para todas las ramas del nodo analizado."
 
 #: of smart_choice.risk_profile.RiskProfile.plot:1
 msgid "Risk profile plot."
-msgstr ""
+msgstr "Gráfica del perfil de riesgo."
 

@@ -20,7 +20,7 @@ msgstr ""
 
 #: of smart_choice.risk_sensitivity:2
 msgid "Risk Sensitivity Analysis"
-msgstr ""
+msgstr "Análisis de Sensibilidad al Riesgo"
 
 #: of smart_choice.risk_sensitivity.RiskAttitudeSensitivity:1
 msgid "Bases: :class:`object`"
@@ -28,43 +28,46 @@ msgstr ""
 
 #: of smart_choice.risk_sensitivity.RiskAttitudeSensitivity:1
 msgid "Displays the sensitivity to risk attitude."
-msgstr ""
+msgstr "Muestra la sensibilidad de la actitud ante el riesgo."
 
 #: of smart_choice.risk_sensitivity.RiskAttitudeSensitivity
 msgid "Parameters"
-msgstr ""
+msgstr "Parámetros"
 
 #: of smart_choice.risk_sensitivity.RiskAttitudeSensitivity:3
 msgid "The decision tree to be analyzed."
-msgstr ""
+msgstr "El árbol de decisión a ser analizado."
 
 #: of smart_choice.risk_sensitivity.RiskAttitudeSensitivity:6
 msgid ""
 "Utility function to be used.  * `\"exp\"`: exponential utility function."
 "  * `\"log\"`: logarithmic utility function."
 msgstr ""
+"Función de utilidad a ser usada: "
+"  * `\"exp\"`: Función de utilidad exponencial."
+"  * `\"log\"`: Función de utilidad logaritmica."
 
 #: of smart_choice.risk_sensitivity.RiskAttitudeSensitivity:7
 msgid "Utility function to be used."
-msgstr ""
+msgstr "Función de utilidad a ser usada."
 
 #: of smart_choice.risk_sensitivity.RiskAttitudeSensitivity:9
 msgid "`\"exp\"`: exponential utility function."
-msgstr ""
+msgstr "`\"exp\"`: función de utilidad exponencial."
 
 #: of smart_choice.risk_sensitivity.RiskAttitudeSensitivity:11
 msgid "`\"log\"`: logarithmic utility function."
-msgstr ""
+msgstr "`\"log\"`: función de utilidad logaritmica."
 
 #: of smart_choice.risk_sensitivity.RiskAttitudeSensitivity:13
 msgid "Risk tolerance of the decision-maker."
-msgstr ""
+msgstr "Tolerancia al riesgo del decisor."
 
 #: of smart_choice.risk_sensitivity.RiskAttitudeSensitivity:16
 msgid "Identification number of the node to be analyzed."
-msgstr ""
+msgstr "Número de identificación del nodo a ser analizado."
 
 #: of smart_choice.risk_sensitivity.RiskAttitudeSensitivity.plot:1
 msgid "Plots the sensibility to risk attitude."
-msgstr ""
+msgstr "Grafica la sensibilidad de la actitud ante el riesgo."
 

@@ -20,19 +20,20 @@ msgstr ""
 
 #: of smart_choice.tornado_graph:2
 msgid "Tornado Graph"
-msgstr ""
+msgstr "Gráfica de Tornado"
 
 #: of smart_choice.tornado_graph.tornado_graph:1
 msgid "Creates a tornado graph of value sensitivities for the analyzed tree."
-msgstr ""
+msgstr "Crea una gráfica de tornado para la sensibilidad a los valores del árbol analizado."
 
 #: of smart_choice.tornado_graph.tornado_graph
 msgid "Parameters"
-msgstr ""
+msgstr "Parámetros"
 
 #: of smart_choice.tornado_graph.tornado_graph:3
 msgid ""
 "dictionary contains ValueSensitivity results for individual values in the"
 " tree."
 msgstr ""
+"diccionario que contiene los resultads como objetos `ValueSensitivity` para valores individuales en el árbol."
 

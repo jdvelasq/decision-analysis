@@ -20,11 +20,11 @@ msgstr ""
 
 #: ../../index.rst:2
 msgid "Smart-Choice: Decision-Making Analysis Toolkit"
-msgstr ""
+msgstr "Smart-Choice: kit de herramientas de análisis para la toma de decisiones"
 
 #: ../../index.rst:5
 msgid "**Author**"
-msgstr ""
+msgstr "**Autor**"
 
 #: ../../index.rst:7
 msgid "Prof. Juan David Velásquez-Henao, MSc, PhD"
@@ -40,7 +40,7 @@ msgstr ""
 
 #: ../../index.rst:13
 msgid "**What is it?**"
-msgstr ""
+msgstr "**¿Qué es?**"
 
 #: ../../index.rst:15
 msgid ""
@@ -52,28 +52,36 @@ msgid ""
 "and it can efficiently run large trees. Different reports are available "
 "to facilitate tree analysis."
 msgstr ""
+"**Smart-Choice** es un paquete de Python para el Análisis de Decisiones usando árboles de decision. "
+"**Smart-Choice** permite que el usuario defina un árbol de decisión completamente en Python. "
+"La mejor experiencia de uso se puede obtener cuando el paquete es usado en "
+"un libro de Jupyter Lab o Google Colab. "
+"**Smart-Choice** no tiene limites en el tamaño del árbol de decisión creado, "
+"y puede ejecutar eficientemente grandes árboles. Diferentes reportes están "
+"disponibles para facilitar el análisis."
 
 #: ../../index.rst:23
 msgid "**Main Features**"
-msgstr ""
+msgstr "Principales características"
 
 #: ../../index.rst:26
 msgid ""
 "The package allows the user to define the following types of nodes in a "
 "decision tree:"
 msgstr ""
+"El paquete permite que el usuario defina los siguientes tipos de nodos en un árbol de decisión:"
 
 #: ../../index.rst:29
 msgid "Chance nodes."
-msgstr ""
+msgstr "Nodos aleatorios."
 
 #: ../../index.rst:31
 msgid "Decision nodes."
-msgstr ""
+msgstr "Nodos de decisión."
 
 #: ../../index.rst:33
 msgid "End or Terminal nodes."
-msgstr ""
+msgstr "Nodos finales o terminales."
 
 #: ../../index.rst:35
 msgid ""
@@ -82,6 +90,12 @@ msgid ""
 " with a basic knowledge of the programming language can use effectively "
 "the package."
 msgstr ""
+"En el paquete, todos los valores y probabilidades son entradas directametne "
+"como propiedades de los nodos usando estructuras de datos de Python. Así, "
+"un usuario con un conocimiento básico del lenguaje de programación puede usar "
+"efectivamente el paquete."
+
+
 
 #: ../../index.rst:40
 msgid ""
@@ -89,30 +103,33 @@ msgid ""
 "but, the following utility functions can be used to represent risk "
 "adversion:"
 msgstr ""
+"Una corrida del árbol de decisión puede ser conputada usando valores monetarios esperados, "
+"pero las siguientes funciones de utilidad pueden ser usadas para representar la aversión al "
+"riesgo:"
 
 #: ../../index.rst:43
 msgid "Exponential."
-msgstr ""
+msgstr "Exponancial."
 
 #: ../../index.rst:45
 msgid "Logarithmic."
-msgstr ""
+msgstr "Logaritmica."
 
 #: ../../index.rst:48
 msgid "Different types of analysis can be conducted easily, including:"
-msgstr ""
+msgstr "Diferentes tipos de análisis pueden ser ejecutados facilmente, incluyendo:"
 
 #: ../../index.rst:50
 msgid "Decision analysis."
-msgstr ""
+msgstr "Análisis de decisiones."
 
 #: ../../index.rst:52
 msgid "Sensitivity analysis."
-msgstr ""
+msgstr "Análisis de sensibilidad."
 
 #: ../../index.rst:54
 msgid "Risk analysis."
-msgstr ""
+msgstr "Análisis de riesgo."
 
 #: ../../index.rst:56
 msgid ""
@@ -126,24 +143,34 @@ msgid ""
 "with spreadsheets; it is possible to run complex models in a fraction of "
 "the time required when a spreadsheet is used."
 msgstr ""
+"Para los terminales de los nodos finales, el usuario debe definir funciones de Python para "
+"evaluar el valor de dichos nodos. Esta característica permite que el usuario use toda la "
+"capacidad del lenguaje de programación. Es posible escriir funciones que ejecuten "
+"una simulación completa de Montecarlo usando paquetes como scipy. "
+"En otros escenarios, es posible construir modelos predictivos complejos que alimenten el"
+"modelo de decisión usando, por ejemplo, scikit-learn. "
+"Otra gran ventaja de **Smart-Choice** es la velocidad cuando se le compara con hojas de calculo; "
+"es posible correr modelos complejos en una fracción del tiempo requerido cuando se usa una hoja de"
+"cálculo."
+
 
 #: ../../index.rst:66
 msgid "**Release Information**"
-msgstr ""
+msgstr "Información de la versión."
 
 #: ../../index.rst:69
 msgid "Date:   July 21, 2021  **Version**: 0.1.0"
-msgstr ""
+msgstr "Fecha:   Julio 21, 2021  **Version**: 0.1.0"
 
 #: ../../index.rst:72
 msgid "Binary Installers:  `<https://pypi.org/project/smart-choice>`_"
-msgstr ""
+msgstr "Instaladores binarios:  `<https://pypi.org/project/smart-choice>`_"
 
 #: ../../index.rst:75
 msgid "Source Repository:  `<https://github.com/jdvelasq/smart-choice>`_"
-msgstr ""
+msgstr "Repositorio del código fuente:  `<https://github.com/jdvelasq/smart-choice>`_"
 
 #: ../../index.rst:78
 msgid "Documentation:  `<https://jdvelasq.github.io/smart-choice/>`_"
-msgstr ""
+msgstr "Documentación:  `<https://jdvelasq.github.io/smart-choice/>`_"
 

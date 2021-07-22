@@ -24,15 +24,16 @@ msgstr ""
 
 #: of smart_choice.spyder_graph.spider_graph:1
 msgid "Creates a spider graph of value sensitivities for the analyzed tree."
-msgstr ""
+msgstr "Crea una gráfica de araña de las sensibilidad al valor para el árbol analizado."
 
 #: of smart_choice.spyder_graph.spider_graph
 msgid "Parameters"
-msgstr ""
+msgstr "Parámetros"
 
 #: of smart_choice.spyder_graph.spider_graph:3
 msgid ""
 "dictionary contains ValueSensitivity results for individual values in the"
 " tree."
 msgstr ""
+"diccionario que contiene los resultados del `ValueSensitivity` para valores individuales del árbol."
 

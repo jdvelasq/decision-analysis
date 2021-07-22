@@ -20,13 +20,13 @@ msgstr ""
 
 #: ../../reference.rst:2
 msgid "Library reference"
-msgstr ""
+msgstr "Referencia"
 
 #: ../../reference.rst:4
 msgid ""
 "Description of the functions, classes and modules contained within "
 "**Smart-Choice**."
-msgstr ""
+msgstr "Descripción de las funciones, clases y módulos contenidos dentro de **Smart-Choice**."
 
 #: ../../reference.rst:21
 msgid ":ref:`genindex`"

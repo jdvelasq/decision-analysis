@@ -20,25 +20,28 @@ msgstr ""
 
 #: of smart_choice.datanodes:2
 msgid "Node types"
-msgstr ""
+msgstr "Tipos de Nodos"
 
 #: of smart_choice.datanodes:4
 msgid ""
 "This module is used to create and characterize the nodes of the tree. The"
 " package implements three types of nodes:"
 msgstr ""
+"Este módulo es usado para crear y caracterizar los  nodos del arbol."
+"El paquete implementa tres tipos de nodos:"
+
 
 #: of smart_choice.datanodes:7
 msgid "Terminal nodes."
-msgstr ""
+msgstr "Nodos terminales."
 
 #: of smart_choice.datanodes:9
 msgid "Decision nodes."
-msgstr ""
+msgstr "Nodos de decisión."
 
 #: of smart_choice.datanodes:11
 msgid "Chance nodes."
-msgstr ""
+msgstr "Nodos aleatorios."
 
 #: of smart_choice.datanodes.DataNodes:1
 msgid "Bases: :class:`object`"
@@ -50,10 +53,12 @@ msgid ""
 "nodes. The functions `terminal`, `chance`, and `decision` are used to "
 "create the nodes."
 msgstr ""
+"Esta es una estructura para  crear y almacenar los tipos de nodos del arbol. "
+"Las funciones `terminal`, `chance` y `decision` son usadas para crear los nodos."
 
 #: of smart_choice.datanodes.DataNodes.add_chance:1
 msgid "Adds a chance node to the bag."
-msgstr ""
+msgstr "Adicioina un nodo aleatorio a la bolsa."
 
 #: of smart_choice.datanodes.DataNodes.add_chance
 #: smart_choice.datanodes.DataNodes.add_decision
@@ -61,13 +66,13 @@ msgstr ""
 #: smart_choice.datanodes.DataNodes.set_outcome
 #: smart_choice.datanodes.DataNodes.set_probability
 msgid "Parameters"
-msgstr ""
+msgstr "Parámetros"
 
 #: of smart_choice.datanodes.DataNodes.add_chance:3
 #: smart_choice.datanodes.DataNodes.add_decision:3
 #: smart_choice.datanodes.DataNodes.add_terminal:3
 msgid "Name assigned to the node."
-msgstr ""
+msgstr "Nombre asignado al nodo."
 
 #: of smart_choice.datanodes.DataNodes.add_chance:6
 msgid ""
@@ -75,41 +80,43 @@ msgid ""
 " Name of the branch.  * Probability.  * Associated value to the branch.  "
 "* Name of the successor node."
 msgstr ""
+"Una lista de tuplas, donde cada tupla contiene la siguiente información: nombre "
+"de la rama; probabilidad; valor asociado a la rama; nombre del nodo sucesor."
 
 #: of smart_choice.datanodes.DataNodes.add_chance:7
 #: smart_choice.datanodes.DataNodes.add_decision:7
 msgid "A list of tuples, where each tuple contains the following information:"
-msgstr ""
+msgstr "Una lista de tuplas, donde cada tupla contiene la siguiente información:"
 
 #: of smart_choice.datanodes.DataNodes.add_chance:9
 #: smart_choice.datanodes.DataNodes.add_decision:9
 msgid "Name of the branch."
-msgstr ""
+msgstr "Nombre de la rama."
 
 #: of smart_choice.datanodes.DataNodes.add_chance:11
 msgid "Probability."
-msgstr ""
+msgstr "Probabilidad."
 
 #: of smart_choice.datanodes.DataNodes.add_chance:13
 #: smart_choice.datanodes.DataNodes.add_decision:11
 msgid "Associated value to the branch."
-msgstr ""
+msgstr "Valor asociado a la rama."
 
 #: of smart_choice.datanodes.DataNodes.add_chance:15
 #: smart_choice.datanodes.DataNodes.add_decision:13
 msgid "Name of the successor node."
-msgstr ""
+msgstr "Nombre del nodo sucesor."
 
 #: of smart_choice.datanodes.DataNodes.add_chance
 #: smart_choice.datanodes.DataNodes.add_decision
 #: smart_choice.datanodes.DataNodes.add_terminal
 msgid "Return type"
-msgstr ""
+msgstr "Tipo retornado"
 
 #: of smart_choice.datanodes.DataNodes.add_decision:1
 #: smart_choice.datanodes.DataNodes.add_terminal:1
 msgid "Adds a decision node to the bag."
-msgstr ""
+msgstr "Adiciona un nodo de decisión a la bolsa."
 
 #: of smart_choice.datanodes.DataNodes.add_decision:6
 msgid ""
@@ -117,10 +124,12 @@ msgid ""
 " Name of the branch.  * Associated value to the branch.  * Name of the "
 "successor node."
 msgstr ""
+"Una lista de tuplas, donde cada tupla contiene la siguiente información: "
+"Nombre de la rama; valor asociado a la rama; nombre del nodo sucesor."
 
 #: of smart_choice.datanodes.DataNodes.add_decision:15
 msgid "When it is `True`, selects the branch with the maximum expected value."
-msgstr ""
+msgstr "Cuando es `True` selecciona la rama con el valor esperado máximo."
 
 #: of smart_choice.datanodes.DataNodes.add_terminal:6
 msgid ""
@@ -128,46 +137,57 @@ msgid ""
 "terminal node in the tree. The names of the created nodes must be used as"
 " the parameters of the function."
 msgstr ""
+"Es una función valida de Pyhon usada para calcular el valor del nodo terminal "
+"en el árbol. Los nombres nombres de los nodos creados deben ser usados como"
+"los parámetros de la función."
+
 
 #: of smart_choice.datanodes.DataNodes.copy:1
 msgid ""
 "Creates a deep copy of the bag. This function is used internally by the "
 "package."
 msgstr ""
+"Crea una copia profunda de la bolsa. Esta función es usada internamente por el "
+"paquete."
 
 #: of smart_choice.datanodes.DataNodes.get_top_bottom_branches:1
 msgid "Gets the position of the branches with top and bottom values."
-msgstr ""
+msgstr "Obtiene la posición de las ramas con los valores superior e inferior."
 
 #: of smart_choice.datanodes.DataNodes.set_outcome:1
 msgid "Creates a dependent outcome for a branch."
-msgstr ""
+msgstr "Crea un resultado dependiente para la rama."
 
 #: of smart_choice.datanodes.DataNodes.set_outcome:3
 msgid "value assigned to the branch."
-msgstr ""
+msgstr "Valor asignado a la rama."
 
 #: of smart_choice.datanodes.DataNodes.set_outcome:6
 msgid ""
 "pairs of variables and values specifying the required conditions to "
 "assign the outcome to a branch."
 msgstr ""
+"Pares de variables y valores especificando las condiciones requeridas "
+"para asignar el valor a la rama."
 
 #: of smart_choice.datanodes.DataNodes.set_probability:1
 msgid "Creates a dependent probability for a branch."
-msgstr ""
+msgstr "Crea una probabilidad dependiente para la rama."
 
 #: of smart_choice.datanodes.DataNodes.set_probability:3
 msgid "probability assigned to the branch."
-msgstr ""
+msgstr "Probabilidad asignada a la rama."
 
 #: of smart_choice.datanodes.DataNodes.set_probability:6
 msgid ""
 "pairs of variables and values specifying the required conditions to "
 "assign the probability to a branch."
 msgstr ""
+"Pares de variables y valores especificando las condiciones requeridas para "
+"asignar la probabilidad a una rama."
+
 
 #: of smart_choice.datanodes.DataNodes.set_probabitlities_to_zero:1
 msgid "Set to zero the probabilities of the all branchs of variable."
-msgstr ""
+msgstr "Fija en cero las probabilidades de todas las ramas de una variable."
 

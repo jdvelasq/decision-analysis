@@ -20,17 +20,18 @@ msgstr ""
 
 #: ../../installation.rst:2
 msgid "Installation"
-msgstr ""
+msgstr "Instalación"
 
 #: ../../installation.rst:5
 msgid "Requeriments"
-msgstr ""
+msgstr "Requisitos"
 
 #: ../../installation.rst:7
 msgid ""
 "**Smart-Choice** was developed in Python 3.9, and it depends on the "
 "following packages:"
 msgstr ""
+"**Smart-Choice** fue desarrollado en Python 3.9, y depende de los siguientes paquetes:"
 
 #: ../../installation.rst:9
 msgid "`Numpy`."
@@ -46,19 +47,21 @@ msgstr ""
 
 #: ../../installation.rst:17
 msgid "How to install"
-msgstr ""
+msgstr "Cómo instalar"
 
 #: ../../installation.rst:19
 msgid "The current stable version can be installed from the command line using:"
-msgstr ""
+msgstr "La version estable actual puede ser instalada desde la línea de comandos usando:"
 
 #: ../../installation.rst:26
 msgid ""
 "The current development version can be installed by clonning the GitHub "
 "repo `<https://github.com/jdvelasq/smart-choice>`_ and executing"
 msgstr ""
+"La versión actual en desarrollo puede ser instalada clonando el repo de GitHub "
+"`<https://github.com/jdvelasq/smart-choice>`_ y ejecutando"
 
 #: ../../installation.rst:33
 msgid "at the command prompt."
-msgstr ""
+msgstr "en la línea de comandos."
 

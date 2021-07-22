@@ -20,7 +20,7 @@ msgstr ""
 
 #: of smart_choice.value_sensitivity:2
 msgid "Value Sensitivity Analysis"
-msgstr ""
+msgstr "Análisis de sensibilidad al valor"
 
 #: of smart_choice.value_sensitivity.ValueSensitivity:1
 msgid "Bases: :class:`object`"
@@ -28,27 +28,27 @@ msgstr ""
 
 #: of smart_choice.value_sensitivity.ValueSensitivity:1
 msgid "Displays sensitivity results to values in the decision tree."
-msgstr ""
+msgstr "Muestra los resultados de sensibilidad a los valores en el árbol de decisión."
 
 #: of smart_choice.value_sensitivity.ValueSensitivity
 msgid "Parameters"
-msgstr ""
+msgstr "Parámetros"
 
 #: of smart_choice.value_sensitivity.ValueSensitivity:3
 msgid "The decision tree to be analyzed."
-msgstr ""
+msgstr "El árbol de decisión a ser analizado."
 
 #: of smart_choice.value_sensitivity.ValueSensitivity:6
 msgid "Variable to be analyzed."
-msgstr ""
+msgstr "Variable a ser analizada."
 
 #: of smart_choice.value_sensitivity.ValueSensitivity:9
 msgid "Name of the branch."
-msgstr ""
+msgstr "Nombre de la rama"
 
 #: of smart_choice.value_sensitivity.ValueSensitivity:12
 msgid "Tuple with the minimal and maximum values to be analyzed."
-msgstr ""
+msgstr "Tupla con los valores máximo y minimo a ser analizados."
 
 #: of smart_choice.value_sensitivity.ValueSensitivity:15
 msgid ""
@@ -56,20 +56,23 @@ msgid ""
 " decision for event nodes. When `False` return the values for all "
 "branches of the node."
 msgstr ""
+"Cuando es `True`, retorna el valor esperado de los nodos aleatorios, y la "
+"decisión óptima para los nodos de decisión. Cuando es `False` retorna los valores "
+"para todas las ramas del nodo."
 
 #: of smart_choice.value_sensitivity.ValueSensitivity:20
 msgid "Identification number of the node to be analyzed."
-msgstr ""
+msgstr "Identificación del nodo a ser analizado."
 
 #: of smart_choice.value_sensitivity.ValueSensitivity:23
 msgid "Number of points used to create the plot."
-msgstr ""
+msgstr "Número de puntos a ser usados para crear la gráfica."
 
 #: of smart_choice.value_sensitivity.ValueSensitivity
 msgid "Return type"
-msgstr ""
+msgstr "Tipo retornado"
 
 #: of smart_choice.value_sensitivity.ValueSensitivity.plot:1
 msgid "Plots the sensitivity to values"
-msgstr ""
+msgstr "Grafica la sensibilidad a los valores."
 

@@ -20,87 +20,96 @@ msgstr ""
 
 #: of smart_choice.examples:2
 msgid "Decision tree examples"
-msgstr ""
+msgstr "Ejemplos de árboles de decisión"
 
 #: of smart_choice.examples:4
 msgid ""
 "The functions in this module returns the data node structures for several"
 " examples in the literature."
 msgstr ""
+"Las funciones en este módulo retronan las estrucuras de datos de los nodos para "
+"varios ejemplos en la literatura."
 
 #: of smart_choice.examples.oil_tree_example:1
 msgid "PrecisionTree Oil Example."
-msgstr ""
+msgstr "Ejemplo del Petróleo de PrecisionTree"
 
 #: of smart_choice.examples.oil_tree_example:4
 msgid ""
 "This function returns the data nodes structure for the oil example in "
 "discuted in the PrecisionTree user guide."
 msgstr ""
+"Esta función retorna la estructura de datos de los nodos para el ejemplo del "
+"petróleo discutido en la guía del usuario de PrecisionTree."
 
 #: of smart_choice.examples.stbook:1
 msgid "Bid example from \"Decision Analysis for the professional."
-msgstr ""
+msgstr "Ejemplo de subasta del libro Decision Analysis for the Professional."
 
 #: of smart_choice.examples.stbook:4
 msgid "Bidding tree with four possible options:"
-msgstr ""
+msgstr "Arbol de oferta con cuatro posibles opciones:"
 
 #: of smart_choice.examples.stbook:6
 msgid "Bid $ 300."
-msgstr ""
+msgstr "Ofertar $ 300"
 
 #: of smart_choice.examples.stbook:8 smart_choice.examples.stguide:6
 msgid "Bid $ 500."
-msgstr ""
+msgstr "Ofertar $ 500."
 
 #: of smart_choice.examples.stbook:10 smart_choice.examples.stguide:8
 msgid "Bid $ 700."
-msgstr ""
+msgstr "Ofertar $ 700."
 
 #: of smart_choice.examples.stbook:12
 msgid "No bid."
-msgstr ""
+msgstr "No ofertar."
 
 #: of smart_choice.examples.stbook_dependent_outcomes:1
 msgid "Dependent outcomes example."
-msgstr ""
+msgstr "Ejemplo de valores dependientes."
 
 #: of smart_choice.examples.stbook_dependent_outcomes:4
 msgid ""
 "This function returns the data nodes for the tree in the Fig. 4.5 (pag. "
 "81) of the book \"Decision Analysis for the Professional\"."
 msgstr ""
+"Esta función retorna los nodos de datos para el árbol de la Fig. 4.5 "
+"(pag. 81) del libro Decision Analysis for the Professional."
 
 #: of smart_choice.examples.stguide:1
 msgid "Supertree userguide bid example (2 branches)."
-msgstr ""
+msgstr "Ejemplo de subasta del manual de usuario de SuperTree (2 ramas)"
 
 #: of smart_choice.examples.stguide:3
 msgid ""
 "This function returns the data nodes for a bid problem with two possible "
 "decisiions:"
 msgstr ""
+"Esta función retorna los nodos de datos para un problema de subasta con dos posibles decisiones:"
 
 #: of smart_choice.examples.stguide:10
 msgid ""
 "This example is used in the documentation available in the web site of "
 "the software."
-msgstr ""
+msgstr "Este ejemplo es usado en la documentación disponible en el sitio web del software."
 
 #: of smart_choice.examples.stguide_dependent_outcomes:1
 msgid "Supertree dependent outcomes example."
-msgstr ""
+msgstr "Ejemplo de valores dependientes de SuperTree"
 
 #: of smart_choice.examples.stguide_dependent_outcomes:3
 msgid ""
 "This function returns the data nodes for the example in the Fig. 7.6 of "
 "the documentation available in the web site."
 msgstr ""
+"Esta función retorna los nodos de datos del ejemplo en la Fig. 7.6 de "
+"la documentación disponible en el sitio Web."
 
 #: of smart_choice.examples.stguide_dependent_probabilities:1
 msgid "Supertree dependent probabilities example."
-msgstr ""
+msgstr "Ejemplo de probabilidades dependientes de SuperTree."
 
 #: of smart_choice.examples.stguide_dependent_probabilities:3
 msgid ""
@@ -108,4 +117,7 @@ msgid ""
 "dependent probabilities presented in Fig 7.3 of the documentation "
 "available in the web site."
 msgstr ""
+"Esta función retorna la estructura de los nodos de datos para el problema de subasta "
+"con probabilidades dependientes presentado en la Fig. 7.3 de la documentación "
+"disponible en el sitio web."
 
